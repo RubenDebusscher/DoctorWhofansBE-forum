@@ -1,8 +1,7 @@
-.snow {
-	background: url("./images/snow.png") repeat-x;
+.snowbg {
+	background: url("./images/snowbg.png") repeat-x;
 	height: 26px;
 	margin: -12px -5px 0;
-	border-radius:5em
 }
 
 .action-bar {
