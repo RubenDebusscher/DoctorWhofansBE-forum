@@ -1,4 +1,4 @@
-name: Deploy to one.com
+name: Test one.com SFTP
 
 on:
   push:
@@ -6,15 +6,27 @@ on:
       - main
 
 jobs:
-  deploy-test:
+  test-sftp:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
 
-      - name: Show deployment info
+      - name: Test SFTP connection
+        env:
+          SFTP_HOST: ${{ secrets.ONECOM_HOST }}
+          SFTP_USER: ${{ secrets.ONECOM_USER }}
+          SFTP_PASSWORD: ${{ secrets.ONECOM_PASSWORD }}
         run: |
-          echo "GitHub Actions werkt!"
-          echo "Deploying commit:"
-          git rev-parse --short HEAD
+          sshpass -p "$SFTP_PASSWORD" sftp \
+            -o StrictHostKeyChecking=no \
+            -P 22 \
+            "$SFTP_USER@$SFTP_HOST" <<'EOF'
+          pwd
+          ls -la
+          cd forum
+          pwd
+          ls -la
+          bye
+          EOF
