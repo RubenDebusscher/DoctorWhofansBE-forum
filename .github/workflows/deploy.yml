@@ -61,8 +61,12 @@ jobs:
           git diff --name-status "$BEFORE" "$AFTER" > /tmp/changes.txt
 
           echo
+          echo "======================================"
           echo "Git wijzigingen:"
+          echo "======================================"
           cat /tmp/changes.txt
+
+          touch /tmp/deleted-files.txt
 
       # --------------------------------------------------
       # 4. Controleer root Composer wijzigingen
@@ -72,11 +76,16 @@ jobs:
         run: |
           if grep -Eq '^[ACMRT][[:space:]]+(composer\.json|composer\.lock)$' /tmp/changes.txt; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
-            echo "Root Composer gewijzigd."
+
+            echo "======================================"
+            echo "Root Composer gewijzigd"
             echo "Volledige vendor/ wordt gedeployed."
+            echo "======================================"
           else
             echo "changed=false" >> "$GITHUB_OUTPUT"
+
             echo "Root Composer niet gewijzigd."
+            echo "Alleen gewijzigde bestanden worden gedeployed."
           fi
 
       # --------------------------------------------------
@@ -89,6 +98,8 @@ jobs:
           REPO: ${{ github.repository }}
           SHA: ${{ github.sha }}
         run: |
+          echo "Zoeken naar gekoppelde Pull Request..."
+
           PR_BODY=$(curl -fsSL \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer $GH_TOKEN" \
@@ -98,12 +109,20 @@ jobs:
 
           if printf '%s' "$PR_BODY" | grep -q 'DEPLOY_DELETE'; then
             echo "authorized=true" >> "$GITHUB_OUTPUT"
+
+            echo
+            echo "======================================"
             echo "DEPLOY_DELETE gevonden."
             echo "Verwijderen van bestanden is toegestaan."
+            echo "======================================"
           else
             echo "authorized=false" >> "$GITHUB_OUTPUT"
+
+            echo
+            echo "======================================"
             echo "DEPLOY_DELETE niet gevonden."
             echo "Bestanden worden NIET automatisch verwijderd."
+            echo "======================================"
           fi
 
       # --------------------------------------------------
@@ -125,8 +144,7 @@ jobs:
           rm -rf /tmp/deploy
           mkdir -p /tmp/deploy
 
-          # Zorg ervoor dat dit bestand altijd schoon begint.
-          : > /tmp/deleted-files.txt
+          touch /tmp/deleted-files.txt
 
           while IFS=$'\t' read -r status file extra; do
 
@@ -158,7 +176,7 @@ jobs:
             esac
 
             # ----------------------------------------------
-            # Alleen bestaande bestanden
+            # Alleen bestaande bestanden toevoegen
             # ----------------------------------------------
             if [ -f "$file" ]; then
               mkdir -p "/tmp/deploy/$(dirname "$file")"
@@ -175,8 +193,10 @@ jobs:
           if [ "$COMPOSER_CHANGED" = "true" ]; then
 
             echo
+            echo "======================================"
             echo "Root Composer gewijzigd."
-            echo "Volledige vendor/ toevoegen aan deploypakket."
+            echo "Volledige vendor/ toevoegen."
+            echo "======================================"
 
             mkdir -p /tmp/deploy/vendor
             cp -a vendor/. /tmp/deploy/vendor/
@@ -188,15 +208,11 @@ jobs:
           echo "Deploypakket:"
           echo "======================================"
 
-          if find /tmp/deploy -type f -print -quit | grep -q .; then
-            find /tmp/deploy -type f | sort
-          else
-            echo "Geen bestanden."
-          fi
+          find /tmp/deploy -type f | sort
 
           echo
           echo "======================================"
-          echo "Te verwijderen:"
+          echo "Verwijderde bestanden:"
           echo "======================================"
 
           if [ -s /tmp/deleted-files.txt ]; then
@@ -212,7 +228,7 @@ jobs:
         env:
           SFTP_HOST: ${{ secrets.ONECOM_HOST }}
           SFTP_USER: ${{ secrets.ONECOM_USER }}
-          SSHPASS: ${{ secrets.ONECOM_PASSWORD }}
+          SFTP_PASSWORD: ${{ secrets.ONECOM_PASSWORD }}
         run: |
 
           if ! find /tmp/deploy -type f -print -quit | grep -q .; then
@@ -221,19 +237,19 @@ jobs:
           fi
 
           python3 <<'PY'
+
           from pathlib import Path
 
-          local_root = Path("/tmp/deploy")
           remote_root = "/customers/e/a/c/doctorwhofans.be/httpd.www/forum"
+          deploy_root = Path("/tmp/deploy")
 
           files = sorted(
-              p.relative_to(local_root).as_posix()
-              for p in local_root.rglob("*")
+              p.relative_to(deploy_root).as_posix()
+              for p in deploy_root.rglob("*")
               if p.is_file()
           )
 
           commands = []
-          created_dirs = set()
 
           for file in files:
 
@@ -244,26 +260,28 @@ jobs:
                   print(f"SKIP unsafe path: {file}")
                   continue
 
-              # Maak alle benodigde directories aan.
-              # - voor mkdir = fout negeren als directory al bestaat.
-              current = remote_root
+              # ------------------------------------------
+              # Maak parent directory aan.
+              #
+              # -p zorgt ervoor dat bestaande directories
+              # geen probleem vormen.
+              # ------------------------------------------
+              parent = path.parent
 
-              for part in path.parent.parts:
+              if str(parent) not in ("", "."):
+                  remote_dir = f"{remote_root}/{parent.as_posix()}"
+                  commands.append(
+                      f'mkdir -p "{remote_dir}"'
+                  )
 
-                  if part in ("", "."):
-                      continue
-
-                  current = f"{current}/{part}"
-
-                  if current not in created_dirs:
-                      commands.append(f'-mkdir "{current}"')
-                      created_dirs.add(current)
-
-              remote = f"{remote_root}/{file}"
-              local = local_root / file
+              # ------------------------------------------
+              # Upload bestand
+              # ------------------------------------------
+              local_file = deploy_root / file
+              remote_file = f"{remote_root}/{file}"
 
               commands.append(
-                  f'put "{local}" "{remote}"'
+                  f'put "{local_file}" "{remote_file}"'
               )
 
           commands.append("bye")
@@ -273,6 +291,7 @@ jobs:
           )
 
           print(f"Prepared {len(files)} files for upload.")
+
           PY
 
           echo
@@ -280,10 +299,9 @@ jobs:
           echo "Testing SFTP authentication..."
           echo "======================================"
 
-          sshpass -e sftp \
+          sshpass -p "$SFTP_PASSWORD" sftp \
             -o StrictHostKeyChecking=no \
-            -o PreferredAuthentications=password \
-            -o PubkeyAuthentication=no \
+            -o BatchMode=no \
             -P 22 \
             "$SFTP_USER@$SFTP_HOST" <<'EOF'
           pwd
@@ -295,13 +313,15 @@ jobs:
           echo "Starting single SFTP upload session..."
           echo "======================================"
 
-          sshpass -e sftp \
+          sshpass -p "$SFTP_PASSWORD" sftp \
             -o StrictHostKeyChecking=no \
-            -o PreferredAuthentications=password \
-            -o PubkeyAuthentication=no \
+            -o BatchMode=no \
             -P 22 \
             -b /tmp/sftp-upload.txt \
             "$SFTP_USER@$SFTP_HOST"
+
+          echo
+          echo "Upload succesvol."
 
       # --------------------------------------------------
       # 9. Verwijder bestanden indien DEPLOY_DELETE aanwezig
@@ -311,7 +331,7 @@ jobs:
         env:
           SFTP_HOST: ${{ secrets.ONECOM_HOST }}
           SFTP_USER: ${{ secrets.ONECOM_USER }}
-          SSHPASS: ${{ secrets.ONECOM_PASSWORD }}
+          SFTP_PASSWORD: ${{ secrets.ONECOM_PASSWORD }}
         run: |
 
           if [ ! -s /tmp/deleted-files.txt ]; then
@@ -320,6 +340,7 @@ jobs:
           fi
 
           python3 <<'PY'
+
           from pathlib import Path
 
           remote_root = "/customers/e/a/c/doctorwhofans.be/httpd.www/forum"
@@ -339,16 +360,41 @@ jobs:
 
               path = Path(file)
 
-              # Extra veiligheidscontrole
-              if file.startswith("/") or ".." in path.parts:
+              # ------------------------------------------
+              # Veiligheidscontrole
+              # ------------------------------------------
+              if (
+                  file.startswith("/")
+                  or ".." in path.parts
+              ):
                   print(f"SKIP unsafe deletion: {file}")
+                  continue
+
+              # ------------------------------------------
+              # Bescherming tegen verwijderen van
+              # belangrijke root/runtime bestanden
+              # ------------------------------------------
+              if file in (
+                  ".env",
+                  "composer.json",
+                  "composer.lock",
+              ):
+                  print(f"SKIP protected deletion: {file}")
+                  continue
+
+              if (
+                  file.startswith("cache/")
+                  or file.startswith("files/")
+                  or file.startswith("store/")
+                  or file.startswith(".github/")
+              ):
+                  print(f"SKIP protected deletion: {file}")
                   continue
 
               remote = f"{remote_root}/{file}"
 
-              # - voor rm = fout negeren als bestand al verdwenen is.
               commands.append(
-                  f'-rm "{remote}"'
+                  f'rm "{remote}"'
               )
 
           commands.append("bye")
@@ -356,6 +402,7 @@ jobs:
           Path("/tmp/sftp-delete.txt").write_text(
               "\n".join(commands) + "\n"
           )
+
           PY
 
           echo
@@ -363,24 +410,26 @@ jobs:
           echo "Deleting authorized files..."
           echo "======================================"
 
-          sshpass -e sftp \
+          sshpass -p "$SFTP_PASSWORD" sftp \
             -o StrictHostKeyChecking=no \
-            -o PreferredAuthentications=password \
-            -o PubkeyAuthentication=no \
+            -o BatchMode=no \
             -P 22 \
             -b /tmp/sftp-delete.txt \
             "$SFTP_USER@$SFTP_HOST"
 
+          echo
+          echo "Verwijderingen uitgevoerd."
+
       # --------------------------------------------------
       # 10. Geen delete-autorisatie:
-      # maak rapport op one.com
+      #     maak rapport op one.com
       # --------------------------------------------------
       - name: Upload deletion report
         if: steps.delete_auth.outputs.authorized == 'false'
         env:
           SFTP_HOST: ${{ secrets.ONECOM_HOST }}
           SFTP_USER: ${{ secrets.ONECOM_USER }}
-          SSHPASS: ${{ secrets.ONECOM_PASSWORD }}
+          SFTP_PASSWORD: ${{ secrets.ONECOM_PASSWORD }}
         run: |
 
           if [ ! -s /tmp/deleted-files.txt ]; then
@@ -388,22 +437,27 @@ jobs:
             exit 0
           fi
 
+          echo
+          echo "======================================"
           echo "DEPLOY_DELETE ontbreekt."
-          echo "Verwijderde bestanden worden niet verwijderd."
+          echo "Verwijderde bestanden worden NIET verwijderd."
+          echo "Rapport wordt geüpload."
+          echo "======================================"
 
           cp /tmp/deleted-files.txt \
             /tmp/DEPLOY_DELETIONS.txt
 
-          sshpass -e sftp \
+          sshpass -p "$SFTP_PASSWORD" sftp \
             -o StrictHostKeyChecking=no \
-            -o PreferredAuthentications=password \
-            -o PubkeyAuthentication=no \
+            -o BatchMode=no \
             -P 22 \
-            "$SFTP_USER@$SFTP_HOST" <<'EOF'
+            "$SFTP_USER@$SFTP_HOST" <<EOF
           cd /customers/e/a/c/doctorwhofans.be/httpd.www/forum
           put /tmp/DEPLOY_DELETIONS.txt DEPLOY_DELETIONS.txt
           bye
           EOF
+
+          echo "DEPLOY_DELETIONS.txt geüpload."
 
       # --------------------------------------------------
       # 11. Samenvatting
