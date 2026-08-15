@@ -1,0 +1,16 @@
+services:
+    phpbbde.externalimgaslink.helper:
+        class: phpbbde\externalimgaslink\helper
+        arguments:
+            - '@language'
+
+    phpbbde.externalimgaslink.listener:
+        class: phpbbde\externalimgaslink\event\listener
+        arguments:
+            - '@config'
+            - '@phpbbde.externalimgaslink.helper'
+            - '@language'
+            - '@template'
+            - '@user'
+        tags:
+            - { name: event.listener }

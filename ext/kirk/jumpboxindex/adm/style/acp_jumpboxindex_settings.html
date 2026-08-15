@@ -1,0 +1,122 @@
+{% include 'overall_header.html' %}
+
+{% set switch_type = TOGGLECTRL_TYPE ?? (JUMPBOX_TOGGLE_ACTIVATED ? 'toggle' : 'radio') %}
+
+{% if JUMPBOX_NOTES %}
+	<p class="successbox jumpbox-notebox">{{ JUMPBOX_NOTES }}</p>
+{% endif %}
+
+<h1>{{ lang('JUMPBOXINDEX') }}</h1>
+<p>{{ lang('JUMPBOXINDEX_EXPLAIN') }}</p>
+
+<form id="acp_jumpboxindex" method="post" action="{{ U_ACTION }}">
+	<fieldset{% if JUMPBOX_DISPLAY_DEACTIVATED %} class="jumpbox-display-deactivated"{% endif %}>
+		<legend>{{ lang('ACP_JUMPBOXINDEX_SETTINGS') }}</legend>
+		<dl>
+			<dt>
+				<label>{{ lang('JUMPBOX_TOGGLE_ACTIVATE') ~ lang('COLON') }}</label><br>
+				{% if TOGGLECTRL_TYPE is defined %}
+					<span class="jumpbox-toggle-explain-note">{{ lang('JUMPBOX_TOGGLECTRL_ACTIVATED') }}</span>
+				{% else %}
+					<span>{{ lang('JUMPBOX_TOGGLE_ACTIVATE_EXPLAIN') }}</span>
+				{% endif %}
+			</dt>
+			<dd{% if TOGGLECTRL_TYPE is defined %} class="jumpbox-togglectrl-activated"{% endif %}>
+				{{ _self.switch('jumpbox_toggle_activated', JUMPBOX_TOGGLE_ACTIVATED, switch_type) }}
+			</dd>
+		</dl>
+
+		<dl>
+			<dt>
+				<label>{{ lang('JUMPBOX_DEFAULT') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('JUMPBOX_DEFAULT_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				{{ _self.switch('jumpbox_default', JUMPBOX_DEFAULT, switch_type) }}
+			</dd>
+		</dl>
+
+		<dl>
+			<dt>
+				<label>{{ lang('JUMPBOX_UCP') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('JUMPBOX_UCP_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				{{ _self.switch('jumpbox_ucp', JUMPBOX_UCP, switch_type) }}
+			</dd>
+		</dl>
+
+		<dl>
+			<dt>
+				<label>{{ lang('JUMPBOX_LEFT_RIGHT') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('JUMPBOX_LEFT_RIGHT_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				{{ _self.switch('jumpbox_right', JUMPBOX_RIGHT, switch_type) }}
+			</dd>
+		</dl>
+
+		<dl>
+			<dt>
+				<label>{{ lang('JUMPBOX_POSITION') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('JUMPBOX_POSITION_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				{{ _self.select('jumpbox_position', JUMPBOX_POSITION, JUMPBOX_POSITION_OPTIONS) }}
+			</dd>
+		</dl>
+
+		<dl id="jumpbox_font_icon">
+			<dt>
+				<label>{{ lang('JUMPBOX_FONT_ICON') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('JUMPBOX_FONT_ICON_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<input
+					type="text"
+					name="jumpbox_font_icon"
+					id="jb_font_icon"
+					maxlength="57"
+					size="31"
+					value="{{ JUMPBOX_FONT_ICON }}"
+					placeholder="{{ lang('JUMPBOX_FONT_ICON') }}"
+				>
+				<span id="fa-icon-preview" class="icon {{ JUMPBOX_FONT_ICON }}"></span>
+			</dd>
+		</dl>
+	</fieldset>
+
+	<p class="submit-buttons">
+		<input class="button1" type="submit" name="submit" value="{{ lang('SUBMIT') }}"{{ (JUMPBOX_DISPLAY_DEACTIVATED) ? ' disabled' }}>&nbsp;
+		<input class="button2" type="reset" name="form_reset" value="{{ lang('RESET') }}">
+	</p>
+
+	{{ S_FORM_TOKEN }}
+
+	<p class="jumpbox-version-copy">{{ JUMPBOX_VERSION_COPY }}</p>
+</form>
+
+{% INCLUDEJS '@kirk_jumpboxindex/js/jb_acp.js' %}
+{% INCLUDECSS '@kirk_jumpboxindex/css/jb_acp.css' %}
+{% if switch_type == 'toggle' %}
+	{% INCLUDECSS '@kirk_jumpboxindex/css/jb_toggle_acp.css' %}
+{% endif %}
+
+{% include 'overall_footer.html' %}
+
+{% macro select(name, value, options) -%}
+	<select name="{{ name }}">
+		{% for opt_langvar, opt_value in options %}
+			<option value="{{ opt_value }}"{{ opt_value == value ? ' selected' }}>{{ lang(opt_langvar) }}</option>
+		{% endfor %}
+	</select>
+{%- endmacro %}
+
+{% macro switch(name, checked = false, type = 'toggle') -%}
+	{% if type == 'toggle' || type == 'checkbox' -%}
+		<input type="checkbox" class="{{ type }}" name="{{ name }}" value="1"{{ checked ? ' checked' }}>
+	{%- elseif type == 'radio' -%}
+		<label><input type="radio" class="radio" name="{{ name }}" value="1"{{ checked ? ' checked' }}> {{ lang('YES') }}</label>
+		<label><input type="radio" class="radio" name="{{ name }}" value="0"{{ !checked ? ' checked' }}> {{ lang('NO') }}</label>
+	{%- endif %}
+{%- endmacro %}

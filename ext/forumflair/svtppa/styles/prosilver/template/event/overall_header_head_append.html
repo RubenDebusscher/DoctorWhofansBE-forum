@@ -1,0 +1,13 @@
+{% INCLUDECSS '@forumflair_svtppa/svtppa_onln.css' %}
+
+{% if SCRIPT_NAME eq 'viewtopic' and S_USER_SVTPPA_ALT eq '2' and S_CONTENT_DIRECTION eq 'ltr' %}
+	{% INCLUDECSS '@forumflair_svtppa/svtppa_lft.css' %}
+{% elseif SCRIPT_NAME eq 'viewtopic' and S_USER_SVTPPA_ALT eq '2' and S_CONTENT_DIRECTION eq 'rtl' %}
+	{% INCLUDECSS '@forumflair_svtppa/svtppa_lft_rtl.css' %}
+{% endif %}
+
+{% if SCRIPT_NAME eq 'viewtopic' and S_USER_SVTPPA_ALT eq '3' and S_CONTENT_DIRECTION eq 'ltr' %}
+	{% INCLUDECSS '@forumflair_svtppa/svtppa_rght.css' %}
+{% elseif SCRIPT_NAME eq 'viewtopic' and S_USER_SVTPPA_ALT eq '3' and S_CONTENT_DIRECTION eq 'rtl' %}
+	{% INCLUDECSS '@forumflair_svtppa/svtppa_rght_rtl.css' %}
+{% endif %}

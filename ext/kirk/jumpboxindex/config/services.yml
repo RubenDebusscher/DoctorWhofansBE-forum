@@ -1,0 +1,22 @@
+services:
+    kirk.jumpboxindex.controller.acp:
+        class: kirk\jumpboxindex\controller\jumpboxindex_acp_controller
+        arguments:
+            - '@config'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@ext.manager' 
+            - '@path_helper'
+            - '%core.php_ext%'
+
+    kirk.jumpboxindex.listener:
+        class: kirk\jumpboxindex\event\listener
+        arguments:
+            - '@config'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: event.listener }

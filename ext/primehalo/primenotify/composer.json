@@ -1,0 +1,34 @@
+{
+    "name": "primehalo/primenotify",
+    "type": "phpbb-extension",
+    "description": "Inserts the content of a post or private messages into notification e-mails. Options allow long messages to be truncated, BBCodes to be kept or removed, and notification emails to be sent after every new post or just the first new post.",
+    "homepage": "https://github.com/primehalo/primenotify",
+    "version": "1.0.7",
+    "time": "2023-04-16",
+    "license": "GPL-2.0-only",
+    "authors": [
+        {
+            "name": "Ken F. Innes IV",
+            "email": "primehalo@gmail.com",
+            "homepage": "https://www.absoluteanime.com/",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "phpbb/phpbb": ">=3.3.2",
+        "composer/installers": "~1.0.0"
+    },
+    "extra": {
+        "display-name": "Prime Notify",
+        "soft-require": {
+            "phpbb/phpbb": ">=3.3.2"
+        },
+        "version-check": {
+            "host": "www.phpbb.com",
+            "directory": "/customise/db/extension/primenotify",
+            "filename": "version_check",
+            "ssl": true
+        }
+    }
+}

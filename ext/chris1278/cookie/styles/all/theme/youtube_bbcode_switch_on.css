@@ -1,0 +1,17 @@
+/* These CSS settings are used for the info box that is displayed when the Youtube switch is set to false but a video is embedded in the post with the BBcode. */
+.yt_video_switch_false {
+	display: none
+}
+
+/* These CSS settings are used to format the video that is displayed. */
+.yt_video_layer {
+	max-width: 600px;
+	max-height: 427px;
+	padding-bottom: 40px;
+}
+
+.yt_video_layer iframe, .yt_video_layer object, .yt_ideo_layer embed {
+	position: relative;
+	width: 600px;
+	height: 427px;
+}

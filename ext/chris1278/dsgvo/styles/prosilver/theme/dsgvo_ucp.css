@@ -1,0 +1,111 @@
+.dgsvo-info {
+	background-color: #D8D8D8;
+	padding: 5px;
+	border-radius: 10px;
+}
+
+.dgsvo-info-headline {
+	color: #ff0000;
+	font-weight: bold;
+	font-size: medium;
+	margin-bottom: 5px;
+}
+
+.redcolor-b {
+	color: #ff0000;
+}
+
+@media (min-width: 701px) {
+#normal-res {
+	display: none;
+}
+}
+
+@media (max-width: 700px) {
+#normal-view {
+	display: none;
+}
+}
+
+.dgsvo-info-box {
+	padding: 0px;
+	border: 1px solid #000;
+}
+
+.table-dgsvo-ucp {
+	width: 100%;
+	border: 1px solid #000000;
+	background-color: #FFFFFF;
+	border-spacing: 1px;
+	border-collapse: revert;
+	font-size: 1.1em;
+}
+
+.ucp-dgsvo-col1{
+	background-color: #DCEBFE;
+}
+
+.ucp-dgsvo-col2{
+	background-color: #D8D8D8;
+}
+
+.ucp-dgsvo-th {
+	padding: 3px 4px;
+	color: #FFFFFF;
+	background: #70AED3 url("./images/upercell.gif") bottom left repeat-x;
+	border-top: 1px solid #6DACD2;
+	border-bottom: 1px solid #327AA5;
+	text-align: left;
+	font-size: 0.75em;
+	text-transform: uppercase;
+	width: 25%;
+}
+
+.ucp-dgsvo-td {
+	padding: 5px;
+}
+
+.dgsvo-dl {
+	padding: 5px;
+}
+
+.dgsvo-dt {
+	width: 45%;
+	text-align: left;
+	padding-top: 3px;
+	border-right: 1px solid #A4B3BF;
+}
+
+@media (max-width: 700px) {
+.dgsvo-dt {
+	width: 100%;
+	text-align: center;
+	padding-top: 3px;
+	border-right: 0px solid #A4B3BF;
+}
+}
+
+.dgsvo-span {
+	padding: 0 5px 0 0;
+}
+
+.dgsvo-dd {
+	margin: auto;
+	padding: 9px;
+	border: none;
+	text-align: center;
+}
+
+@media (max-width: 700px) {
+.dgsvo-dd {
+	margin: auto;
+	padding: 9px;
+	border: none;
+	text-align: center;
+}
+}
+
+.error-info {
+	color: #ff0000;
+	font-size: bold;
+}

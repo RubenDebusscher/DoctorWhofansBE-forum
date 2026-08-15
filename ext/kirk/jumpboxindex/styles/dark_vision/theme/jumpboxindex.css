@@ -1,0 +1,165 @@
+/* jumpboxindex.css dark_vision
+------------------------------- */
+
+.nav-breadcrumbs.linklist.navlinks {
+	padding: 7px 0 0 0;
+}
+
+.jumpbox-index {
+	margin: 6px 0;
+}
+
+.jumpbox-ucp {
+	margin: 12px 0;
+}
+
+.jumpbox-navbar {
+	margin: -4px 0;
+	cursor: pointer;
+}
+
+.jumpbox-navbar-default-top,
+.jumpbox-navbar-default-bottom {
+	margin: -9px 0 -19px 0px;
+	cursor: pointer;
+}
+
+.jumpbox-navbar-modern-top,
+.jumpbox-navbar-bottom {
+	margin: 2px 0 -11px 0px;
+}
+
+.dropdown .jumpbox-pointer-navbar {
+	margin-right: -1px !important;
+	margin-left: -4.6px;
+}
+
+.jumpbox-default-left-pointer.pointer {
+	left: -3px;
+}
+
+.jumpbox-default-right-pointer.pointer {
+	margin-right: -11px;
+}
+
+.jumpbox-left-pointer.pointer {
+	left: 2px;
+}
+
+.jumpbox-right-pointer.pointer {
+	margin-right: -3px;
+	margin-top: 2px !important;
+}
+
+.jumpbox-navbar-text-left {
+	float: left;
+	padding: 1px 2px 0 2px;
+}
+
+.jumpbox-navbar-text-right {
+	float: right;
+	margin-top: 2px;
+}
+
+.jumpbox-text-left {
+	float: left;
+	padding-right: 5px;
+}
+
+.jumpbox-text-right {
+	float: right;
+	padding-left: 5px;
+}
+
+.jumpbox-navbar-top-left.fa-sort-down {
+	margin-right: -6px;
+}
+
+.jumpbox-navbar-top-right.fa-sort-down {
+	margin-left: -4px;
+	top: 1px;
+	position: relative;
+}
+
+.jumpbox-navbar-default-down-left.fa-sort-up {
+	margin-right: -2px;
+	top: 6px;
+	position: relative;
+}
+
+.jumpbox-navbar-default-down-right.fa-sort-up {
+	margin-left: 0;
+	top: 5px;
+	position: relative;
+}
+
+.jumpbox-navbar-down-left.fa-sort-up,
+.jumpbox-navbar-down-right.fa-sort-up {
+	margin-right: -6px;
+	top: 7px;
+	position: relative;
+}
+
+.jumpbox-navbar-down-right.fa-sort-up {
+	margin-left: -6px;
+	margin-right: 0;
+}
+
+.jumpbox-navbar-modern-bottom {
+	margin: 1px 0 -10px 0;
+}
+
+.jumpbox-navbar .dropdown-visible .dropdown-select,
+.nojs .dropdown-container:hover .dropdown-select,
+.jumpbox-navbar-default-top .dropdown-visible .dropdown-select,
+.jumpbox-navbar-default-bottom .dropdown-visible .dropdown-select,
+.jumpbox-navbar-default-bottom .dropdown-visible .dropdown-select {
+	background-image: none;
+}
+
+.jumpbox-drop-down.dropdown {
+	margin-top: 4px;
+}
+
+.jumpbox-drop-up.dropdown {
+	margin-bottom: 3px;;
+}
+
+.dropdown-visible .dropdown-select .dropdown-container-navbar:hover {
+	background-image: none;
+}
+
+.jumpbox-default-dropdown-contents-navbar {
+	margin-left: -4px !important;
+	margin-right: -1px !important;
+}
+
+.jumpbox-dropdown-contents-navbar {
+	margin-left: -4px !important;
+	margin-right: -1px !important;
+}
+
+.dropdown-left .dropdown .jumpbox-pointer-navbar,
+.nojs .rightside .dropdown .jumpbox-pointer-navbar {
+	right: 0;
+	bottom: 1px;
+}
+
+.caret-modern .fa-sort-down {
+	margin-top: 2px;
+}
+
+.caret-left {
+	border-right: 1px solid;
+	border-right-color: currentcolor;
+	position: relative;
+	right: 4px;
+}
+
+.caret-left i {
+	vertical-align: top;
+}
+
+.caret-bottom i {
+	vertical-align: sub;
+}

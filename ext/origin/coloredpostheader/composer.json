@@ -1,0 +1,38 @@
+{
+    "name": "origin/coloredpostheader",
+    "type": "phpbb-extension",
+    "description": "Addition of a colored band, corresponding to the color of the groups, at the top of each message",
+    "homepage": "https://caforum/fr/forum",
+    "version": "1.0.1",
+    "time": "2020-11-30",
+    "keywords": [
+        "phpbb",
+        "extension"
+    ],
+    "license": "GPL-2.0-only",
+    "authors": [
+        {
+            "name": "Origin",
+            "email": "contact@caforum.fr",
+            "homepage": "https://caforum.fr/forum/",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.3",
+        "composer/installers": "~1.0.0",
+        "phpbb/phpbb": "3.3"
+    },
+    "extra": {
+        "display-name": "Colored Post Header",
+        "soft-require": {
+            "phpbb/phpbb": "3.3"
+        },
+        "version-check": {
+            "host": "www.phpbb.com",
+            "directory": "/customise/db/extension/colored_post_header",
+            "filename": "version_check",
+            "ssl": true
+        }
+    }
+}

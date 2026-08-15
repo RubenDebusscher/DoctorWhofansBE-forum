@@ -1,0 +1,16 @@
+/* This hides the div container created with the Vimeo BBcode in the post. This is to avoid wasting space unnecessarily. */
+.sp_video_layer {
+	display: none;
+}
+
+/* This formatting using css an info box that is only displayed instead of the actual video. The text of which can be created and output via the corresponding language file, especially for this BBcode. */
+.sp_video_switch_false {
+	border: 2px solid #000000;
+	padding: 25px;
+	text-align: center;
+	font-weight: bold;
+	color: #FF0000;
+	font-size: 19px;
+	background-color: #FFA500;
+	margin: 5px 0px;
+}

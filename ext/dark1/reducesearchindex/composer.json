@@ -1,0 +1,51 @@
+{
+    "name": "dark1/reducesearchindex",
+    "type": "phpbb-extension",
+    "description": "Reduce Search Index [RSI]",
+    "homepage": "https://phpbb.com/customise/db/extension/reduce_search_index",
+    "version": "1.1.1",
+    "time": "2022-07-21",
+    "keywords": [
+        "phpbb",
+        "extension",
+        "reduce",
+        "search",
+        "index"
+    ],
+    "license": "GPL-2.0-only",
+    "authors": [
+        {
+            "name": "Dark❶",
+            "email": "phpbb@dark1.tech",
+            "homepage": "https://dark1.tech",
+            "role": "Lead Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.7",
+        "composer/installers": "~1.0.0",
+        "phpbb/phpbb": ">=3.2.3"
+    },
+    "extra": {
+        "display-name": "Reduce Search Index",
+        "soft-require": {
+            "phpbb/phpbb": ">=3.2.3"
+        },
+        "version-check": {
+            "host": "www.phpbb.com",
+            "directory": "/customise/db/extension/reduce_search_index",
+            "filename": "version_check",
+            "ssl": true
+        }
+    },
+    "readme": "./README.md",
+    "support": {
+        "email": "phpbb@dark1.tech",
+        "issues": "https://github.com/Dark1z/reducesearchindex/issues",
+        "forum": "https://phpbb.com/customise/db/extension/reduce_search_index/support",
+        "wiki": "https://github.com/Dark1z/reducesearchindex/wiki",
+        "source": "https://github.com/Dark1z/reducesearchindex",
+        "docs": "https://github.dark1.tech/reducesearchindex",
+        "chat": "https://github.com/Dark1z/reducesearchindex/discussions"
+    }
+}

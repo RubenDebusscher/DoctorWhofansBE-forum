@@ -1,0 +1,21 @@
+/*	phpBB3 Style Sheet
+	--------------------------------------------------------------
+	phpBB Extension Name:	Simple View Topic Post Profile Alternator
+	Extension Developer:	ForumFlair (https://forumflair.co.uk)
+	Compatible Style:		Prosilver_Dark
+	--------------------------------------------------------------
+*/
+
+/* Hide Online Image */
+.post.online { background-image: none !important; }
+#viewprofile .online { background-image: none !important; }
+
+/* Online FA Icon */
+.svtppa-icon::before { padding-right: 0; }
+.svtppa-icon { font-size: 10px; }
+.user-online { color: #9CCC65; }
+
+/* Prosilver RTL Bug Fixes */
+/* Icon padding bug: a mistake in the prosilver bidi.css style sheet doesn't remove the padding */
+.rtl .svtppa-icon.icon { padding: 0; }
+/* This can be removed when the mistake in the prosilver bidi.css file is fixed */

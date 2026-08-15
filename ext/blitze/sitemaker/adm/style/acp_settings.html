@@ -1,0 +1,150 @@
+{% INCLUDE 'overall_header.html' %}
+
+{% INCLUDECSS '@blitze_sitemaker/assets/sitemaker.min.css' %}
+{% INCLUDECSS '@blitze_sitemaker/assets/codemirror/codemirror.min.css' %}
+{% INCLUDECSS '@blitze_sitemaker/assets/settings/admin.min.css' %}
+
+{% INCLUDEJS '@blitze_sitemaker/assets/runtime.min.js' %}
+{% INCLUDEJS '@blitze_sitemaker/assets/codemirror/codemirror.min.js' %}
+{% INCLUDEJS '@blitze_sitemaker/assets/settings/admin.min.js' %}
+
+{% INCLUDECSS 'https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.6/dist/jquery.fancybox.min.css' %}
+{% INCLUDEJS 'https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.6/dist/jquery.fancybox.min.js' %}
+
+<a data-fancybox data-type="iframe" href="https://blitze.github.io/phpBB-ext-sitemaker/docs/{{ sm_user_lang }}/introduction"><i class="fa fa-question-circle fa-lg fa-pull-right fa-orange" aria-hidden="true"></i></a>
+
+{% if BLOCKS_CLEANUP %}
+
+<h1>{{ lang('BLOCKS_CLEANUP') }}</h1>
+
+<form id="blocks_cleanup" method="post" action="{{ u_action }}">
+	<fieldset>
+		<p>{{ lang('BLOCKS_CLEANUP_EXPLAIN') }}</p>
+		<ul class="sm-list">
+		{% for component, orphans in orphaned_blocks %}
+			{% if component === 'routes' %}
+				{% set orphans = orphans|map(url => '<a href="' ~ url ~ '" target="_blank">' ~ url ~ '</a>') %}
+			{% endif %}
+			<li>
+				<label><input type="checkbox" name="cleanup[]" value="{{ component }}" checked="checked"> <strong>{{ lang('BLOCKS_CLEANUP_' ~ component|upper) }}</strong></label><br />
+				<ul class="sm-list">
+					<li>{{ orphans|join('</li><li>') }}</li>
+				</ul>
+			</li>
+		{% endfor %}
+		</ul>
+        <p class="submit-buttons">
+        	{{ S_FORM_TOKEN }}
+            <input class="button1" type="submit" id="submit" name="orphans" value="{{ lang('CONFIRM') }}" />
+        </p>
+	</fieldset>
+</form>
+{% endif %}
+
+<h1>{{ lang('SETTINGS') }}</h1>
+
+<form method="post" action="{{ u_action }}">
+	<div id="acp_settings">
+		<h3>{{ lang('NAVIGATION_SETTINGS') }}</h3>
+		<fieldset>
+			<dl>
+				<dt>
+					<label for="show_forum_nav">{{ lang('SHOW_FORUM_NAV') }}</label><br />
+					<span>{{ lang('SHOW_FORUM_NAV_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<label><input type="radio" class="radio" id="show_forum_nav" name="config[sm_show_forum_nav]" value="1"{% if config.sm_show_forum_nav %} checked="checked"{% endif %} /> {{ lang('SHOW_FORUM_NAV_WITH_ICON') }}</label>
+					<div class="icon-container">
+						<a href="#" class="icon-select"><i class="{{ config.sm_forum_icon }}" aria-hidden="true"></i></a>
+						<input type="hidden" name="config[sm_forum_icon]" value="{{ config.sm_forum_icon }}" />
+					</div><br />
+					<label><input type="radio" class="radio" name="config[sm_show_forum_nav]" value="0"{% if !config.sm_show_forum_nav %} checked="checked"{% endif %} /> {{ lang('NO') }}</label>
+				</dd>
+			</dl>
+			<dl>
+				<dt>
+					<label for="navbar_menu">{{ lang('SELECT_NAVBAR_MENU') }}</label>
+				</dt>
+				<dd>
+					<select id="navbar_menu" name="config[sm_navbar_menu]">
+						<option value="0">{{ lang('NO_NAVBAR') }}</option>
+						{{ menu_options }}
+					</select>
+				</dd>
+			</dl>
+		</fieldset>
+
+		<h3>{{ lang('FORUM_INDEX_SETTINGS') }}</h3>
+		<fieldset>
+			<dl>
+				<dt><label for="hide_login">{{ lang('HIDE_LOGIN') }}</label></dt>
+				<dd>
+					<label><input type="radio" class="radio" id="hide_login" name="config[sm_hide_login]" value="1"{% if config.sm_hide_login %} checked="checked"{% endif %} /> {{ lang('YES') }}</label>
+					<label><input type="radio" class="radio" name="config[sm_hide_login]" value="0"{% if !config.sm_hide_login %} checked="checked"{% endif %} /> {{ lang('NO') }}</label>
+				</dd>
+			</dl>
+			<dl>
+				<dt><label for="hide_online">{{ lang('HIDE_ONLINE') }}*</label></dt>
+				<dd>
+					<label><input type="radio" class="radio" id="hide_online" name="config[sm_hide_online]" value="1"{% if config.sm_hide_online %} checked="checked"{% endif %} /> {{ lang('YES') }}</label>
+					<label><input type="radio" class="radio" name="config[sm_hide_online]" value="0"{% if !config.sm_hide_online %} checked="checked"{% endif %} /> {{ lang('NO') }}</label>
+				</dd>
+			</dl>
+			<dl>
+				<dt><label for="hide_birthday">{{ lang('HIDE_BIRTHDAY') }}*</label></dt>
+				<dd>
+					<label><input type="radio" class="radio" id="hide_birthday" name="config[sm_hide_birthday]" value="1"{% if config.sm_hide_birthday %} checked="checked"{% endif %} /> {{ lang('YES') }}</label>
+					<label><input type="radio" class="radio" name="config[sm_hide_birthday]" value="0"{% if !config.sm_hide_birthday %} checked="checked"{% endif %} /> {{ lang('NO') }}</label>
+				</dd>
+			</dl>
+			<p>*{{ lang('FORUM_INDEX_SETTINGS_EXPLAIN') }}</p>
+		</fieldset>
+
+		{% EVENT blitze_sitemaker_acp_settings %}
+
+		<h3>{{ lang('LAYOUT_SETTINGS') }}</h3>
+		<fieldset>
+			<div class="style-layouts">
+			{%- set views = ['basic', 'boxed', 'simple'] -%}
+			{% for style in styles %}
+				<dl data-layout="{{ style.layout }}">
+					<dt><label for="{{ style.name }}">{{ style.name }}</label></dt>
+					<dd>
+						<select class="layout-option" name="layouts[{{ style.id }}][layout]" id="{{ style.name }}">
+						{% for name, path in layouts %}
+							<option value="{{ path }}"{{ path === style.layout ? ' selected="selected"' : '' }}>{{ lang('LAYOUT_' ~ name|upper) }}</option>
+						{% endfor %}
+						</select>
+						<select class="view-option" name="layouts[{{ style.id }}][view]">
+						{%- set view = style.view ?: 'simple' -%}
+						{% for value in views %}
+							<option value="{{ value }}"{{ value === view ? ' selected="selected"' : '' }}>{{ lang('BLOCK_VIEW_' ~ value|upper) }}</option>
+						{% endfor %}
+						</select>
+					</dd>
+				</dl>
+				{% if !loop.first %}<hr />{% endif %}
+			{% endfor %}
+			</div>
+			<div class="layout-small-preview responsive-hide">
+				{% set preview = styles|first %}
+				<img src="{{ preview.layout }}preview.png" alt="" />
+			</div>
+		</fieldset>
+	</div>
+	{% set preview = styles|first %}
+	<div class="layout-large-preview hide"><img src="{{ preview.layout }}preview.png" alt="" /></div>
+
+    <fieldset>
+        <p class="submit-buttons">
+            <input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
+            <input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}" />
+        </p>
+
+        {{ S_FORM_TOKEN }}
+    </fieldset>
+</form>
+
+{{ icon_picker }}
+
+{% INCLUDE 'overall_footer.html' %}

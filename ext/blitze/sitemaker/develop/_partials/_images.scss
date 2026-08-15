@@ -1,0 +1,157 @@
+@import 'globals';
+
+/* Avatar sizes */
+img {
+	max-width: 100%;
+	height: auto;
+
+	@mixin set-avatar-size($size, $valign) {
+		vertical-align: $valign;
+		max-width: $size;
+		width: auto;
+		width: $size;
+		max-height: $size;
+		height: auto;
+		height: $size;
+	}
+
+	.tiny-avatar & {
+		@include set-avatar-size($tiny-avatar-size, middle);
+	}
+
+	.small-avatar & {
+		@include set-avatar-size($small-avatar-size, top);
+	}
+
+	.medium-avatar & {
+		@include set-avatar-size($medium-avatar-size, top);
+	}
+
+	.post &,
+	.attach-image & {
+		max-width: 100%;
+		height: auto;
+	}
+
+	.feeds & {
+		max-width: 100%;
+		margin: 0 0.25rem;
+	}
+}
+
+/* Block images */
+.img-ui,
+.attach-image {
+	display: block;
+	position: relative;
+
+	// image sizes
+	.large-img & {
+		width: $large-image-size;
+	}
+
+	.medium-img & {
+		width: $medium-image-size;
+	}
+
+	.small-img & {
+		width: $small-image-size;
+	}
+
+	.fullwidth-img & {
+		float: none !important;
+		margin: 0 !important;
+		width: 100%;
+	}
+
+	.card-img & {
+		margin: -4px -10px auto;
+
+		img {
+			width: 100%;
+			padding: 0;
+			border-top-left-radius: 5px;
+			border-top-right-radius: 5px;
+		}
+
+		.content & {
+			margin: 0;
+
+			img {
+				border-radius: 0;
+			}
+		}
+	}
+
+	// image alignment
+	.img-align-left & {
+		float: left;
+		margin-right: 0.8rem;
+	}
+
+	.img-align-right & {
+		float: right;
+		margin-left: 0.8rem;
+	}
+
+	.img-align-left &,
+	.img-align-right & {
+		& + .label-hidden {
+			display: none;
+		}
+	}
+
+	// image borders
+	.img-border &,
+	.img-border-padding & {
+		border: 1px solid $border-color;
+	}
+
+	// image padding
+	.img-border-padding & {
+		padding: 4px;
+	}
+
+	// image shape
+	.img-circle & img {
+		border-radius: 50%;
+		overflow: hidden;
+	}
+
+	.img-rounded & img {
+		border-radius: $panel_border_radius;
+	}
+
+	// image ratios
+	[class*='img-ratio-'] & {
+		position: relative;
+		display: block;
+		background: black;
+		overflow: hidden;
+		height: 0;
+
+		img {
+			display: block;
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			margin: auto;
+			max-width: 100%;
+			max-height: 100%;
+		}
+	}
+
+	.img-ratio-1x1 & {
+		padding-top: 100%;
+	}
+
+	.img-ratio-4x3 & {
+		padding-top: 75%;
+	}
+
+	.img-ratio-16x9 & {
+		padding-top: 56.25%;
+	}
+}

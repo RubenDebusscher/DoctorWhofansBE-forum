@@ -1,0 +1,23 @@
+/*	phpBB3 Style Sheet
+	--------------------------------------------------------------
+	phpBB Extension Name:	Simple View Topic Post Profile Alternator
+	Extension Developer:	ForumFlair (https://forumflair.co.uk)
+	Compatible Style:		Prosilver
+	--------------------------------------------------------------
+*/
+
+/* Alternate Post Body & Post Profile */
+.has-profile.bg1 .postbody { float: right; }
+.has-profile.bg1 .postbody .attachbox { clear: right; }
+.has-profile.bg1 .postprofile { border-width: 0 1px 0 0; float: left; text-align: right; }
+.has-profile.bg1 .postprofile .avatar { float: right; }
+.has-profile.bg1 .postprofile dd { margin-left: 0; margin-right: 8px; }
+.has-profile.bg1 .postprofile dt { margin-left: 0; margin-right: 8px; }
+
+/* Responsive Media Queries */
+@media (max-width: 700px) {
+	/* Alternate Post Body & Post Profile */
+	.has-profile.bg1 .postbody { float: none; }
+	.has-profile.bg1 .postprofile { border-width: 0 0 1px 0; float: none; text-align: left; }
+	.has-profile.bg1 .postprofile .avatar { float: left; }
+}

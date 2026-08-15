@@ -1,0 +1,90 @@
+{% extends 'layout_base.twig' %}
+
+{% block layout %}
+						</div>
+						{% if positions.boxes or S_EDIT_MODE %}
+						<div id="pos-boxes" class="block-position grid_sm-1-equalHeight horizontal">
+							{% for block in positions.boxes %}
+							<div id="block-{{ block.bid }}" class="block col">
+								{% include 'views/' ~ (block.view ? block.view : 'simple') ~ '_view.twig' %}
+								{{ block_controls }}
+							</div>
+							{% endfor %}
+						</div>
+						{% endif %}
+
+						{% if positions.bottom or S_EDIT_MODE %}
+						<div id="pos-bottom" class="block-position">
+							{% for block in positions.bottom %}
+							<div id="block-{{ block.bid }}" class="block">
+								{% include 'views/' ~ (block.view ? block.view : 'simple') ~ '_view.twig' %}
+								{{ block_controls }}
+							</div>
+							{% endfor %}
+						</div>
+						{% endif %}
+					</div>
+					{% if positions.subcontent or S_EDIT_MODE %}
+						{%- set col_size = subcontent_size -%}
+						{%- if subcontent_width -%}
+							{%- set col_size = 0 -%}
+							{%- set col_style = ' style="width: ' ~ subcontent_width ~ '"' -%}
+						{%- endif -%}
+					<div id="pos-subcontent" class="{{ 'block-position col-' ~ col_size ~ '_sm-12' ~ subcontent_placement ~ ' sidebar' }}"{{ col_style }}>
+						{% for block in positions.subcontent %}
+						<div id="block-{{ block.bid }}" class="block">
+							{% include 'views/' ~ (block.view ? block.view : 'simple') ~ '_view.twig' %}
+							{{ block_controls }}
+						</div>
+						{% endfor %}
+						{% if S_EDIT_MODE %}
+						{% block subcontent_sizer %}{% endblock %}
+						{% endif %}
+					</div>
+					{% endif %}
+				</div>
+				{% if positions.bottom_hor or S_EDIT_MODE %}
+				<div id="pos-bottom_hor" class="block-position grid_sm-1-equalHeight horizontal">
+					{% for block in positions.bottom_hor %}
+					<div id="block-{{ block.bid }}" class="block col">
+						{% include 'views/' ~ (block.view ? block.view : 'simple') ~ '_view.twig' %}
+						{{ block_controls }}
+					</div>
+					{% endfor %}
+				</div>
+				{% endif %}
+			</div>
+			{% if positions.sidebar or S_EDIT_MODE %}
+				{%- set col_size = sidebar_size -%}
+				{%- if sidebar_width -%}
+					{%- set col_size = 0 -%}
+					{%- set col_style = ' style="width: ' ~ sidebar_width ~ '"' -%}
+				{%- endif -%}
+			<div id="pos-sidebar" class="{{ 'block-position col-' ~ col_size ~ '_sm-12' ~ sidebar_placement ~ ' sidebar' }}"{{ col_style }}>
+				{% for block in positions.sidebar %}
+				<div id="block-{{ block.bid }}" class="block">
+					{% include 'views/' ~ (block.view ? block.view : 'simple') ~ '_view.twig' %}
+					{{ block_controls }}
+				</div>
+				{% endfor %}
+				{% if S_EDIT_MODE %}
+				{% block sidebar_sizer %}{% endblock %}
+				{% endif %}
+			</div>
+			{% endif %}
+		</div>
+
+		{% if positions.footer or S_EDIT_MODE %}
+		<div class="footer panel bg3">
+			<div id="pos-footer" class="block-position grid_sm-1-center-equalHeight horizontal">
+				{% for block in positions.footer %}
+				<div id="block-{{ block.bid }}" class="block col">
+					{% include 'views/' ~ (block.view ? block.view : 'simple') ~ '_view.twig' %}
+					{{ block_controls }}
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+		{% endif %}
+	</div>
+{% endblock layout %}

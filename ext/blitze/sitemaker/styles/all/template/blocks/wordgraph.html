@@ -1,0 +1,5 @@
+<ul class="sm-list">
+{% for word in words %}
+	<li><a href="{{ word.WORD_URL }}" style="font-size: {{ word.WORD_SIZE }}px; color: #{{ word.WORD_COLOR }}">{{ word.WORD }}</a></li>
+{% endfor %}
+</ul>

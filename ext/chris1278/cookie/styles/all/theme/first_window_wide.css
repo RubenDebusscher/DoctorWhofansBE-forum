@@ -1,0 +1,94 @@
+.cookie-notice {
+	max-width: var(--notice-max-with, 100%) !important;
+	margin-left: -20px !important;
+	margin-bottom: -20px !important;
+	border-radius: 0px !important;
+	position: fixed !important;
+	display: inline !important;
+	right: 0 !important;
+}
+
+.klaro .cookie-notice:not(.cookie-modal-notice) .cn-body .cn-ok a, .klaro .cookie-notice:not(.cookie-modal-notice) .cn-body .cn-ok div a {
+	color: #ffffff !important;
+	background-color: #2581C4 !important;
+	padding: 5.6px;
+	cursor: pointer;
+	border-radius: 5px;
+	flex-grow: 0 !important;
+}
+
+.klaro .cookie-notice:not(.cookie-modal-notice) .cn-body p.cn-changes {
+	font-weight: bolder !important;
+	color: #00cc66 !important;
+	font-style: italic !important;
+}
+
+.klaro .cookie-notice p {
+	font-size: 12px;
+	text-align: center !important;
+}
+
+.klaro .cookie-notice:not(.cookie-modal-notice) .cn-body .cn-ok {
+	justify-content: center !important;
+}
+
+/*
+.cookie-notice {
+	border-radius: 0px !important;
+	position: fixed !important;
+	bottom: 0 !important;
+	width: 100% !important;
+	display: inline !important;
+	right: 0 !important;
+	max-width:var(--notice-max-with, 100%) !important;
+}
+
+.klaro .cookie-notice p {
+	font-size: 12px;
+	text-align: center !important;
+}
+
+.klaro .cookie-notice:not(.cookie-modal-notice) .cn-body p {
+  margin-bottom: -43px !important;
+}
+
+@media (max-width: 1090px) {
+	.klaro .cookie-notice:not(.cookie-modal-notice) .cn-body p {
+		margin-bottom: -12px !important;
+	}
+}
+
+@media (max-width: 1000px) {
+	.klaro .cookie-notice:not(.cookie-modal-notice) .cn-body p {
+		margin-bottom: 0px !important;
+	}
+}
+
+.klaro .cookie-notice:not(.cookie-modal-notice) .cn-body .cn-ok {
+  margin-top: 30px !important;
+  justify-content: center !important;
+}
+
+.klaro .cookie-notice:not(.cookie-modal-notice) .cn-body p.cn-changes {
+  font-weight: bolder !important;
+  color: #00cc66 !important;
+  font-style: italic !important;
+  padding: 2px 0px !important;
+}
+
+.klaro .cookie-notice:not(.cookie-modal-notice) .cn-body .cn-ok a, .klaro .cookie-notice:not(.cookie-modal-notice) .cn-body .cn-ok div a {
+	color: #ffffff !important;
+	background-color: #2581C4 !important;
+
+	padding: 5.6px;
+	cursor: pointer;
+	border-radius: 5px;
+	flex-grow: 0 !important;
+}
+
+.klaro .cookie-notice:not(.cookie-modal-notice) .cn-body {
+	padding: 5px 15px 0px 15px !important;
+	margin: -5px 0px -5px 0px;
+}
+
+*/

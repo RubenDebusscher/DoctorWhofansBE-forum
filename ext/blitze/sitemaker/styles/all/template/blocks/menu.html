@@ -1,0 +1,32 @@
+{% if tree|length %}
+<nav>
+	<ul class="sm-list fa-ul">
+	{% for node in tree %}
+		{% if node.THIS_DEPTH > node.PREV_DEPTH %}
+			<ul class="sm-list fa-ul">
+		{% else %}
+		{% for i in node.CLOSE %}
+			</ul>
+		</li>
+		{% endfor %}
+		{% endif %}
+		{% if node.ITEM_URL %}
+		<li{% if node.IS_CURRENT %} class="active"{% endif %}>
+			<a href="{{ node.FULL_URL }}"{% if node.ITEM_TARGET %} target="_blank" rel="noopener"{% endif %}><i class="{{ node.ITEM_ICON }}fa-fw" aria-hidden="true"></i>{{ node.ITEM_TITLE }}</a>
+		{% elseif node.ITEM_TITLE !== '-' %}
+		<li class="sm-nav-header">
+			<i class="{{ node.ITEM_ICON }}fa-fw" aria-hidden="true"></i>{{ node.ITEM_TITLE }}
+		{% else %}
+		<li class="sm-nav-divider"><hr />
+		{% endif %}
+		{% if node.NUM_KIDS == 0 %}
+		</li>
+		{% endif %}
+	{% endfor %}
+		{% for i in close %}
+	    	</ul>
+	    </li>
+	    {% endfor %}
+	</ul>
+</nav>
+{% endif %}

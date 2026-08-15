@@ -1,0 +1,26 @@
+{% INCLUDE 'ucp_header.html' %}
+{% INCLUDECSS 'dsgvo_ucp.css' %}
+<h2>{{ lang('UCP_DSGVO_PROFILE_DOWNLOAD') }}</h2>
+{% if DSGVO_PROFILE_DOWNLOAD %}
+<div class="panel">
+<p>{{ DSGVO_LANG_OVERVIEW }}</p>
+	<fieldset>
+		<dl class="dgsvo-dl">
+			<dt class="dgsvo-dt"><label>{{ lang('DSGVO_PROFILE_DOWNLOAD')  ~ lang('COLON') }}</label><br /><span id="normal-view" class="dgsvo-span">{{ lang('DSGVO_PROFILE_DOWNLOAD_EXPLAIN') }}</span><span id="normal-res" class="dgsvo-span">{{ lang('DSGVO_PROFILE_DOWNLOAD_EXPLAIN') }}</span></dt>
+			<dd class="dgsvo-dd">
+			<form id="profil-down" method="post" action="{{ S_UCP_ACTION }}"{{ S_FORM_ENCTYPE }}>
+				<input class="button1" type="submit" id="prof-down" name="prof-down" value="{{ lang('DSGVO_DOWNLOAD_BUTTON') }}" />
+			</form>
+			</dd>
+		</dl>
+	</fieldset>
+</div>
+{% else %}
+<div class="panel">
+<br>
+{{ lang('NO_PERM_DGSVO') }}
+<br><br>
+</div>
+{% endif %}
+{% INCLUDE 'ucp_footer.html' %}
+

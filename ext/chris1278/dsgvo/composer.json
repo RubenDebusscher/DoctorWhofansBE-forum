@@ -1,0 +1,35 @@
+{
+    "name": "chris1278/dsgvo",
+    "type": "phpbb-extension",
+    "description": "With this Extension you can download the information stored about you in accordance with the GDPR General Data Protection Regulation",
+    "homepage": "https://christian-esch.de",
+    "version": "1.0.5",
+    "time": "2022-08-21",
+    "license": "GPL-2.0-only",
+    "authors": [
+        {
+            "name": "Christian Esch",
+            "email": "smilie-man@gmx.de",
+            "homepage": "https://christian-esch.de",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0,<9.0.0",
+        "phpbb/phpbb": ">=3.2.9,<3.4.0@dev",
+        "composer/installers": "~1.0.0"
+    },
+    "extra": {
+        "display-name": "DSGVO/GDPR Private Download´s",
+        "lang-min-ver": "1.0.4",
+        "soft-require": {
+            "phpbb/phpbb": ">= 3.2.9,<3.4.0@dev"
+        },
+        "version-check": {
+            "host": "www.phpbb.com",
+            "directory": "/customise/db/extension/dsgvo_gdpr_private_download%CA%B9s",
+            "filename": "version_check",
+            "ssl": true
+        }
+    }
+}

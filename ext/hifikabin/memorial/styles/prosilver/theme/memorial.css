@@ -1,0 +1,36 @@
+.ribbon_container {
+	position: relative;
+}
+
+.ribbon_wrapper {
+	position: absolute;
+	left: -20px;
+	top: -20px;
+	height: 100px;
+	width: 100px;
+	overflow: hidden;
+}
+
+.rtl .ribbon_wrapper {
+	right: -20px;
+}
+
+.ribbon {
+	position: absolute;
+	left: -64px;
+	top: 32px;
+	height: 18px;
+	width: 206px;
+	z-index: 1;
+	-webkit-transform: rotate(-45deg);
+	-ms-transform: rotate(-45deg);
+	transform: rotate(-45deg);
+	background-color: #000000;
+}
+
+.rtl .ribbon {
+	right: -64px;
+	-webkit-transform: rotate(45deg);
+	-ms-transform: rotate(45deg);
+	transform: rotate(45deg);
+}

@@ -1,0 +1,44 @@
+{
+    "name": "phpbbde/externalimgaslink",
+    "type": "phpbb-extension",
+    "description": "Displays every image as a link, which is included with [img] bbcode and not hosted with the own board.",
+    "homepage": "https://github.com/phpbb-de/phpbb-ext-external-images-as-link",
+    "version": "1.2.2",
+    "time": "2020-10-14",
+    "license": "GPL-2.0-only",
+    "authors": [
+        {
+            "name": "Christian Schnegelberger",
+            "email": "crizzo@phpbb.de",
+            "homepage": "https://www.phpbb.de",
+            "role": "Developer"
+        },
+        {
+            "name": "Oliver Schramm",
+            "email": "elsensee@phpbb.de",
+            "homepage": "https://www.phpbb.de",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.7",
+        "phpbb/phpbb": ">=3.2.4",
+        "composer/installers": "~1.0.0"
+    },
+    "require-dev": {
+        "phpbb/epv": "^0.0.11",
+        "phpbb/translation-validator": "^1.5.2"
+    },
+    "extra": {
+        "display-name": "phpBB.de - External Image as Link",
+        "soft-require": {
+            "phpbb/phpbb": ">=3.2.4"
+        },
+        "version-check": {
+            "host": "www.phpbb.com",
+            "directory": "/customise/db/extension/phpbb.de_external_images_as_link",
+            "filename": "version_check",
+            "ssl": true
+        }
+    }
+}

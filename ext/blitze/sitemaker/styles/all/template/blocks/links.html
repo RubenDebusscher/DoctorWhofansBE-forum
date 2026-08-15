@@ -1,0 +1,23 @@
+{% if tree|length %}
+<ul class="sm-list fa-ul">
+{% for node in tree %}
+	{% if node.THIS_DEPTH > node.PREV_DEPTH %}
+		<ul class="sm-list fa-ul">
+	{% else %}
+	{% for i in node.CLOSE %}
+		</ul>
+	</li>
+	{% endfor %}
+	{% endif %}
+	<li>
+		<a href="{{ node.FULL_URL }}"{% if node.ITEM_TARGET %} target="_blank" rel="noopener"{% endif %}><i class="{{ node.ITEM_ICON }}fa-fw" aria-hidden="true"></i>{{ node.ITEM_TITLE }}</a>
+	{% if node.NUM_KIDS == 0 %}
+	</li>
+	{% endif %}
+{% endfor %}
+{% for i in close %}
+	    </ul>
+	</li>
+{% endfor %}
+</ul>
+{% endif %}

@@ -1,0 +1,16 @@
+services:
+    dmzx.upautogroups.listener:
+        class: dmzx\upautogroups\event\listener
+        arguments:
+            - '@?phpbb.autogroups.manager'
+        tags:
+            - { name: event.listener }
+
+    dmzx.upautogroups.type.points:
+        class: dmzx\upautogroups\conditions\type\points
+        parent: phpbb.autogroups.type.base
+        shared: false
+        calls:
+            - [set_up_functions, ['@dmzx.ultimatepoints.core.functions.points']]
+        tags:
+            - { name: phpbb.autogroups.type }

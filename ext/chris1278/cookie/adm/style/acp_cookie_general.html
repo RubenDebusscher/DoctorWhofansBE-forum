@@ -1,0 +1,259 @@
+{% INCLUDECSS '@chris1278_cookie/css/chris1278_cookie_acp.css' %}
+{% include 'overall_header.html' %}
+<a id="maincontent"></a>
+	<h1>{{ lang('ACP_COOKIE_GENERAL') }}</h1>
+	<p>{{ lang('CM_CONFIG_DESC', CM_EXT_NAME, CM_EXT_VER) }}</p>
+	<p>{{ lang('ACP_CM_GENERAL_PAGE_TITLE_EXPLAIN') }}</p>
+
+{% if S_ERROR %}
+	<div class="errorbox">
+		<h3>{{ lang('WARNING') }}</h3>
+		<p>{{ ERROR_MSG }}</p>
+	</div>
+{% endif %}
+{% if CM_NOTES %}
+	<div class="errorbox notice">
+		{{ CM_NOTES }}
+	</div>
+{% endif %}
+	<form id="cookie_general" name="cookie_general" method="post" action="{{ U_ACTION }}">
+	<fieldset>
+	<legend>{{ lang('ACP_COOKIE_GENERAL_STYLE_OTPION') }}</legend>
+	<p>{{ lang('ACP_COOKIE_GENERAL_STYLE_OTPION_EXPLAIN') }}</p>		
+		<dl>
+			<dt>
+				<label>{{ lang('COOKIE_ICON_SELECTION') ~ lang('COLON') }}</label><br >
+				<span>{{ lang('COOKIE_ICON_SELECTION_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<input type="radio" class="radio" name="cookie_icon_selection" value="1" {{ COOKIE_ICON_SELECTION == 1 ? ' checked' }}> {{ lang('ACP_FONTAWESOME') }} &nbsp;
+				<input type="radio" class="radio" name="cookie_icon_selection" value="0" {{ COOKIE_ICON_SELECTION == 0 ? ' checked' }}> {{ lang('ACP_SVG') }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('KLAROSTYLECOLOR') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('KLAROSTYLECOLOR_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<select name="klarostylecolor">
+					<option value="dark" {{ KLAROSTYLECOLOR == 'dark' ? 'selected' }}>{{ lang('DARK') }}</option>
+					<option value="light"{{ KLAROSTYLECOLOR == 'light' ? 'selected' }}>{{ lang('LIGHT') }}</option>
+				</select>
+			</dd>
+		</dl>
+		<div class="opt_klarostylewidth">
+			<dl>
+				<dt>
+					<label>{{ lang('KLAROSTYLEWIDTH') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('KLAROSTYLEWIDTH_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<select name="klarostylewidth">
+						<option value="small" {{ KLAROSTYLEWIDTH == 'small' ? 'selected' }}>{{ lang('ACP_SMALL') }}</option>
+						<option value="wide"  {{ KLAROSTYLEWIDTH == 'wide' ? 'selected' }}>{{ lang('ACP_WIDE') }}</option>
+					</select>
+				</dd>
+			</dl>		
+			<dl class="oicm-no-border" id="dim_opt_klarostyleposition">
+				<dt>
+					<label>{{ lang('KLAROSTYLEPOSITION') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('KLAROSTYLEPOSITION_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<select name="klarostyleposition" id="klarostyleposition" onchange="cookiegeneraldimmer.setConfig()">
+						<option value="topleft"		{{ KLAROSTYLEPOSITION == 'topleft' ? 'selected' }}>		{{ lang('ACP_TOP_LEFT_SMALL') }}</option>
+						<option value="topright"	{{ KLAROSTYLEPOSITION == 'topright' ? 'selected' }}>	{{ lang('ACP_TOP_RIGHT_SMALL') }}</option>
+						<option value="bottomleft"	{{ KLAROSTYLEPOSITION == 'bottomleft' ? 'selected' }}>	{{ lang('ACP_BOTTOM_LEFT_SMALL') }}</option>
+						<option value="bottomright"	{{ KLAROSTYLEPOSITION == 'bottomright' ? 'selected' }}>	{{ lang('ACP_BOTTOM_RIGHT_SMALL') }}</option>
+					</select>
+				</dd>
+			</dl>
+		</div>
+		<div class="acp_style_info">
+			{{ lang('ACP_STYLE_NOTE') }}
+		</div>
+		<dl>
+			<dt>
+				<label>{{ lang('WINDOW_FIX_IN_THE_MIDDLE') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('WINDOW_FIX_IN_THE_MIDDLE_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<input type="radio" class="radio" name="window_fix_in_the_middle" value="1" {{ WINDOW_FIX_IN_THE_MIDDLE == 1 ? 'checked' }}> {{ lang('YES') }} &nbsp;
+				<input type="radio" class="radio" name="window_fix_in_the_middle" value="0" {{ WINDOW_FIX_IN_THE_MIDDLE == 0 ? 'checked' }}> {{ lang('NO') }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('WINDOW_POSITION') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('WINDOW_POSITION_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<input type="radio" class="radio" name="window_position" value="1" {{ WINDOW_POSITION == 1 ? 'checked' }}> {{ lang('DOWNRIGHT') }} &nbsp;
+				<input type="radio" class="radio" name="window_position" value="0" {{ WINDOW_POSITION == 0 ? 'checked' }}> {{ lang('MIDDLE') }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('KLARO_HIDDEN_WINDOWS') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('KLARO_HIDDEN_WINDOWS_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<input type="radio" class="radio" name="klaro_hidden_windows" value="1" {{ KLARO_HIDDEN_WINDOWS == 1 ? 'checked' }}> {{ lang('ALTERNATE') }} &nbsp;
+				<input type="radio" class="radio" name="klaro_hidden_windows" value="0" {{ KLARO_HIDDEN_WINDOWS == 0 ? 'checked' }}> {{ lang('HIDDEN') }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('OICM_DEFAULTS') }}{{ lang('COLON') }}</label><br>
+				<span>{{ lang('OICM_DEFAULTS_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<input class="button2" type="button" name="oicm_defaults_style" value="{{ lang('ACP_STYLE_DEFAULT') }}" onclick="cookiegeneraldimmer.setstyleDefaults()" >
+			</dd>
+		</dl>
+	</fieldset>
+	{{ _self.oicmg_form_buttons(1) }}
+	<br>
+	<div class="general_info">
+		{{ lang('ACP_GENERAL_INFO') }}
+	</div>
+	<fieldset>
+	<legend>{{ lang('ACP_COOKIE_GENERAL_SETTING_OTPION') }}</legend>
+	<p>{{ lang('ACP_COOKIE_GENERAL_SETTING_OTPION_EXPLAIN') }}</p>
+		<dl>
+			<dt>
+				<label>{{ lang('NAME_OF_COOKIE') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('NAME_OF_COOKIE_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<input type="text" name="name_of_cookie" maxlength="255" size="40" value="{{ NAME_OF_COOKIE }}">
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('KLARO_DIV_CONTAINER') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('KLARO_DIV_CONTAINER_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<input type="text" name="klaro_div_container" maxlength="255" size="40" value="{{ KLARO_DIV_CONTAINER }}">
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('STORAGE_VERSION') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('STORAGE_VERSION_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<select name="storage_version">
+					<option value="cookie" {{ STORAGE_VERSION == 'cookie' ? 'selected' }}>{{ lang('COOKIE') }}</option>
+					<option value="localStorage" {{ STORAGE_VERSION == 'localStorage' ? 'selected' }}>{{ lang('LOCALSTORAGE') }}</option>
+				</select>
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('HTML_CODE_PROCESSING') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('HTML_CODE_PROCESSING_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<input type="radio" class="radio" name="html_code_processing" value="1" {{ HTML_CODE_PROCESSING == 1 ? 'checked' }}> {{ lang('PHPBBKOMP') }}&nbsp;
+				<input type="radio" class="radio" name="html_code_processing" value="0" {{ HTML_CODE_PROCESSING == 0 ? 'checked' }}> {{ lang('KLARO') }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('GROUP_FORMATION') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('GROUP_FORMATION_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<input type="radio" class="radio" name="group_formation" value="1" {{ GROUP_FORMATION == 1 ? 'checked' }}> {{ lang('CM_GROUP') }}&nbsp;
+				<input type="radio" class="radio" name="group_formation" value="0" {{ GROUP_FORMATION == 0 ? 'checked' }}> {{ lang('NO_CM_GROUP') }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('SAVE_ALL_BUTTON') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('SAVE_ALL_BUTTON_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<input type="radio" class="radio" name="save_all_button" value="1" {{ SAVE_ALL_BUTTON == 1 ? 'checked' }}> {{ lang('YES') }} &nbsp;
+				<input type="radio" class="radio" name="save_all_button" value="0" {{ SAVE_ALL_BUTTON == 0 ? 'checked' }}> {{ lang('NO') }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('COOKIE_RUNTIME') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('COOKIE_RUNTIME_EXPLAIN') }}</span>
+				</dt>
+			<dd>
+				<input type="number" name="cookie_runtime" min="1" max="365" value="{{ COOKIE_RUNTIME }}">
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('SHOW_DECLINE_BUTTON') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('SHOW_DECLINE_BUTTON_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<input type="radio" class="radio" name="show_decline_button" value="1" {{ SHOW_DECLINE_BUTTON == 1 ? 'checked' }}> {{ lang('YES') }} &nbsp;
+				<input type="radio" class="radio" name="show_decline_button" value="0" {{ SHOW_DECLINE_BUTTON == 0 ? 'checked' }}> {{ lang('NO') }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('TO_THE_COOKIE_SETTINGS') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('TO_THE_COOKIE_SETTINGS_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<input type="radio" class="radio" name="to_the_cookie_settings" value="1" {{ TO_THE_COOKIE_SETTINGS == 1 ? 'checked' }}> {{ lang('YES') }} &nbsp;
+				<input type="radio" class="radio" name="to_the_cookie_settings" value="0" {{ TO_THE_COOKIE_SETTINGS == 0 ? 'checked' }}> {{ lang('NO') }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('KLARO_NOTE') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('KLARO_NOTE_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<input type="radio" class="radio" name="klaro_note" value="1" {{ KLARO_NOTE == 1 ? 'checked' }}> {{ lang('YES') }} &nbsp;
+				<input type="radio" class="radio" name="klaro_note" value="0" {{ KLARO_NOTE == 0 ? 'checked' }}> {{ lang('NO') }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('OICM_SETTINGS_DEFAULTS') }}{{ lang('COLON') }}</label><br>
+				<span>{{ lang('OICM_SETTINGS_DEFAULTS_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				<input class="button2" type="button" name="oicm_defaults_settings" value="{{ lang('ACP_SETTINGS_DEFAULT') }}" onclick="cookiegeneraldimmer.setsettingsDefaults()">
+			</dd>
+		</dl>
+	</fieldset>
+	<fieldset>
+		<p class="info-cookie">{{ COOKIE_WARN_INFO }}</p>
+	</fieldset>
+	{{ _self.oicmg_form_buttons(2) }}
+	<p class="chris1278_acp_copyright">
+		{{ CM_EXT_NAME }} &copy; Chris1278<br>
+		{{ lang('CM_LANG_DESC') }} {{ lang('CM_LANG_EXT_VER') }} &bull; {{ lang('CM_LANG_AUTHOR') }}
+	</p>
+	{S_FORM_TOKEN}
+</form>
+
+{% INCLUDEJS '@chris1278_cookie/acp_cookiegeneraldimmer.js' %}
+{% include 'overall_footer.html' %}
+{% macro oicmg_form_buttons(id) %}
+	<div class="oicmb_form_buttons">
+		<div class="oicmb_col_left">
+		
+		</div>
+		<div class="oicmb_col_center">
+			<input class="button1 oicm_button1" type="submit" id="submit_{{ id }}" name="submit" value="{{ lang('SUBMIT') }}" >&nbsp;
+			<input class="button2 oicm_button2" type="button" id="form_reset_{{ id }}" name="form_reset" value="{{ lang('RESET') }}">
+		</div>
+		<div class="oicmb_col_right">
+			<a href="#maincontent" title="{{ lang('BACK_TO_TOP') }}" class="oicmb_back_to_top"><p class="icon fa-chevron-circle-up"></p></a>
+		</div>
+	</div>
+{% endmacro %}

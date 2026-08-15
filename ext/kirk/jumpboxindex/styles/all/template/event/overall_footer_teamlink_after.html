@@ -1,0 +1,9 @@
+{% if JUMPBOX_POSITION == 4 %}
+	<li data-skip-responsive="true" class="{{ JUMPBOX_RIGHT ? 'right' : 'left' }}side jumpbox-navbar-{{ JUMPBOX_DEFAULT ? 'default-bottom' : 'modern-bottom' }}">
+		{% if JUMPBOX_DEFAULT %}
+			{% include '@kirk_jumpboxindex/jumpbox_default.html' %}
+		{% else %}
+			{% include '@kirk_jumpboxindex/jumpbox_modern.html' %}
+		{% endif %}
+	</li>
+{% endif %}

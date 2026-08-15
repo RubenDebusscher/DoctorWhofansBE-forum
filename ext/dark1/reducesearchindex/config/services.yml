@@ -1,0 +1,69 @@
+services:
+
+    dark1.reducesearchindex.forum_map_rsi:
+        class: dark1\reducesearchindex\core\forum_map_rsi
+        arguments:
+            - '@dbal.conn'
+
+    dark1.reducesearchindex.controller.acp.main:
+        class: dark1\reducesearchindex\controller\acp_main
+        arguments:
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '@config'
+            - '@config_text'
+
+    dark1.reducesearchindex.controller.acp.forum:
+        class: dark1\reducesearchindex\controller\acp_forum
+        arguments:
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '@dbal.conn'
+            - '@cache.driver'
+            - '@dark1.reducesearchindex.forum_map_rsi'
+
+    dark1.reducesearchindex.controller.acp.cron:
+        class: dark1\reducesearchindex\controller\acp_cron
+        arguments:
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '@config'
+            - '@cron.manager'
+
+    dark1.reducesearchindex.listener:
+        class: dark1\reducesearchindex\event\main_listener
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@cache.driver'
+            - '@template'
+            - '@user'
+            - '@language'
+            - '@config_text'
+        tags:
+            - { name: event.listener }
+
+    dark1.reducesearchindex.cron.auto_reduce_sync:
+        class: dark1\reducesearchindex\cron\auto_reduce_sync
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@log'
+            - '@auth'
+            - '@user'
+            - '@dispatcher'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        calls:
+            - [set_name, [dark1.reducesearchindex.cron.auto_reduce_sync]]
+        tags:
+            - { name: cron.task }

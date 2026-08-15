@@ -1,0 +1,35 @@
+{
+	"name": "lotusjeff/fancybox",
+	"type": "phpbb-extension",
+	"description": "Fancybox for phpBB 3.1 will display images in a Fancybox overlay effect.",
+	"homepage": "https://github.com/LotusJeff/fancybox",
+	"version": "1.0.2",
+	"keywords": ["phpbb", "extension", "lightbox", "image", "fancybox"],
+	"license": "GPL-2.0",
+	"authors": [
+		{
+			"name": "Jeff Cocking (LotusJeff)",
+			"homepage": "http://www.cocking.com",
+			"role": "Developer"
+		}
+	],
+	"require": {
+		"php": ">=5.3.3",
+		"squizlabs/php_codesniffer": "2.*"
+	},
+	"require-dev": {
+		"phpbb/epv": "dev-master"
+	},
+	"extra": {
+		"display-name": "Fancybox",
+		"soft-require": {
+			"phpbb/phpbb": ">=3.1.0"
+		},
+		"version-check": {
+			"host": "www.cocking.com",
+			"directory": "/phpbb-ext/fancybox",
+			"filename": "version-check.html",
+			"ssl": "true"
+		}
+	}
+}

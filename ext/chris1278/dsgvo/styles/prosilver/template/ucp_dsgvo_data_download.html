@@ -1,0 +1,31 @@
+{% INCLUDE 'ucp_header.html' %}
+{% INCLUDECSS 'dsgvo_ucp.css' %}
+<h2>{{ lang('UCP_DSGVO_DATA_DOWNLOAD') }}</h2>
+{% if DSGVO_POSTS_DOWNLOAD %}
+<div class="panel">
+<p>{{ DSGVO_LANG_OVERVIEW }}</p>
+	<fieldset>
+		<dl class="dgsvo-dl">
+			{% if FORMAT_OF_POST %}
+			<dt class="dgsvo-dt"><label>{{ lang('DSGVO_POST_ALL')  ~ lang('COLON') }}</label><br /><span id="normal-view" class="dgsvo-span">{{ lang('DSGVO_POST_ALL_EXPLAIN') }}</span><span id="normal-res" class="dgsvo-span">{{ lang('DSGVO_POST_ALL_EXPLAIN') }}</span></dt>
+			{% else %}
+			<dt class="dgsvo-dt"><label>{{ lang('DSGVO_POST_META')  ~ lang('COLON') }}</label><br /><span id="normal-view" class="dgsvo-span">{{ lang('DSGVO_POST_META_EXPLAIN') }}</span><span id="normal-res" class="dgsvo-span">{{ lang('DSGVO_POST_META_EXPLAIN') }}</span></dt>
+			{% endif %}
+			<dd class="dgsvo-dd">
+			<form id="posts-down" method="post" action="{{ S_UCP_ACTION }}"{{ S_FORM_ENCTYPE }}>
+				<input class="button1" type="submit" id="post-down" name="post-down" value="{{ lang('DSGVO_DOWNLOAD_BUTTON') }}" />
+			</form>
+			</dd>
+		</dl>
+	</fieldset>
+</div>
+{% else %}
+<div class="panel">
+<br>
+{{ lang('NO_PERM_DGSVO') }}
+<br><br>
+</div>
+{% endif %}
+{% INCLUDE 'ucp_footer.html' %}
+
+

@@ -1,0 +1,40 @@
+{
+    "name": "rmcgirr83/birthdaycake",
+    "type": "phpbb-extension",
+    "description": "This Extension will allow a birthday cake to appear when viewing a topic if the user had inputted month and birthday and it is their birthday",
+    "version": "1.0.5",
+    "time": "2020-09-04",
+    "keywords": [
+        "phpbb",
+        "extension",
+        "birthday cake",
+        "communication"
+    ],
+    "license": "GPL-2.0-only",
+    "authors": [
+        {
+            "name": "Rich McGirr",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.1",
+        "phpbb/phpbb": ">=3.2",
+        "composer/installers": "~1.0.0"
+    },
+    "require-dev": {
+        "phpbb/epv": "dev-master"
+    },
+    "extra": {
+        "display-name": "Birthday Cake",
+        "soft-require": {
+            "phpbb/phpbb": ">=3.2"
+        },
+        "version-check": {
+            "host": "www.phpbb.com",
+            "directory": "/customise/db/extension/viewtopic_birthday_cake",
+            "filename": "version_check",
+            "ssl": true
+        }
+    }
+}

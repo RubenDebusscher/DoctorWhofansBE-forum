@@ -1,0 +1,158 @@
+/* jumpboxindex.css
+------------------- */
+
+.jumpbox-index {
+	margin: 6px 0;
+}
+
+.jumpbox-ucp {
+	margin: 12px 0;
+}
+
+.jumpbox-navbar {
+	color: initial;
+	margin: -6px auto;
+	cursor: pointer;
+}
+
+.jumpbox-navbar .jumpbox-font-icon {
+	vertical-align: middle;
+}
+
+.jumpbox-navbar-default-top,
+.jumpbox-navbar-default-bottom {
+	margin: -13px 0;
+	cursor: pointer;
+}
+
+.jumpbox-navbar-modern-top,
+.jumpbox-navbar-bottom {
+	margin: 1px 0 -5px;
+}
+
+.dropdown .jumpbox-pointer-navbar {
+	margin-right: -12px !important;
+	margin-left: -4.6px;
+}
+
+.jumpbox-default-left-pointer.pointer {
+	left: -3px;
+}
+
+.jumpbox-default-right-pointer.pointer {
+	margin-right: -11px;
+}
+
+.jumpbox-left-pointer.pointer {
+	left: 2px;
+}
+
+.jumpbox-right-pointer.pointer {
+	margin-right: -4px;
+}
+
+.jumpbox-navbar-text-left {
+	float: left;
+	padding: 2px 2px 0 2px;
+}
+
+.jumpbox-navbar-text-left,
+.jumpbox-navbar-text-right {
+	font-weight: bold;
+}
+
+.jumpbox-navbar-text-right {
+	float: right;
+	margin-top: 2px;
+	font-size: 1.1em;
+}
+
+.jumpbox-text-left {
+	float: left;
+	padding-right: 4px;
+	cursor: pointer;
+}
+
+.jumpbox-text-right {
+	float: right;
+	padding-left: 3px;
+}
+
+.jumpbox-navbar-top-left.fa-sort-down,
+.jumpbox-navbar-top-right.fa-sort-down {
+	margin-right: -8px;
+	padding: 2px 2px;
+	top: -2px;
+	position: relative;
+}
+
+.jumpbox-navbar-top-right.fa-sort-down,
+.jumpbox-navbar-down-right.fa-sort-up {
+	margin-left: -10px;
+}
+
+.jumpbox-navbar-default-down-left.fa-sort-up {
+	margin-right: -2px;
+	top: 6px;
+	position: relative;
+}
+
+.jumpbox-navbar-default-down-right.fa-sort-up {
+	margin-left: 0;
+	top: 6px;
+	position: relative;
+}
+
+.jumpbox-navbar-down-left.fa-sort-up,
+.jumpbox-navbar-down-right.fa-sort-up {
+	margin-right: -6px;
+	padding-left: 2px;
+	top: 5px;
+	position: relative;
+}
+
+.jumpbox-navbar-modern-bottom {
+	margin: 0 0 -4px 0;
+}
+
+.jumpbox-drop-down.dropdown {
+	margin-top: 3px;
+}
+
+.jumpbox-drop-up.dropdown {
+	margin-bottom: 3px;;
+}
+
+.caret-modern .fa-sort-down {
+	margin-top: 2px;
+}
+
+.jumpbox-default-dropdown-contents-navbar {
+	margin-left: -4px !important;
+	margin-right: -1px !important;
+}
+
+.jumpbox-dropdown-contents-navbar {
+	margin-left: -4px !important;
+	margin-right: -7px !important;
+}
+
+.dropdown-left .dropdown .jumpbox-pointer-navbar,
+.nojs .rightside .dropdown .jumpbox-pointer-navbar {
+	right: 5px;
+	margin-top: -2px;
+}
+
+.caret-left {
+	border-right: 1px solid;
+	position: relative;
+	right: 5px;
+}
+
+.caret-left i {
+	vertical-align: top;
+}
+
+.caret-bottom i {
+	vertical-align: sub;
+}

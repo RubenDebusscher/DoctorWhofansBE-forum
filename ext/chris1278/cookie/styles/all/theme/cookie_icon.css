@@ -1,0 +1,32 @@
+@font-face {
+	font-family: 'chris1278_cookie_icon';
+	font-style: normal;
+	font-weight: 900;
+	font-display: block;
+	src: url("./font-awesome-5/fa-solid-900.eot");
+	src: url("./font-awesome-5/fa-solid-900.eot?#iefix") format("embedded-opentype"),
+	url("./font-awesome-5/fa-solid-900.woff2") format("woff2"),
+	url("./font-awesome-5/fa-solid-900.woff") format("woff"),
+	url("./font-awesome-5/fa-solid-900.ttf") format("truetype"),
+	url("./font-awesome-5/fa-solid-900.svg#fontawesome") format("svg");
+}
+
+.opt-in-cookie-icon::before {
+	content: "\f564";
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-font-smoothing: antialiased;
+	display: inline-block;
+	font-style: normal;
+	font-variant: normal;
+	text-rendering: auto;
+	line-height: 1;
+	font-family: 'chris1278_cookie_icon';
+	font-weight: 900;
+	padding-right: 3px;
+	width: 14px;
+}
+
+.cookie-box-icon {
+	padding-right: 15px;
+	font-size: 24px;
+}

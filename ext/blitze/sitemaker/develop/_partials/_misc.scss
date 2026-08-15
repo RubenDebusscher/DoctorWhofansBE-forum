@@ -1,0 +1,101 @@
+@import 'globals';
+
+.edit-mode-btn {
+	position: fixed;
+	top: 5px;
+	right: 5px;
+	padding: 12px 15px;
+	font-size: 18px;
+	border-radius: 100%;
+	opacity: 0.8;
+	z-index: 1000;
+
+	&:hover {
+		opacity: 0.6;
+		transform: rotate(15deg);
+	}
+
+	@media screen and (max-width: 940px) {
+		padding: 7px 10px;
+	}
+}
+
+/* Misc */
+.field-label {
+	font-weight: bold;
+	margin-top: 1rem;
+}
+
+.label-hidden {
+	display: none;
+	height: 0;
+
+	.content &,
+	.sm-content-footer & {
+		display: block;
+		visibility: hidden;
+	}
+}
+
+.label-inline {
+	display: inline;
+
+	.content &:before {
+		content: ' ';
+		display: block;
+		height: 0.5rem;
+		white-space: pre;
+	}
+}
+
+.label-newline {
+	display: block;
+}
+
+.d-inline {
+	float: none;
+	display: inline !important;
+}
+
+.sm-full-width {
+	width: 100%;
+
+	.content {
+		overflow: hidden;
+	}
+}
+
+.sm-fill-space {
+	overflow: hidden;
+}
+
+.sm-content-footer {
+	margin-top: 1.2rem;
+}
+
+/* text alignment */
+.align-right {
+	text-align: right;
+}
+
+.align-center {
+	text-align: center;
+}
+
+.align-left {
+	text-align: left;
+}
+
+@media screen and (max-width: $breakpoint-medium) {
+	.sm-responsive-show {
+		display: block;
+	}
+
+	.sm-responsive-hide {
+		display: none;
+	}
+
+	.sm-responsive-full-width {
+		width: 100%;
+	}
+}

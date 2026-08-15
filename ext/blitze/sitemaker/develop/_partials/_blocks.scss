@@ -1,0 +1,131 @@
+@import 'globals';
+
+.flex {
+	> dl {
+		position: relative;
+
+		> dt {
+			float: left;
+			clear: left;
+			width: 40%;
+			margin: 0 0 0.7em 0;
+
+			.sidebar & {
+				width: 100%;
+				padding-left: 0;
+			}
+		}
+
+		> dd {
+			float: left;
+			width: 58%;
+			margin: 0;
+			position: relative;
+
+			.sidebar & {
+				width: 100%;
+				padding-left: 0;
+			}
+		}
+	}
+
+	.sidebar & {
+		.resultbar {
+			width: 80%;
+			padding: 0;
+		}
+
+		.poll_option_percent {
+			position: absolute;
+			width: auto;
+			bottom: 0;
+			right: 0;
+			padding: 0;
+		}
+	}
+}
+
+/* blocks layout */
+.sm-block-spacing {
+	margin-bottom: $gutter-width;
+}
+
+.sm-block-content {
+	display: block;
+	clear: both;
+	overflow: hidden;
+	word-wrap: break-word;
+
+	.forabg & {
+		margin: 0;
+	}
+
+	li {
+		list-style-type: inherit;
+	}
+
+	p:last-of-type {
+		margin-bottom: 0;
+	}
+}
+
+.sm-block-container {
+	.postbody {
+		@extend .sm-full-width;
+
+		.codebox {
+			display: inline-block;
+			position: relative;
+			width: 99%;
+			margin: $gutter-width 0;
+		}
+	}
+
+	.content {
+		overflow-x: hidden;
+		min-height: 1px;
+		padding-top: 0.3rem;
+	}
+
+	.list-inner {
+		display: flex;
+		align-items: center;
+		width: 100%;
+	}
+}
+
+.sm-polar {
+	display: flex;
+	justify-content: space-between;
+	flex: 1;
+}
+
+.inner-spacing {
+	padding: 1em;
+	height: 100%;
+}
+
+.no-padding {
+	padding: 0;
+}
+
+/* Footer */
+.footer {
+	.block {
+		.panel {
+			background: transparent;
+		}
+	}
+
+	@media (min-width: $breakpoint-small) {
+		&.panel {
+			padding: 1rem;
+		}
+	}
+}
+
+.sitemaker {
+	.horizontal .col {
+		padding-bottom: 0;
+	}
+}

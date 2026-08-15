@@ -1,0 +1,26 @@
+.lfwwh_button_users,
+.lfwwh_button_bots {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	cursor: pointer;
+	color: inherit;
+}
+
+.lfwwh_pos_hint {
+	color: white;
+	background-color: steelblue;
+	border: 1px solid skyblue;
+	padding: 2px 4px;
+	font-size: smaller;
+	line-height: 2em;
+}
+
+.lfwwh_time {
+	color: inherit;
+}
+
+.lfwwh_ip {
+	color: inherit;
+}

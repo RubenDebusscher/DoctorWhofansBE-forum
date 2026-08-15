@@ -1,0 +1,2 @@
+var urlBase = phpbb_root_path + 'ext/prosk8er/snowstormlights/styles/all/template/snowstorm/lights/';
+soundManager.url = phpbb_root_path + 'ext/prosk8er/snowstormlights/styles/all/template/snowstorm/lights/';

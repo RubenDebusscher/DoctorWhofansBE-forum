@@ -1,0 +1,28 @@
+{# These are all files that are required to control the Cookie Manager. #}
+{% INCLUDE '@chris1278_cookie/cookie_opt_in_variablen.html' %}
+{% INCLUDEJS '@chris1278_cookie/thirdparty/config.js' %}
+{% INCLUDEJS '@chris1278_cookie/thirdparty/klaro.js' %}
+{% INCLUDECSS '@chris1278_cookie/cookie.css' %}
+{% INCLUDECSS '@chris1278_cookie/cookie_icon.css' %}
+{# This must bei using for the Youtube and youtube_be bbcode #}
+{% if YOUTUBE_BBCODE_SWITCH %}
+{% INCLUDECSS '@chris1278_cookie/youtube_bbcode_switch_on.css' %}
+{% else %}
+{% INCLUDECSS '@chris1278_cookie/youtube_bbcode_switch_of.css' %}
+{% endif %}
+{# This must bei using for the vimeo bbcode #}
+{% if VIMEO_BBCODE_SWITCH %}
+{% INCLUDECSS '@chris1278_cookie/vimeo_bbcode_switch_on.css' %}
+{% else %}
+{% INCLUDECSS '@chris1278_cookie/vimeo_bbcode_switch_of.css' %}
+{% endif %}
+{% if SPOTIFY_BBCODE_SWITCH %}
+{% INCLUDECSS '@chris1278_cookie/spotify_bbcode_switch_on.css' %}
+{% else %}
+{% INCLUDECSS '@chris1278_cookie/spotify_bbcode_switch_of.css' %}
+{% endif %}
+
+{% if WIDE_CSS %}
+{% INCLUDECSS '@chris1278_cookie/first_window_wide.css' %}
+{% endif %}
+

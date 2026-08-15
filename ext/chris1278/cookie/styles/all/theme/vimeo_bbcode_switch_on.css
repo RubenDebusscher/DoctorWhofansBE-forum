@@ -1,0 +1,17 @@
+/* These CSS settings are used for the info box that is displayed when the Vimeo switch is set to false but a video is embedded in the post with the BBcode. */
+.v_video_switch_false {
+	display: none;
+}
+
+/* These CSS settings are used to format the video that is displayed. */
+.v_video_layer {
+	max-width: 600px;
+	max-height: 427px;
+	padding-bottom: 40px;
+}
+
+.v_video_layer iframe, .v_video_layer object, .v_ideo_layer embed {
+	position: relative;
+	width: 600px;
+	height: 427px;
+}

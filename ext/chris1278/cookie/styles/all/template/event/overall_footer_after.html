@@ -1,0 +1,23 @@
+{% if GOOGLE_ANALYTICS_NO_TM_SWITCH %}
+	{% if not S_GANALYTICS_OWN_SCRIPT %}
+		<!-- Insert here the script without Database -->
+	{% else %}
+		{{ GAOS_POS2 }}
+	{% endif %}
+{% endif %}
+
+{% if MATOMO_SWITCH %}
+	{% if not S_MATOMO_OWN_SCRIPT %}
+			<!-- Insert here the script without Database -->
+	{% else %}
+		{{ MATOMO_POS2 }}
+	{% endif %}
+{% endif %}
+
+{% if GOOGLE_ADSENSE_SWITCH %}
+	{{ GOADS_POS2 }}
+{% endif %}
+
+{% if GOOGLE_MAPS_SWITCH %}
+	{{ GOMAPS_POS2 }}
+{% endif %}

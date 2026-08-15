@@ -1,0 +1,24 @@
+services:
+    dmzx.maintenance.admin.controller:
+        class: dmzx\maintenance\controller\admin_controller
+        arguments:
+            - '@config'
+            - '@template'
+            - '@log'
+            - '@user'
+            - '@request'
+            - '%core.adm_relative_path%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+    dmzx.maintenance.listener:
+        class: dmzx\maintenance\event\listener
+        arguments:
+            - '@user'
+            - '@config'
+            - '@auth'
+            - '@template'
+            - '%core.adm_relative_path%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: event.listener }

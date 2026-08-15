@@ -1,0 +1,30 @@
+#translate {
+	float: right;
+	margin: 2px 5px 10px 15px;
+}
+
+.rtl #translate {
+	float: left;
+	margin: 2px 15px 10px 5px;
+}
+
+#google_translate_element div.goog-te-gadget-simple {
+	border: none;
+	font-weight: bold;
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-size: 1.1em;
+	background-color: white;
+}
+
+#google_translate_element div.goog-te-gadget-simple a.goog-te-menu-value:hover {
+	text-decoration: none;
+}
+
+#google_translate_element div.goog-te-gadget-simple a.goog-te-menu-value span {
+	color: #105289;
+}
+
+#google_translate_element div.goog-te-gadget-simple a.goog-te-menu-value span:hover {
+	color: #105289;
+	text-decoration: underline;
+}

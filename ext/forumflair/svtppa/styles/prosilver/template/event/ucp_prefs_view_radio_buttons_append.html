@@ -1,0 +1,12 @@
+<dl>
+	<dt>
+		<label for="svtppa_alt">{{ lang('UCP_SVTPPA_TTL') }}</label>
+	</dt>
+	<dd>
+		<select name="svtppa_alt" id="svtppa_alt">
+			<option value="1"{% if S_USER_SVTPPA_ALT eq '1' %} selected="selected"{% endif %}>{{ lang('NO') }}</option>
+			<option value="2"{% if S_USER_SVTPPA_ALT eq '2' %} selected="selected"{% endif %}>{{ lang('UCP_SVTPPA_LFT') }}</option>
+			<option value="3"{% if S_USER_SVTPPA_ALT eq '3' %} selected="selected"{% endif %}>{{ lang('UCP_SVTPPA_RGHT') }}</option>
+		</select>
+	</dd>
+</dl>

@@ -1,0 +1,183 @@
+{% include 'overall_header.html' %}
+
+{# include the html code for user POI input if creating POIs is permitted #}
+{% if POI_CREATE %}
+	{% include '@mot_usermap/usermap_poi_input.html' %}
+{% endif %}
+
+{% if not INCLUDED_LEAFLETJS %}
+	{% INCLUDECSS '@mot_usermap/leaflet.css' %}
+	{% INCLUDECSS '@mot_usermap/MarkerCluster.css' %}
+	{% INCLUDECSS '@mot_usermap/MarkerCluster.Default.css' %}
+	{% INCLUDECSS '@mot_usermap/usermap.css' %}
+	{% INCLUDEJS '@mot_usermap/thirdparty/leaflet.js' %}
+	{% INCLUDEJS '@mot_usermap/thirdparty/leaflet.markercluster.js' %}
+	{% INCLUDEJS '@mot_usermap/bbcode.js' %}
+	{% INCLUDEJS '@mot_usermap/mot_usermap.js' %}
+	{% INCLUDEJS '@mot_usermap/mot_usermap_tabs.js' %}
+	{% set INCLUDED_LEAFLETJS = true %}
+{% endif %}
+
+<div id="page-body" class="page-body">
+
+{% if VIEW_MAP_ALWAYS || (VIEW_MAP_SUBSCRIBED && VALID_USER) || (POI_ENABLED && POI_VIEW) %}
+	{% if VIEW_MAP_ALWAYS || VALID_USER || (POI_ENABLED && POI_VIEW) %}
+		<div class="forabg">
+			<div class="inner">
+				<ul class="topiclist">
+					<li class="header">
+						<dl class="row-item">
+							<dt>
+								<div class="list-inner">
+									{{ lang('USERMAP_SEARCHFORM') }}
+								</div>
+							</dt>
+						</dl>
+					</li>
+				</ul>
+			</div>
+			<div class="panel bg1">
+				{% include 'usermap_search.html' %}
+			</div>
+		</div>
+	{% endif %}
+
+	<div class="forabg">
+		<div class="inner">
+			<ul class="topiclist">
+				<li class="header">
+					<dl class="row-item">
+						<dt>
+							<div class="list-inner">
+								{{ lang('USERMAP') }}
+							</div>
+						</dt>
+					</dl>
+				</li>
+			</ul>
+		</div>
+		<div class="panel bg1">
+			<div id="map_container">
+			</div>
+		</div>
+	</div>
+
+	<div class="forabg">
+		<div class="inner">
+			<ul class="topiclist">
+				<li class="header">
+					<dl class="row-item">
+						<dt>
+							<div class="list-inner">
+								{{ lang('USERMAP_LEGEND') }}
+							</div>
+						</dt>
+					</dl>
+				</li>
+			</ul>
+		</div>
+		<div class="panel bg1">
+			{% if VALID_USER || VIEW_MAP_ALWAYS %}
+				<div id="map-legend">
+					<p class="usermap_group_legend">{{ MAP_LEGEND }}</p>
+					<p>{{ lang('USERMAP_LEGEND_TEXT') }}<br><br>{{ MAP_USERS }}</p>
+				</div>
+			{% endif %}
+			{% if POI_ENABLED && POI_VIEW %}
+				{% if VALID_USER || VIEW_MAP_ALWAYS %}
+					<hr>
+				{% endif %}
+				<p>{{ lang('POI_LEGEND_TITLE') }}</p>
+				<div>
+					<p>{{ POI_LEGEND }}</p>
+				</div>
+				<p>{{ POI_NUMBER }}</p>
+			{% endif %}
+		</div>
+	</div>
+	<p class="usermap-thanks">{{ lang('USERMAP_CREDENTIALS') }}<a href="http://www.geonames.org" target="_blank">www.geonames.org</a></p>
+
+{% else %}
+
+	<div class="forabg">
+		<div class="inner">
+			<ul class="topiclist">
+				<li class="header">
+					<dl class="row-item">
+						<dt>
+							<div class="list-inner">
+								{{ lang('USERMAP') }}
+							</div>
+						</dt>
+					</dl>
+				</li>
+			</ul>
+		</div>
+		<div class="panel bg1">
+			<div>{{ lang('USERMAP_NOT_AUTHORIZED') }}</div>
+		</div>
+	</div>
+
+{% endif %}
+</div>
+
+<div class="stat-block permissions">
+	<h3>{{ lang('USERMAP_PERM_OVERVIEW') }}</h3>
+	<p>{{ DISPLAY_PERMISSIONS  }}</p>
+</div>
+
+{# Handover of all necessary data to the js script #}
+<script>
+	var motUsermap = {};
+	motUsermap.tab = {{ TAB }};
+
+	motUsermap.jsProfileLink = {{ PROFILE_LINK }};
+	// Permissions
+	motUsermap.jsMapViewAlways = {{ VIEW_MAP_ALWAYS }}
+	motUsermap.jsPoiEnabled = {{ POI_ENABLED }};
+	motUsermap.jsPoiView = {{ POI_VIEW }};
+	motUsermap.jsPoiCreate = {{ POI_CREATE }};
+
+	motUsermap.defaultPoiIconSize = '{{ DEFAULT_POI_ICON_SIZE|e('js') }}';
+	motUsermap.defaultPoiIconAnchor = '{{ DEFAULT_POI_ICON_ANCHOR|e('js') }}';
+	motUsermap.jsMapConfig = {{ MAPCONFIG }};
+	motUsermap.jsAuthUser = {{ VALID_USER }};
+	motUsermap.jsCurrentUser = {{ USER }};
+	motUsermap.jsMapResult = "{{ lang('MAP_RESULT')|e('js') }}";
+	motUsermap.jsMapNoResult = "{{ lang('MAP_NORESULT')|e('js') }}";
+	motUsermap.jsMapKm = "{{ lang('MAP_KM')|e('js') }}";
+	motUsermap.jsMemberResult = "{{ lang('MEMBERNAME_RESULT')|e('js') }}";
+	motUsermap.jsMemberNoResult = "{{ lang('MEMBERNAME_NORESULT')|e('js') }}";
+	motUsermap.jsStreetDesc = "{{ lang('STREET_DESC')|e('js') }}";
+	motUsermap.jsTopoDesc = "{{ lang('TOPO_DESC')|e('js') }}";
+	motUsermap.jsSatDesc = "{{ lang('SAT_DESC')|e('js') }}";
+	motUsermap.jsDisplayBBCode = {{ DISPLAY_BBCODE }};
+</script>
+
+{# if user is permitted to see members the following data must be handed over #}
+{% if VIEW_MAP_ALWAYS || VIEW_MAP_SUBSCRIBED %}
+	<script>
+		motUsermap.jsMemberData = {{ MEMBERDATA }};
+		motUsermap.jsMemberLayers = {{ MEMBER_LAYERDATA }};
+	</script>
+{% endif %}
+
+{# if POIs are enabled the following data must be handed over #}
+{% if POI_ENABLED %}
+	<script>
+		motUsermap.poiIconPath = {{ POI_ICON_PATH }};
+		motUsermap.poiIconPath = motUsermap.poiIconPath.slice(0,motUsermap.poiIconPath.lastIndexOf('/')+1); // prevent misconfigured(?) (mobile) browsers from not getting images
+
+		motUsermap.errorMsg = '{{ ERROR_MSG|e('js') }}';
+		motUsermap.jsAddressResult = "{{ lang('ADDRESS_RESULT')|e('js') }}";
+		motUsermap.jsAddressNoResult = "{{ lang('ADDRESS_NORESULT')|e('js') }}";
+
+		motUsermap.jsPoiData = {{ POIDATA }};
+		motUsermap.jsPoiResult = "{{ lang('POINAME_RESULT')|e('js') }}";
+		motUsermap.jsPoiNoResult = "{{ lang('POINAME_NORESULT')|e('js') }}";
+		motUsermap.jsPoiLayers = {{ POI_LAYERDATA }};
+		motUsermap.jsAjaxCall = '{{ AJAX_CALL|e('js') }}';
+	</script>
+{% endif %}
+
+{% include 'overall_footer.html' %}

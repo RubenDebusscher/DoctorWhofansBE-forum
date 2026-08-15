@@ -1,0 +1,77 @@
+/* jumpboxindex_acp.css
+----------------------- */
+
+.jumpbox-notebox {
+	background-color: #A47419;
+	border-radius: 10px;
+	box-shadow: 2px 3px 5px #BB9F6A;
+}
+
+.jumpbox-notebox p {
+	font-size: 1em;
+	font-weight: bold;
+}
+
+.successbox.jumpbox-notebox a {
+	color: #EDF3F7;
+}
+
+.successbox.jumpbox-notebox a:hover {
+	text-decoration: underline;
+}
+
+fieldset.acp-jumpboxindex {
+	border-radius: 10px;
+	box-shadow: 2px 3px 0 #B9B6B1;
+}
+
+legend {
+	top: 0;
+	margin-left: -11px;
+	padding: 2px 10px;
+	border-radius: 5px 5px 0 0;
+	border-top: inherit;
+	border-left: inherit;
+	background-color: inherit;
+}
+
+.ext-jumpboxindex.nojs {
+	display: none;
+}
+
+input[type="submit"]:disabled {
+	opacity: .35;
+	cursor: url("./images/not_allowed.png"), auto;
+}
+
+.copy-jumpboxindex {
+	margin-top: 1em;
+	font-size: 1em;
+	text-align: center;
+}
+
+#acp_jumpboxindex dd label input {
+	margin: 2px 0 0 0;
+}
+
+#jumpbox_font_icon a {
+	text-decoration: underline;
+	font-weight: bold;
+}
+
+#fa-icon-preview {
+	font-size: 14px;
+	vertical-align: middle;
+	margin-left: 4px;
+}
+
+@media (max-width: 700px) {
+	legend {
+		margin-left: -6px;
+		padding: 2px 5px;
+	}
+
+	#acp_jumpboxindex dd {
+		margin-top: .5em;
+	}
+}

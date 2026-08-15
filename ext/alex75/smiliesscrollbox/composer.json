@@ -1,0 +1,34 @@
+{
+    "name": "alex75/smiliesscrollbox",
+    "type": "phpbb-extension",
+    "description": "Emoticons in a scroll box.",
+    "homepage": "https://www.phpbb-italia.it",
+    "version": "1.0.4",
+    "license": "GPL-2.0-only",
+    "authors": [
+        {
+            "name": "Alessandro DI BENEDETTO",
+            "username": "alex75",
+            "email": "forum@phpbb-italia.it",
+            "homepage": "www.phpbb-italia.it",
+            "role": "developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "composer/installers": "~1.0.0",
+        "phpbb/phpbb": ">=3.1.1"
+    },
+    "extra": {
+        "display-name": "smilies scroll box",
+        "soft-require": {
+            "phpbb/phpbb": ">=3.1.1"
+        },
+        "version-check": {
+            "host": "www.phpbb.com",
+            "directory": "/customise/db/extension/smilies_scroll_box",
+            "filename": "version_check",
+            "ssl": true
+        }
+    }
+}

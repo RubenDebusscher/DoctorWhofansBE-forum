@@ -1,0 +1,2 @@
+parameters:
+    chris1278.cookie.script_table: '%core.table_prefix%chris1278_cookie_scripts'

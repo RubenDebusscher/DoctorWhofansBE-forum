@@ -1,0 +1,8 @@
+services:
+    rmcgirr83.birthdaycake.listener:
+        class: rmcgirr83\birthdaycake\event\listener
+        arguments:
+            - '@language'
+            - '@user'
+        tags:
+            - { name: event.listener }

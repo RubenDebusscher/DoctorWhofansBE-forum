@@ -1,0 +1,41 @@
+{
+    "name": "gwynethllewelyn/postlocalstorage",
+    "type": "phpbb-extension",
+    "description": "A very simple phpBB3 extension to locally store the content of a post being written, to avoid losing everything after a crash or session expiration.",
+    "homepage": "https://github.com/GwynethLlewelyn/post-local-storage",
+    "version": "1.0.2",
+    "license": "GPL-2.0-only",
+    "keywords": [
+        "phpbb",
+        "extension",
+        "local storage"
+    ],
+    "authors": [
+        {
+            "name": "Gwyneth Llewelyn",
+            "email": "gwyneth.llewelyn@gwynethllewelyn.net",
+            "homepage": "https://gwynethllewelyn.net",
+            "role": "Overall Coordination"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "composer/installers": "~1.0.0",
+        "phpbb/phpbb": ">=3.3"
+    },
+    "require-dev": {
+        "phing/phing": "2.4.*"
+    },
+    "extra": {
+        "display-name": "Post Local Storage",
+        "soft-require": {
+            "phpbb/phpbb": ">=3.3"
+        },
+        "version-check": {
+            "host": "www.phpbb.com",
+            "directory": "/customise/db/extension/postlocalstorage",
+            "filename": "version_check",
+            "ssl": true
+        }
+    }
+}

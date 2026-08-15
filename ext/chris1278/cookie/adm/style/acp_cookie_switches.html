@@ -1,0 +1,399 @@
+{% INCLUDECSS '@chris1278_cookie/css/chris1278_cookie_acp.css' %}
+{% include 'overall_header.html' %}
+<a id="maincontent"></a>
+	<h1>{{ lang('ACP_COOKIE_SWITCHES') }}</h1>
+	<p>{{ ACP_CM_SETTINGS_PAGE_TITLE_EXPLAIN }}</p>
+
+{% if S_ERROR %}
+	<div class="errorbox">
+		<h3>{{ lang('WARNING') }}</h3>
+		<p>{{ ERROR_MSG }}</p>
+	</div>
+{% endif %}
+<h2 class="cookie-set-title">{{ lang('ACP_CM_SWITCH_SET_TITLE') }}</h2>
+<form id="cookie_switches" name="cookie_switches" method="post" action="{{ U_ACTION }}">
+	<fieldset>
+	<legend>{{ lang('ACP_COOKIE_IMPRESSUM') }}</legend>
+	<p>{{ lang('ACP_COOKIE_IMPRESSUM_EXPLAIN') }}</p>
+		<div class="one_thing">
+			<dl>
+				<dt>
+					<label>{{ lang('ACP_COOKIE_IMPRESSUM_INTERN_EXTERN') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('ACP_COOKIE_IMPRESSUM_INTERN_EXTERN_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<select name="cookie_impressum_intern_extern" id="cookie_impressum_intern_extern" >
+						{% if COOKIE_ABOUT_US_CHECK %}
+						<option value="cookie_imp_extension" {{ COOKIE_IMPRESSUM_INTERN_EXTERN == 'cookie_imp_extension' ? 'selected' }}>{{ lang('ACP_ABOUT_US_EXTENSION') }}</option>
+						{% endif %}
+						<option value="cookie_imp_link" {{ COOKIE_IMPRESSUM_INTERN_EXTERN == 'cookie_imp_link' ? 'selected' }}>{{ lang('ACP_EXTERNER_LINK') }}</option>
+						<option value="cookie_no_imp" {{ COOKIE_IMPRESSUM_INTERN_EXTERN == 'cookie_no_imp' ? 'selected' }}>{{ lang('ACP_NO_IMPRESSUM') }}</option>
+					</select>
+				</dd>
+			</dl>
+			<dl class="oicm-no-border" id="dim_cookie_impressum_link_extern">
+				<dt>
+					<label>{{ lang('COOKIE_IMPRESSUM_LINK_EXTERN') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('COOKIE_IMPRESSUM_LINK_EXTERN_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<input type="text" name="cookie_impressum_link_extern" maxlength="255" size="40" value="{{ COOKIE_IMPRESSUM_LINK_EXTERN }}">
+				</dd>
+			</dl>
+		</div>
+	</fieldset>
+	{{ _self.oicmg_form_buttons(1) }}
+	<fieldset>
+	<legend>{{ lang('ACP_MEDIA_SWITCHES') }}</legend>
+		<div class="one_thing">
+			<dl class="oicm-no-border">
+				<dt>
+					<label>{{ lang('YOUTUBE_BBCODE_SWITCH') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('YOUTUBE_BBCODE_SWITCH_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<input type="radio" class="radio" name="youtube_bbcode_switch" value="1" {{ YOUTUBE_BBCODE_SWITCH == 1 ? 'checked' }}> {{ lang('YES') }} &nbsp;
+					<input type="radio" class="radio" name="youtube_bbcode_switch" value="0" {{ YOUTUBE_BBCODE_SWITCH == 0 ? 'checked' }}> {{ lang('NO') }}
+				</dd>
+			</dl>
+		</div>
+		<div class="one_thing">
+			<dl class="oicm-no-border">
+				<dt>
+					<label>{{ lang('VIMEO_BBCODE_SWITCH') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('VIMEO_BBCODE_SWITCH_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<input type="radio" class="radio" name="vimeo_bbcode_switch" value="1" {{ VIMEO_BBCODE_SWITCH == 1 ? 'checked' }}> {{ lang('YES') }} &nbsp;
+					<input type="radio" class="radio" name="vimeo_bbcode_switch" value="0" {{ VIMEO_BBCODE_SWITCH == 0 ? 'checked' }}> {{ lang('NO') }}
+				</dd>
+			</dl>
+		</div>
+		<div class="one_thing">	
+			<dl class="oicm-no-border">
+				<dt>
+					<label>{{ lang('SPOTIFY_BBCODE_SWITCH') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('SPOTIFY_BBCODE_SWITCH_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<input type="radio" class="radio" name="spotify_bbcode_switch" value="1" {{ SPOTIFY_BBCODE_SWITCH == 1 ? 'checked' }}> {{ lang('YES') }} &nbsp;
+					<input type="radio" class="radio" name="spotify_bbcode_switch" value="0" {{ SPOTIFY_BBCODE_SWITCH == 0 ? 'checked' }}> {{ lang('NO') }}
+				</dd>
+			</dl>
+		</div>
+	</fieldset>
+	{{ _self.oicmg_form_buttons(2) }}
+	
+	<fieldset>	
+	<legend>{{ lang('ACP_SWITCHES_WITH_SKRIPTS') }}</legend>
+	<p>{{ lang('ACP_SWITCHES_WITH_SKRIPTS_EXPLAIN') }}
+		<div class="one_thing">
+			<dl id="google_analytics_no_tm_switch">
+				<dt>
+					<label>{{ lang('GOOGLE_ANALYTICS_NO_TAGMANAGER') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('GOOGLE_ANALYTICS_NO_TAGMANAGER_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<input type="radio" class="radio" name="google_analytics_no_tm_switch" value="1" {{ GOOGLE_ANALYTICS_NO_TM_SWITCH == 1 ? 'checked' }}> {{ lang('YES') }} &nbsp;
+					<input type="radio" class="radio" name="google_analytics_no_tm_switch" value="0" {{ GOOGLE_ANALYTICS_NO_TM_SWITCH == 0 ? 'checked' }}> {{ lang('NO') }}
+				</dd>
+			</dl>
+			<dl id="dim_data_name_googleanalytics">
+				<dt>
+					<label>{{ lang('ACP_DATA_NAME_GOOGLEANALYTICS') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('ACP_DATA_NAME_GOOGLEANALYTICS_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<input type="text" name="data_name_googleanalytics" id="data_name_googleanalytics" maxlength="255" size="40" value="{{ DATA_NAME_GOOGLEANALYTICS }}">
+				</dd>
+			</dl>
+			<dl id="dim_google_analytics_os">
+				<dt>
+					<label>{{ lang('ACP_GANALYTICS_OWN_SCRIPT') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('ACP_GANALYTICS_OWN_SCRIPT_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<input type="radio" class="radio" name="ganalytics_own_script" value="1"  {{ GANALYTICS_OWN_SCRIPT == 1 ? 'checked' }}> {{ lang('YES') }} &nbsp;
+					<input type="radio" class="radio" name="ganalytics_own_script" value="0"  {{ GANALYTICS_OWN_SCRIPT == 0 ? 'checked' }}> {{ lang('NO') }}
+				</dd>
+			</dl>
+			<dl id="dim_gaos_pos1">
+				<dt>
+					<label>{{ lang('ACP_GOAS_POS1') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('ACP_GOAS_POS1_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<textarea name="gaos_pos1" rows="10" cols="60" style="width: 95%;">{{ GAOS_POS1 }}</textarea>
+				</dd>
+			</dl>
+			<dl id="dim_gaos_pos2">
+				<dt>
+					<label>{{ lang('ACP_GOAS_POS2') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('ACP_GOAS_POS2_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<textarea name="gaos_pos2" rows="10" cols="60" style="width: 95%;">{{ GAOS_POS2 }}</textarea>
+				</dd>
+			</dl>	
+			
+			<dl class="oicm-no-border" id="dim_google_analytics_id">
+				<dt>
+					<label>{{ lang('GOOGLE_ANALYTICS_ID') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('GOOGLE_ANALYTICS_ID_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<input type="text" name="google_analytics_id" maxlength="255" size="40" value="{{ GOOGLE_ANALYTICS_ID }}" placeholder=" {{ lang('ACP_GOOGLE_ANALYTICS_ID') }}">
+				</dd>
+			</dl>	
+		</div>
+		<div class="one_thing">
+			<dl id="matomo_switch" >
+				<dt>
+					<label>{{ lang('MATOMO_SWITCH') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('MATOMO_SWITCH_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<input type="radio" class="radio" name="matomo_switch" value="1"  {{ MATOMO_SWITCH == 1 ? 'checked' }}> {{ lang('YES') }} &nbsp;
+					<input type="radio" class="radio" name="matomo_switch" value="0"  {{ MATOMO_SWITCH == 0 ? 'checked' }}> {{ lang('NO') }}
+				</dd>
+			</dl>
+			<dl id="dim_data_name_matomo">
+				<dt>
+					<label>{{ lang('ACP_DATA_NAME_MATOMO') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('ACP_DATA_NAME_MATOMO_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<input type="text" name="data_name_matomo" id="data_name_matomo" maxlength="255" size="40" value="{{ DATA_NAME_MATOMO }}">
+				</dd>
+			</dl>
+			<dl id="dim_matomo_own_script" >
+				<dt>
+					<label>{{ lang('ACP_MATOMO_OWN_SCRIPT') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('ACP_MATOMO_OWN_SCRIPT_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<input type="radio" class="radio" name="matomo_own_script" value="1"  {{ MATOMO_OWN_SCRIPT == 1 ? 'checked' }}> {{ lang('YES') }} &nbsp;
+					<input type="radio" class="radio" name="matomo_own_script" value="0"  {{ MATOMO_OWN_SCRIPT == 0 ? 'checked' }}> {{ lang('NO') }}
+				</dd>
+			</dl>
+			
+			<dl id="dim_matomo_pos1">
+				<dt>
+					<label>{{ lang('ACP_MATOMO_POS1') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('ACP_MATOMO_POS1_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<textarea id="matomo_pos1" name="matomo_pos1" rows="10" cols="60" style="width: 95%;">{{ MATOMO_POS1 }}</textarea>
+				</dd>
+			</dl>
+			<dl id="dim_matomo_pos2">
+				<dt>
+					<label>{{ lang('ACP_MATOMO_POS2') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('ACP_MATOMO_POS2_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<textarea id="matomo_pos2" name="matomo_pos2" rows="10" cols="60" style="width: 95%;">{{ MATOMO_POS2 }}</textarea>
+				</dd>
+			</dl>	
+			<dl id="dim_matomo_url">
+				<dt>
+					<label>{{ lang('MATOMO_URL') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('MATOMO_URL_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<input type="text" name="matomo_url" id="matomo_url" maxlength="255" size="40" value="{{ MATOMO_URL }}">
+				</dd>
+			</dl>
+			<dl id="dim_matomo_side_id">
+				<dt>
+					<label>{{ lang('MATOMO_SIDE_ID') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('MATOMO_SIDE_ID_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<input type="text" name="matomo_side_id" id="matomo_side_id" maxlength="255" size="4" value="{{ MATOMO_SIDE_ID }}">
+				</dd>
+			</dl>
+			<dl class="oicm-no-border" id="dim_matomo_in_out">
+				<dt>
+					<label>{{ lang('MATOMO_IN_OUT') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('MATOMO_IN_OUT_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<input type="radio" class="radio" name="matomo_in_out" value="1" {{ MATOMO_IN_OUT == 1 ? 'checked' }}> {{ lang('ACP_MATOMO_EXTERN') }} &nbsp;
+					<input type="radio" class="radio" name="matomo_in_out" value="0" {{ MATOMO_IN_OUT == 0 ? 'checked' }}> {{ lang('ACP_MATOMO_INTERN') }}
+				</dd>
+			</dl>
+		</div>
+	</fieldset>
+	{{ _self.oicmg_form_buttons(3) }}
+	<fieldset>
+	<legend>{{ lang('ACP_SWITCHES_WITHOUT_SKRIPTS') }}</legend>
+	<p>{{ lang('ACP_SWITCHES_WITHOUT_SKRIPTS_EXPLAIN') }}</p>
+		<div class="one_thing">
+			<dl id="google_webfont_switch">
+				<dt>
+					<label>{{ lang('ACP_GOOGLE_WEBFONT_SWITCH') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('ACP_GOOGLE_WEBFONT_SWITCH_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<input type="radio" class="radio" name="google_webfont_switch" value="1"  {{ GOOGLE_WEBFONT_SWITCH == 1 ? 'checked' }}> {{ lang('YES') }} &nbsp;
+					<input type="radio" class="radio" name="google_webfont_switch" value="0"  {{ GOOGLE_WEBFONT_SWITCH == 0 ? 'checked' }}> {{ lang('NO') }}
+				</dd>
+			</dl>	
+			<dl class="oicm-no-border" id="dim_data_name_googlewebfont">
+				<dt>
+					<label>{{ lang('ACP_DATA_NAME_GOOGLEWEBFONT') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('ACP_DATA_NAME_GOOGLEWEBFONT_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<input type="text" name="data_name_googlewebfont"  maxlength="255" size="40" value="{{ DATA_NAME_GOOGLEWEBFONT }}">
+				</dd>
+			</dl>
+		</div>
+		<div class="one_thing">
+			<dl id="google_adsense_switch">
+				<dt>
+					<label>{{ lang('ACP_GOOGLE_ADSENSE_SWITCH') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('ACP_GOOGLE_ADSENSE_SWITCH_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<input type="radio" class="radio" name="google_adsense_switch" value="1"  {{ GOOGLE_ADSENSE_SWITCH == 1 ? 'checked' }}> {{ lang('YES') }} &nbsp;
+					<input type="radio" class="radio" name="google_adsense_switch" value="0"  {{ GOOGLE_ADSENSE_SWITCH == 0 ? 'checked' }}> {{ lang('NO') }}
+				</dd>
+			</dl>
+			<dl class="oicm-no-border" id="dim_data_name_googleadsense">
+				<dt>
+					<label>{{ lang('ACP_DATA_NAME_GOOGLEADSENSE') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('ACP_DATA_NAME_GOOGLEADSENSE_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<input type="text" name="data_name_googleadsense" maxlength="255" size="40" value="{{ DATA_NAME_GOOGLEADSENSE }}">
+				</dd>
+			</dl>
+			<dl id="dim_goads_pos1">
+				<dt>
+					<label>{{ lang('ACP_GOADS_POS1') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('ACP_GOADS_POS1_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<textarea name="goads_pos1" rows="10" cols="60" style="width: 95%;">{{ GOADS_POS1 }}</textarea>
+				</dd>
+			</dl>
+			<dl id="dim_goads_pos2">
+				<dt>
+					<label>{{ lang('ACP_GOADS_POS2') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('ACP_GOADS_POS2_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<textarea name="goads_pos2" rows="10" cols="60" style="width: 95%;">{{ GOADS_POS2 }}</textarea>
+				</dd>
+			</dl>	
+		</div>
+		<div class="one_thing">
+			<dl id="google_maps_switch">
+				<dt>
+					<label>{{ lang('ACP_GOOGLE_MAPS_SWITCH') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('ACP_GOOGLE_MAPS_SWITCH_EXPLAIN') }}</span>
+					</dt>
+				<dd>
+					<input type="radio" class="radio" name="google_maps_switch" value="1"  {{ GOOGLE_MAPS_SWITCH == 1 ? 'checked' }}> {{ lang('YES') }} &nbsp;
+					<input type="radio" class="radio" name="google_maps_switch" value="0"  {{ GOOGLE_MAPS_SWITCH == 0 ? 'checked' }}> {{ lang('NO') }}
+				</dd>
+			</dl>
+			<dl class="oicm-no-border" id="dim_data_name_googlemaps">
+				<dt>
+					<label>{{ lang('ACP_DATA_NAME_GOOGLEMAPS') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('ACP_DATA_NAME_GOOGLEMAPS_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<input type="text" name="data_name_googlemaps" maxlength="255" size="40" value="{{ DATA_NAME_GOOGLEMAPS }}">
+				</dd>
+			</dl>
+			<dl id="dim_gomaps_pos1">
+				<dt>
+					<label>{{ lang('ACP_GOMAPS_POS1') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('ACP_GOMAPS_POS1_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<textarea name="gomaps_pos1" rows="10" cols="60" style="width: 95%;">{{ GOMAPS_POS1 }}</textarea>
+				</dd>
+			</dl>
+			<dl id="dim_gomaps_pos2">
+				<dt>
+					<label>{{ lang('ACP_GOMAPS_POS2') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('ACP_GOMAPS_POS2_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<textarea name="gomaps_pos2" rows="10" cols="60" style="width: 95%;">{{ GOMAPS_POS2 }}</textarea>
+				</dd>
+			</dl>	
+			
+		</div>
+		<div class="one_thing">
+			<dl id="google_translator_switch">
+				<dt>
+					<label>{{ lang('GOOGLE_TRANSLATOR_SWITCH') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('GOOGLE_TRANSLATOR_SWITCH_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<input type="radio" class="radio" name="google_translator_switch" value="1"  {{ GOOGLE_TRANSLATOR_SWITCH == 1 ? 'checked' }}> {{ lang('YES') }} &nbsp;
+					<input type="radio" class="radio" name="google_translator_switch" value="0"  {{ GOOGLE_TRANSLATOR_SWITCH == 0 ? 'checked' }}> {{ lang('NO') }}
+				</dd>
+			</dl>
+			<dl class="oicm-no-border" id="dim_data_name_googletranslate">
+				<dt>
+					<label>{{ lang('ACP_DATA_NAME_GOOGLETRANSLATE') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('ACP_DATA_NAME_GOOGLETRANSLATE_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<input type="text" name="data_name_googletranslate" maxlength="255" size="40" value="{{ DATA_NAME_GOOGLETRANSLATE }}">
+				</dd>
+			</dl>
+		</div>
+		
+		<div class="one_thing">
+			<dl id="amazon_switch">
+				<dt>
+					<label>{{ lang('AMAZON_SWITCH') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('AMAZON_SWITCH_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<input type="radio" class="radio" name="amazon_switch" value="1"  {{ AMAZON_SWITCH == 1 ? 'checked' }}> {{ lang('YES') }} &nbsp;
+					<input type="radio" class="radio" name="amazon_switch" value="0"  {{ AMAZON_SWITCH == 0 ? 'checked' }}> {{ lang('NO') }}
+				</dd>
+			</dl>
+			<dl class="oicm-no-border" id="dim_data_name_amazon">
+				<dt>
+					<label>{{ lang('ACP_DATA_NAME_AMAZON') ~ lang('COLON') }}</label><br>
+					<span>{{ lang('ACP_DATA_NAME_AMAZON_EXPLAIN') }}</span>
+				</dt>
+				<dd>
+					<input type="text" name="data_name_amazon" maxlength="255" size="40" value="{{ DATA_NAME_AMAZON }}">
+				</dd>
+			</dl>
+		</div>
+	</fieldset>
+	{{ _self.oicmg_form_buttons(4) }}
+
+	{S_FORM_TOKEN}
+	<p class="chris1278_acp_copyright">
+		{{ CM_EXT_NAME }} &copy; Chris1278<br>
+		{{ lang('CM_LANG_DESC') }} {{ lang('CM_LANG_EXT_VER') }} &bull; {{ lang('CM_LANG_AUTHOR') }}
+	</p>
+</form>
+
+{% INCLUDEJS '@chris1278_cookie/acp_cookieswitchdimmer.js' %}
+{% include 'overall_footer.html' %}
+{% macro oicmg_form_buttons(id) %}
+	<div class="oicmb_form_buttons">
+		<div class="oicmb_col_left">
+		</div>
+		<div class="oicmb_col_center">
+			<input class="button1 oicm_button1" type="submit" id="submit_{{ id }}" name="submit" value="{{ lang('SUBMIT') }}">&nbsp;
+			<input class="button2 oicm_button2" type="button" id="form_reset_{{ id }}" name="form_reset" value="{{ lang('RESET') }}">
+		</div>
+		<div class="oicmb_col_right">
+			<a href="#maincontent" title="{{ lang('BACK_TO_TOP') }}" class="oicmb_back_to_top"><p class="icon fa-chevron-circle-up"></p></a>
+		</div>
+	</div>
+{% endmacro %}

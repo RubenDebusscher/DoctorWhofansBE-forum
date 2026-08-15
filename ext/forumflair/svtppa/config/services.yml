@@ -1,0 +1,17 @@
+services:
+    forumflair.svtppa.listener:
+        class: forumflair\svtppa\event\main_listener
+        arguments:
+            - '@template'
+            - '@user'
+        tags:
+            - { name: event.listener }
+
+    forumflair.svtppa.ucp_listener:
+        class: forumflair\svtppa\event\ucp_listener
+        arguments:
+            - '@request'
+            - '@template'
+            - '@user'
+        tags:
+            - { name: event.listener }

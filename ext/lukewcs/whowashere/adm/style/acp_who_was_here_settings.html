@@ -1,0 +1,438 @@
+{#
+*
+* LF who was here 2 - based on "NV who was here". An extension for the phpBB Forum Software package.
+*
+* @copyright (c) 2018, LukeWCS, https://www.wcsaga.org/
+* @copyright (c) 2015, Anvar, http://phpbbguru.net
+* @copyright (c) 2010, nickvergessen
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+#}
+
+{% set switch_type = TOGGLECTRL_TYPE ?? 'toggle' %}
+
+{% INCLUDE 'overall_header.html' %}
+<a id="maincontent"></a>
+
+<h1>{{ lang('LFWWH_CONFIG_TITLE') }}</h1>
+<p>{{ lang('LFWWH_CONFIG_DESC', LFWWH_METADATA.ext_name) }}</p>
+
+{{ _self.notes(LFWWH_NOTES) }}
+
+<form id="lfwwh_form" method="post" action="{{ U_ACTION }}">
+	<fieldset>
+		<legend>{{ lang('LFWWH_SECTION_PERMISSIONS') }}</legend>
+
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_ADMIN_MODE') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_ADMIN_MODE_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.switch('lfwwh_admin_mode', LFWWH_ADMIN_MODE, switch_type) }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_USE_PERMISSIONS') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_USE_PERMISSIONS_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.switch('lfwwh_use_permissions', LFWWH_USE_PERMISSIONS, switch_type) }}
+			</dd>
+		</dl>
+
+		<legend class="legend_sub simple_permissions">{{ lang('LFWWH_SECTION_SIMPLE_PERMISSIONS') }}</legend>
+		<dl class="simple_permissions">
+			<dt>
+				<span>{{ lang('LFWWH_SIMPLE_PERMISSIONS_EXP') }}</span>
+			</dt>
+		</dl>
+
+		<dl class="simple_permissions">
+			<dt>
+				<label>{{ lang('LFWWH_PERM_FOR_GUESTS') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_PERM_FOR_GUESTS_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.switch('lfwwh_perm_for_guests_stats'	, LFWWH_PERM_FOR_GUESTS b-and 1, switch_type) }} {{ lang('LFWWH_PERM_STATS') }}<br>
+				{{ _self.switch('lfwwh_perm_for_guests_record'	, LFWWH_PERM_FOR_GUESTS b-and 2, switch_type) }} {{ lang('LFWWH_PERM_RECORD') }}<br>
+				{{ _self.switch('lfwwh_perm_for_guests_users'	, LFWWH_PERM_FOR_GUESTS b-and 4, switch_type) }} {{ lang('LFWWH_PERM_USERS') }}<br>
+				{{ _self.switch('lfwwh_perm_for_guests_bots'	, LFWWH_PERM_FOR_GUESTS b-and 8, switch_type) }} {{ lang('LFWWH_PERM_BOTS') }}<br>
+			</dd>
+		</dl>
+		<dl class="simple_permissions">
+			<dt>
+				<label>{{ lang('LFWWH_PERM_FOR_BOTS') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_PERM_FOR_BOTS_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.switch('lfwwh_perm_for_bots_stats'		, LFWWH_PERM_FOR_BOTS b-and 1, switch_type) }} {{ lang('LFWWH_PERM_STATS') }}<br>
+				{{ _self.switch('lfwwh_perm_for_bots_record'	, LFWWH_PERM_FOR_BOTS b-and 2, switch_type) }} {{ lang('LFWWH_PERM_RECORD') }}<br>
+				{{ _self.switch('lfwwh_perm_for_bots_users'		, LFWWH_PERM_FOR_BOTS b-and 4, switch_type) }} {{ lang('LFWWH_PERM_USERS') }}<br>
+				{{ _self.switch('lfwwh_perm_for_bots_bots'		, LFWWH_PERM_FOR_BOTS b-and 8, switch_type) }} {{ lang('LFWWH_PERM_BOTS') }}<br>
+			</dd>
+		</dl>
+	</fieldset>
+
+	<fieldset>
+		<legend>{{ lang('LFWWH_SECTION_DISP_1') }}</legend>
+
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_DISP_REG_USERS') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_DISP_REG_USERS_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.switch('lfwwh_disp_reg_users', LFWWH_DISP_REG_USERS, switch_type) }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_DISP_HIDDEN') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_DISP_HIDDEN_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.switch('lfwwh_disp_hidden', LFWWH_DISP_HIDDEN, switch_type) }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_DISP_BOTS') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_DISP_BOTS_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.select('lfwwh_disp_bots', LFWWH_DISP_BOTS_OPTIONS) }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_DISP_GUESTS') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_DISP_GUESTS_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.switch('lfwwh_disp_guests', LFWWH_DISP_GUESTS, switch_type) }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_DISP_TIME_USERS') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_DISP_TIME_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.select('lfwwh_disp_time_users', LFWWH_DISP_TIME_USERS_OPTIONS) }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_DISP_TIME_BOTS') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_DISP_TIME_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.select('lfwwh_disp_time_bots', LFWWH_DISP_TIME_BOTS_OPTIONS) }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_DISP_TIME_FORMAT') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_DISP_TIME_FORMAT_EXP', lang('LFWWH_LAST1'), lang('LFWWH_LAST2'), lang('LFWWH_LAST3')) }}</span>
+			</dt>
+			<dd>
+				{{ _self.text('lfwwh_disp_time_format', LFWWH_DISP_TIME_FORMAT, 12) }}
+				{{ LFWWH_DISP_TIME_FORMAT_DEMO }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_DISP_IP') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_DISP_IP_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.select('lfwwh_disp_ip', LFWWH_DISP_IP_OPTIONS) }}
+			</dd>
+		</dl>
+	</fieldset>
+
+{{ _self.form_buttons() }}
+
+	<fieldset>
+		<legend>{{ lang('LFWWH_SECTION_DISP_2') }}</legend>
+
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_TIME_MODE') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_TIME_MODE_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.select('lfwwh_time_mode', LFWWH_TIME_MODE_OPTIONS) }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_TIME_MODE_PERIOD') ~ lang('COLON') }}</label>
+			</dt>
+			<dd>
+				{{ _self.number('lfwwh_period_of_time_h', LFWWH_PERIOD_OF_TIME_H, 0, 99999) }}
+				{{ lang('HOURS') }}
+			</dd>
+			<dd>
+				{{ _self.number('lfwwh_period_of_time_m', LFWWH_PERIOD_OF_TIME_M, 0, 99999) }}
+				{{ lang('MINUTES') }}
+			</dd>
+			<dd>
+				{{ _self.number('lfwwh_period_of_time_s', LFWWH_PERIOD_OF_TIME_S, 0, 99999) }}
+				{{ lang('SECONDS') }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_SORT_BY') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_SORT_BY_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.select('lfwwh_sort_by', LFWWH_SORT_BY_OPTIONS) }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_RECORD') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_RECORD_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.switch('lfwwh_record', LFWWH_RECORD, switch_type) }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_RECORD_TIME_FORMAT') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_RECORD_TIME_FORMAT_EXP') }}</span>
+			</dt>
+			<dd>
+				<input type="text" name="lfwwh_record_time_format" size="12" value="{{ LFWWH_RECORD_TIME_FORMAT }}">
+				{{ LFWWH_RECORD_TIME_FORMAT_DEMO }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_TEMPLATE_POS') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_TEMPLATE_POS_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.select('lfwwh_template_pos', LFWWH_TEMPLATE_POS_OPTIONS) }}
+			</dd>
+		</dl>
+	</fieldset>
+
+	<fieldset>
+		<legend>{{ lang('LFWWH_SECTION_OTHERS') }}</legend>
+
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_API_MODE') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_API_MODE_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.switch('lfwwh_api_mode', LFWWH_API_MODE, switch_type) }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_CLEAR_UP') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_CLEAR_UP_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.switch('lfwwh_clear_up', LFWWH_CLEAR_UP, switch_type) }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_TEMPLATE_POS_ALL') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_TEMPLATE_POS_ALL_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.switch('lfwwh_template_pos_all', LFWWH_TEMPLATE_POS_ALL, switch_type) }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_CREATE_HIDDEN_INFO') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_CREATE_HIDDEN_INFO_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.switch('lfwwh_create_hidden_info', LFWWH_CREATE_HIDDEN_INFO, switch_type) }}
+			</dd>
+		</dl>
+	</fieldset>
+
+{{ _self.form_buttons() }}
+
+	<fieldset>
+		<legend>{{ lang('LFWWH_SECTION_LOAD_SETTINGS') }}</legend>
+
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_USE_CACHE') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_USE_CACHE_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.switch('lfwwh_use_cache', LFWWH_USE_CACHE, switch_type) }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_USE_ONLINE_TIME') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_USE_ONLINE_TIME_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.switch('lfwwh_use_online_time', LFWWH_USE_ONLINE_TIME, switch_type) }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_CACHE_TIME') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_CACHE_TIME_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.number('lfwwh_cache_time', LFWWH_CACHE_TIME, 1, LFWWH_CACHE_TIME_MAX) }}
+				{{ lang('MINUTES') }}
+			</dd>
+		</dl>
+	</fieldset>
+
+	<fieldset>
+
+		<legend>{{ lang('LFWWH_SECTION_RESET') }}</legend>
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_DEFAULTS') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_DEFAULTS_EXP') }}</span>
+			</dt>
+			<dd>
+				<input class="button2" type="button" name="lfwwh_defaults" value="{{ lang('LFWWH_BUTTON_DEFAULTS') }}">
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_RECORD_RESET') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_RECORD_RESET_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.switch('lfwwh_record_reset', false, switch_type) }}
+				{{ LFWWH_RECORD_RESET_TIME }}
+				{{ _self.confirmbox('lfwwh_record_reset', lang('LFWWH_MSG_CONFIRM_RECORD_RESET')) }}
+			</dd>
+		</dl>
+	</fieldset>
+
+{{ _self.form_buttons() }}
+
+{{ S_FORM_TOKEN }}
+</form>
+
+{{ _self.footer(LFWWH_METADATA) }}
+
+<script>
+	var lfwwhACP = {
+		tpl: {
+			CacheTimeMax: {{ LFWWH_CACHE_TIME_MAX }}
+		},
+	};
+</script>
+
+{% INCLUDE 'overall_footer.html' %}
+
+{% INCLUDEJS '@lukewcs_whowashere/acp_who_was_here_settings.js' %}
+{% INCLUDECSS '@lukewcs_whowashere/acp_who_was_here_settings.css' %}
+
+{% macro form_buttons() %}
+	<fieldset>
+		<legend>{{ lang('ACP_SUBMIT_CHANGES') }}</legend>
+
+		<div class="lfwwh_form_buttons">
+			<div class="lfwwh_col_left">
+			</div>
+			<div class="lfwwh_col_center">
+				<input class="button1" type="submit" name="submit" value="{{ lang('LFWWH_BUTTON_SAVE_PAGE') }}">&nbsp;
+				<input class="button2" type="reset" name="form_reset" value="{{ lang('RESET') }}">
+			</div>
+			<div class="lfwwh_col_right">
+				<a href="#maincontent" title="{{ lang('BACK_TO_TOP') }}" class="lfwwh_back_to_top">{{ _self.icon('fa-chevron-circle-up', false) }}</a>
+			</div>
+		</div>
+	</fieldset>
+{% endmacro %}
+
+{% macro notes(notes) %}
+	{% if notes|length %}
+		<div class="successbox notice">
+			{% for note in notes %}
+				<p>{{ note }}</p>
+			{% endfor %}
+		</div>
+	{% endif %}
+{% endmacro %}
+
+{% macro icon(classes, decorative = true) -%}
+	<i class="icon {{ classes }}"{{ decorative ? ' aria-hidden="true"' }}></i>
+{%- endmacro %}
+
+{% macro footer(metadata) %}
+	<p class="{{ metadata.class  }}">
+		{{ metadata.ext_name }} {{ metadata.ext_ver }} &copy; {{ metadata.ext_copyright }}
+		{% if metadata.lang_ver is defined %}
+			<br>
+			{{ metadata.lang_desc|e('html') }} {{ metadata.lang_ver|e('html') }} &bull; {{ metadata.lang_author|e('html') }}
+		{% endif %}
+	</p>
+{% endmacro %}
+
+{% macro switch(name, checked = false, type = 'toggle') -%}
+	{% if type == 'toggle' || type == 'checkbox' -%}
+		<input type="checkbox"{{ type == 'toggle' ? ' class="toggle"' }} name="{{ name }}" value="1"{{ checked ? ' checked' }}>
+	{%- elseif type == 'radio' -%}
+		<label><input type="radio" class="radio" name="{{ name }}" value="1"{{ checked ? ' checked' }}> {{ lang('YES') }}</label>
+		<label><input type="radio" class="radio" name="{{ name }}" value="0"{{ !checked ? ' checked' }}> {{ lang('NO') }}</label>
+	{%- endif %}
+{%- endmacro %}
+
+{% macro select(name, options, multiple = null, size = null) -%}
+	<select name="{{ name }}{{ multiple ? '[]' }}"{{
+		(size !== null ? ' size="' ~ size ~ '"') ~
+		(multiple ? ' multiple')
+	}}>
+		{% for opt in options %}
+			<option value="{{ opt.value }}"{{
+				(opt.bold ? ' class="sep"') ~
+				(opt.selected ? ' selected')
+			}}>{{ lang(opt.label) }}</option>
+		{% endfor %}
+	</select>
+{%- endmacro %}
+
+{% macro number(name, value, min = null, max = null, step = null, placeholder = null) -%}
+	<input type="number" name="{{ name }}" value="{{ value }}"{{
+		(min !== null ? ' min="' ~ min ~ '"') ~
+		(max !== null ? ' max="' ~ max ~ '"') ~
+		(step !== null ? ' step="' ~ step ~ '"') ~
+		(placeholder !== null ? ' placeholder="' ~ placeholder ~ '"')
+	}}>
+{%- endmacro %}
+
+{% macro text(name, value, size = null, placeholder = null, pattern = null) -%}
+	<input type="text" name="{{ name }}" value="{{ value }}"{{
+		(size !== null ? ' size="' ~ size ~ '"') ~
+		(placeholder !== null ? ' placeholder="' ~ placeholder ~ '"') ~
+		(pattern !== null ? ' pattern="' ~ pattern ~ '"')
+	}}>
+{%- endmacro %}
+
+{% macro confirmbox(name, message, default = false) -%}
+	<div id="{{ name }}_confirmbox" data-default="{{ default }}" style="display: none;">
+		<h2>{{ lang('CONFIRM') }}</h2>
+		<p>{{ message }}</p>
+		<p>
+			<input type="button" class="button1" name="{{ name }}_confirm_yes" value="{{ lang('YES') }}">&nbsp;
+			<input type="button" class="button2" name="{{ name }}_confirm_no" value="{{ lang('NO') }}">
+		</p>
+	</div>
+{%- endmacro %}

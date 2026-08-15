@@ -1,0 +1,136 @@
+/**
+ * phpBB Studio's Dice extension for the phpBB Forum Software package.
+ *
+ * @copyright (c) 2019 phpBB Studio <https://www.phpbbstudio.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ */
+
+.dice-section {
+	font-size: 1rem;
+	color: #5b5b5b;
+}
+
+.dice-title {
+	font-size: 1.5rem;
+	border: none;
+}
+
+/* TEST DICE PART */
+.dice-fieldset {
+	position: relative;
+	margin-bottom: 0;
+	padding: 0;
+}
+
+.dice-options {
+	text-align: center;
+}
+
+.dice-submit {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	display: inline-block;
+	padding: 0 0.75rem 0.5rem;
+}
+
+.dice-skin {
+	font-size: 0.9rem;
+	border-radius: inherit;
+	position: absolute;
+	top: 0.5rem;
+	left: 0.5rem;
+	width: calc(150px - 1rem);
+	padding-top: calc(3px + 0.1rem);
+	padding-bottom: calc(4px + 0.1rem);
+	padding-left: 3px;
+}
+
+.dice-skin:focus {
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+.dice-input {
+	text-indent: 1rem;
+	border: 1px solid transparent;
+	border-radius: inherit;
+	width: calc(100% - 1rem - 152px);
+	margin: 0.5rem 1rem 0.5rem 150px;
+	padding: 0.25rem 0;
+}
+
+.dice-input:focus {
+	border: 1px inset #a1b0bc;
+	outline: none;
+}
+
+.dice-result {
+	font-size: 1rem;
+	margin-bottom: 1rem;
+	padding: 1rem;
+}
+
+/* FAQ PART */
+.dice-limit {
+	font-size: 0.75rem;
+}
+
+.dice-section p {
+	font-size: 1rem;
+}
+
+.dice-type {
+	border-bottom: none;
+	color: #333333;
+	margin: 0 0 .5rem;
+	padding: 5px;
+}
+
+.dice-type:before {
+	font-family: FontAwesome, sans-serif;
+	color: #12a3eb;
+	margin-right: 1rem;
+	content: "\f1b2";
+}
+
+.dice-list,
+dl.dice-list {
+	font-size: 0.9rem;
+	font-style: italic;
+	border-left: 2px solid #12a3eb;
+	margin-bottom: 1.5rem;
+	margin-left: calc(1.5rem - 15px);
+	padding: 0.75rem 1.5rem;
+}
+
+dl.dice-list dt { width: 15%; }
+dl.dice-list dd { width: 80%; padding-left: 1rem; }
+
+.dice-hr {
+	border-top: 2px solid #12a3eb;
+	width: 25%;
+	margin: 1rem auto;
+}
+
+div.dice-example,
+span.dice-example {
+	font-size: 0.9rem;
+	border-radius: 3px;
+	color: #333333;
+}
+
+div.dice-example {
+	margin: 0 0 0.5rem;
+	padding: 16px;
+}
+
+span.dice-example {
+	background-color: rgba(0, 0, 0, 0.1);
+	margin: 0;
+	padding: 0.05rem 0.4rem;
+}
+
+div.dice-example dl.details dt,
+div.dice-example dl.details dd {
+	font-size: 1rem;
+}

@@ -1,0 +1,37 @@
+{
+    "name": "mot/userreminder",
+    "type": "phpbb-extension",
+    "description": "Remind and manage inactive users",
+    "homepage": "https://www.mike-on-tour.com",
+    "version": "1.8.1",
+    "time": "2024-06-24 12:11:57",
+    "license": "GPL-2.0-only",
+    "authors": [
+        {
+            "name": "Michael Vormwald",
+            "email": "webmaster@mike-on-tour.de",
+            "homepage": "https://www.mike-on-tour.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.4.0,<8.3.0",
+        "phpbb/phpbb": ">=3.3.0,<3.4.0@dev",
+        "composer/installers": "~1.0.0"
+    },
+    "require-dev": {
+        "phpbb/epv": "dev-master"
+    },
+    "extra": {
+        "display-name": "Userreminder for phpbb",
+        "soft-require": {
+            "phpbb/phpbb": ">=3.3.0,<3.4.0@dev"
+        },
+        "version-check": {
+            "host": "www.phpbb.com",
+            "directory": "/customise/db/extension/userreminder_for_phpbb",
+            "filename": "version_check",
+            "ssl": true
+        }
+    }
+}

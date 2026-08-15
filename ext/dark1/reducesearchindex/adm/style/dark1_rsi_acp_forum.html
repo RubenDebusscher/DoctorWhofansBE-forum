@@ -1,0 +1,74 @@
+{% include 'overall_header.html' %}
+
+{% INCLUDECSS '@dark1_reducesearchindex/dark1_rsi_acp_style.css' %}
+
+<h1>{{ RSI_EXT_NAME }}</h1>
+<div>{{ lang('ACP_RSI_BY') }}&nbsp;{{ RSI_EXT_DEV }}</div>
+<hr class="acp-rsi-hr">
+<h2>{{ RSI_EXT_MODE }}</h2>
+
+<form id="dark1_rsi_acp" name="dark1_rsi_acp" method="post" action="{{ U_ACTION }}">
+
+	<fieldset>
+		<legend>{{ lang('ACP_RSI_SET') }}</legend>
+		<div>
+			<div>{{ lang('ACP_RSI_FORUM_EXPLAIN') ~ lang('COLON') }}</div>
+			<ul>
+				<li><b>{{ lang('ACP_RSI_TABLE_LOCK') }}</b> {{ lang('COLON') ~ ' ' ~ lang('ACP_RSI_TABLE_LOCK_EXPLAIN') }}</li>
+				<li><b>{{ lang('ACP_RSI_TABLE_TOPIC') }}</b> {{ lang('COLON') ~ ' ' ~ lang('ACP_RSI_TABLE_TOPIC_EXPLAIN') }}</li>
+				<li><b>{{ lang('ACP_RSI_TABLE_POST') }}</b> {{ lang('COLON') ~ ' ' ~ lang('ACP_RSI_TABLE_POST_EXPLAIN') }}</li>
+			</ul>
+		</div>
+		<br>
+		<table class="table1 responsive">
+			<thead>
+				<tr>
+					<th>{{ lang('ACP_RSI_TABLE_FORUM_NAME') }}</th>
+					<th colspan="4">{{ lang('ACP_RSI_TABLE_FORUM_OPTION') }}</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% if loops.forumrow|length %}
+					{% for forumrow in loops.forumrow %}
+						{% if forumrow.S_IS_CAT %}
+							<tr>
+								<td class="row3" colspan="5"><span class="responsive-hide">{{ forumrow.FORUM_PAD }}</span>{{ forumrow.FORUM_NAME }}</td>
+							</tr>
+						{% else %}
+							<tr>
+								<td class="col1"><span class="responsive-hide">{{ forumrow.FORUM_PAD }}</span>{{ forumrow.FORUM_NAME }}</td>
+								<td class="col1">
+									<label><input type="radio" class="radio" name="forum_enable[{{ forumrow.FORUM_ID }}]" value="3" {% if forumrow.ENABLE == 3 %}checked="checked"{% endif %}/> {{ lang('ACP_RSI_TABLE_LOCK') }}</label>
+								</td>
+								<td class="col1">
+									<label><input type="radio" class="radio" name="forum_enable[{{ forumrow.FORUM_ID }}]" value="2" {% if forumrow.ENABLE == 2 %}checked="checked"{% endif %}/> {{ lang('ACP_RSI_TABLE_TOPIC') }}</label>
+								</td>
+								<td class="col1">
+									<label><input type="radio" class="radio" name="forum_enable[{{ forumrow.FORUM_ID }}]" value="1" {% if forumrow.ENABLE == 1 %}checked="checked"{% endif %}/> {{ lang('ACP_RSI_TABLE_POST') }}</label>
+								</td>
+								<td class="col1">
+									<label><input type="radio" class="radio" name="forum_enable[{{ forumrow.FORUM_ID }}]" value="0" {% if forumrow.ENABLE == 0 %}checked="checked"{% endif %}/> {{ lang('ACP_RSI_TABLE_DISABLE') }}</label>
+								</td>
+							</tr>
+						{% endif %}
+					{% else %}
+							<tr>
+								<td class="row3" style="text-align: center;" colspan="5">
+									<strong>{{ lang('NO_FORUMS') }}</strong>
+								</td>
+							</tr>
+					{% endfor %}
+				{% endif %}
+			</tbody>
+		</table>
+	</fieldset>
+
+	<fieldset class="submit-buttons">
+		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}" />
+		{{ S_FORM_TOKEN }}
+	</fieldset>
+
+</form>
+
+{% include 'overall_footer.html' %}

@@ -1,0 +1,43 @@
+{% if S_DISPLAY_JUMPBOX %}
+	<div class="action-bar jumpbox-index actions-jump{% if JUMPBOX_UCP && !JUMPBOX_NAVBAR %} jumpbox-ucp{% endif %}">
+		<div class="jumpbox dropdown-container{% if JUMPBOX_POSITION_DOWN %} dropdown-up{% endif %}
+			dropdown-container-{{ JUMPBOX_RIGHT ? 'right' : 'left' }}
+			dropdown-{% if JUMPBOX_RIGHT %}{{ S_CONTENT_FLOW_BEGIN }}{% else %}{{ S_CONTENT_FLOW_END }}{% endif %}
+			dropdown-button-control" id="jumpbox">
+			{% if !JUMPBOX_NAVBAR %}
+				<span title="{{ lang('JUMP_TO') }}" class="button button-secondary dropdown-trigger dropdown-select">
+					<span class="{{ JUMPBOX_RIGHT ? 'jumpbox-text-left' : 'jumpbox-text-right' }}">{{ lang('JUMP_TO') }}</span>
+			{% else %}
+				<span title="{{ lang('JUMP_TO') }}" class="dropdown-trigger dropdown-select">
+					<span class="{{ JUMPBOX_RIGHT ? 'jumpbox-navbar-text-left' : 'jumpbox-navbar-text-right' }}">{{ lang('JUMP_TO') }}</span>
+			{% endif %}
+			{% if !JUMPBOX_NAVBAR %}
+					<span class="{% if JUMPBOX_DOWN_RIGHT %}caret caret-bottom{% elseif JUMPBOX_DOWN_LEFT %}caret-left caret-bottom{% endif %}{% if JUMPBOX_TOP_RIGHT %}caret{% elseif JUMPBOX_TOP_LEFT %}caret-left{% endif %}"><i class="icon fa-sort-{{ JUMPBOX_POSITION_DOWN ? 'up' : 'down' }} fa-fw" aria-hidden="true"></i></span>
+			{% else %}
+					<span><i class="jumpbox-navbar-default-{{ JUMPBOX_RIGHT ? 'down-right' : 'down-left' }} icon fa-sort-{{ JUMPBOX_POSITION_DOWN ? 'up' : 'down' }} fa-fw" aria-hidden="true"></i></span>
+			{% endif %}
+				</span>
+			<div class="dropdown">
+				{% if JUMPBOX_NAVBAR && JUMPBOX_DEFAULT %}
+					<div class="pointer jumpbox-default-{{ JUMPBOX_RIGHT ? 'right-pointer' : 'left-pointer' }}">
+				{% else %}
+					<div class="pointer jumpbox-{{ JUMPBOX_RIGHT ? 'right-pointer' : 'left-pointer' }}">
+				{% endif %}
+					<div class="pointer-inner"></div>
+					</div>
+				<ul class="dropdown-contents{% if JUMPBOX_NAVBAR && JUMPBOX_DEFAULT %} jumpbox-default-dropdown-contents-navbar{% endif %}">
+					{% for jumpbox_forums in jumpbox_forums -%}
+						{% if jumpbox_forums.FORUM_ID != -1 %}
+							<li>
+								<a href="{{ jumpbox_forums.LINK }}" class="{% if jumpbox_forums.level %}jumpbox-sub-link{% elseif jumpbox_forums.S_IS_CAT %}jumpbox-cat-link{% else %}jumpbox-forum-link{% endif %}">
+								{% for level in jumpbox_forums.level %}<span class="spacer"></span>{% endfor %}
+								<span>{% if jumpbox_forums.level %}{% if S_CONTENT_DIRECTION eq 'rtl' %}&#8626;{% else %}&#8627;{% endif %} &nbsp;{% endif %} {{ jumpbox_forums.FORUM_NAME }}</span></a>
+							</li>
+						{% endif %}
+					{%- endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+	{% INCLUDECSS '@kirk_jumpboxindex/jumpboxindex.css' %}
+{% endif %}

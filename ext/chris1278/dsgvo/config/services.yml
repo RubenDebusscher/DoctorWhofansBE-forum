@@ -1,0 +1,34 @@
+services:
+    chris1278.dsgvo.controller.acp:
+        class: chris1278\dsgvo\controller\acp_controller
+        arguments:
+            - '@ext.manager'
+            - '@config'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@user'
+
+    chris1278.dsgvo.controller.ucp:
+        class: chris1278\dsgvo\controller\ucp_controller
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@user'
+            - '@template'
+            - '@request'
+            - '@language'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    chris1278.dsgvo.listener:
+        class: chris1278\dsgvo\event\main_listener
+        arguments:
+             - '@auth'
+             - '@config'
+             - '@template'
+        tags:
+            - { name: event.listener }

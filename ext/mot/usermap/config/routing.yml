@@ -1,0 +1,11 @@
+mot_usermap_route:
+    path: /usermap
+    defaults: { _controller: mot.usermap.controller:handle }
+
+mot_usermap_mod_poi_route:
+    path: /mod_poi
+    defaults: { _controller: mot.usermap.mod_poi:handle }
+
+mot_usermap_ajax:
+    path: /ajax_call
+    defaults: { _controller: mot.usermap.controller.ajax_call:main }

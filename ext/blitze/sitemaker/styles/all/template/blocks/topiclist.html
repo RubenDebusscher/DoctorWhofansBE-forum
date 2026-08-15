@@ -1,0 +1,9 @@
+{% if TOPICS|length %}
+<ul class="sm-list">
+	{% for topic in TOPICS %}
+	<li><a href="{{ topic.U_VIEWTOPIC }}">{{ topic.TOPIC_TITLE }}</a></li>
+	{% endfor %}
+</ul>
+{% else %}
+	<p>{{ NO_RECORDS }}</p>
+{% endif %}

@@ -1,0 +1,33 @@
+{
+    "name": "hifikabin/memorial",
+    "type": "phpbb-extension",
+    "description": "Adds a black memorial ribbon over the boards logo",
+    "homepage": "http://phpbb.hifikabin.me.uk",
+    "version": "3.3.0",
+    "license": "GPL-2.0-only",
+    "authors": [
+        {
+            "name": "James Newcombe",
+            "email": "webmaster@hifikabin.me.uk",
+            "homepage": "http://phpbb.hifikabin.me.uk",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.3",
+        "phpbb/phpbb": "3.3.x",
+        "composer/installers": "~1.0.0"
+    },
+    "extra": {
+        "display-name": "Memorial Ribbon",
+        "soft-require": {
+            "phpbb/phpbb": "3.3.x"
+        },
+        "version-check": {
+            "host": "www.phpbb.com",
+            "directory": "/customise/db/extension/memorial_ribbon",
+            "filename": "version_check",
+            "ssl": true
+        }
+    }
+}

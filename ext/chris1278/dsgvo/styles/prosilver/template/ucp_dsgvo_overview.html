@@ -1,0 +1,130 @@
+{% INCLUDE 'ucp_header.html' %}
+{% INCLUDECSS 'dsgvo_ucp.css' %}
+<h2>{{ lang('UCP_DSGVO_OVERVIEW') }}</h2>
+{% if DSGVO_PROFILE_DOWNLOAD || DSGVO_POSTS_DOWNLOAD %}
+<div class="panel">
+<p>{{ lang('UCP_DSGVO_OVERVIEW_EXPLAIN') }}</p>
+	<fieldset class="dgsvo-info">
+		<div class="dgsvo-info-headline">{{ lang('DSGVO_INFO_BOX') }}</div>
+		{{ lang('DSGVO_INFO_BOX_EXPLAIN') }}
+	</fieldset>
+
+{% if DSGVO_PROFILE_DOWNLOAD %}
+<h2>{{ lang('DSGVO_PROF_INFO') }}</h2>
+<table class="table-dgsvo-ucp">
+	<colgroup>
+		<col class="ucp-dgsvo-col1"><col class="ucp-dgsvo-col2">
+	</colgroup>
+	<thead>
+		<tr>
+			<th class="ucp-dgsvo-th">{{ lang('UCP_VALUE') }}</th>
+			<th class="ucp-dgsvo-th">{{ lang('UCP_INFO') }}</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_ID') }}</td>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_ID_EXPLAIN') }}</td>
+		</tr>
+		<tr>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_IP') }}</td>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_IP_EXPLAIN') }}</td>
+		</tr>
+		<tr>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_REGDATE') }}</td>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_REGDATE_EXPLAIN') }}</td>
+		</tr>
+		<tr>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_EMAIL') }}</td>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_EMAIL_EXPLAIN') }}</td>
+		</tr>
+		<tr>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_LASTVISIT') }}</td>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_LASTVISIT_EXPLAIN') }}</td>
+		</tr>
+		<tr>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_POST') }}</td>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_POST_EXPLAIN') }}</td>
+		</tr>
+		<tr>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_LANG') }}</td>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_LANG_EXPLAIN') }}</td>
+		</tr>
+		<tr>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_TIMEZONE') }}</td>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_TIMEZONE_EXPLAIN') }}</td>
+		</tr>
+		<tr>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_DATEFORMAT') }}</td>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_DATEFORMAT_EXPLAIN') }}</td>
+		</tr>
+		<tr>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_AVATAR') }}</td>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_AVATAR_EXPLAIN') }}</td>
+		</tr>
+		<tr>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_SIG') }}</td>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_SIG_EXPLAIN') }}</td>
+		</tr>
+		<tr>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_JABBER') }}</td>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_USER_JABBER_EXPLAIN') }}</td>
+		</tr>
+	</tbody>
+</table>
+{% endif %}
+{% if DSGVO_POSTS_DOWNLOAD %}
+<h2>{{ lang('DSGVO_DATA_INFO') }}</h2>
+<table class="table-dgsvo-ucp">
+	<colgroup>
+		<col class="ucp-dgsvo-col1"><col class="ucp-dgsvo-col2">
+	</colgroup>
+	<thead>
+		<tr>
+			<th class="ucp-dgsvo-th">{{ lang('UCP_VALUE') }}</th>
+			<th class="ucp-dgsvo-th">{{ lang('UCP_INFO') }}</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_POST_ID') }}</td>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_POST_ID_EXPLAIN') }}</td>
+		</tr>
+		<tr>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_TOPIC_ID') }}</td>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_TOPIC_ID_EXPLAIN') }}</td>
+		</tr>
+		<tr>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_FORUM_ID') }}</td>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_FORUM_ID_EXPLAIN') }}</td>
+		</tr>
+		<tr>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_POSTER_IP') }}</td>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_POSTER_IP_EXPLAIN') }}</td>
+		</tr>
+		<tr>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_POST_TIME') }}</td>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_POST_TIME_EXPLAIN') }}</td>
+		</tr>
+		<tr>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_POST_SUBJECT') }}</td>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_POST_SUBJECT_EXPLAIN') }}</td>
+		</tr>
+		{% if FORMAT_OF_POST %}
+		<tr>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_POST_TEXT') }}</td>
+			<td class="ucp-dgsvo-td">{{ lang('UCP_POST_TEXT_EXPLAIN') }}</td>
+		</tr>
+		{% endif %}
+	</tbody>
+</table>
+{% endif %}
+</div>
+{% else %}
+<div class="panel">
+<br>
+{{ lang('NO_PERM_DGSVO') }}
+<br><br>
+</div>
+{% endif %}
+{% INCLUDE 'ucp_footer.html' %}

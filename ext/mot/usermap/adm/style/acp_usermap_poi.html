@@ -1,0 +1,187 @@
+{% include 'overall_header.html' %}
+{% INCLUDECSS '@mot_usermap/mot_usermap_acp.css' %}
+{% if not INCLUDED_USERMAP_ACP %}
+	{% INCLUDEJS '@mot_usermap/admin_mot_usermap.js' %}
+    {% set INCLUDED_USERMAP_ACP = true %}
+{% endif %}
+
+<script type="text/javascript">
+// <![CDATA[
+	var form_name = 'acp_usermap_poi';
+	var text_name = 'mot_usermap_poi_popup';
+
+	function scrollToElement(inputName) {
+		var domElement = document.getElementById(inputName);
+		window.scrollTo(0, domElement.offsetTop);
+	}
+	
+	var motUsermap = {};
+	motUsermap.jsLayersArr = {{ LAYERS_ARR }};
+	/*
+	* Define error messages
+	*/
+	motUsermap.poiErrorNoName = '{{ lang('ACP_ERR_POI_NO_NAME')|e('js') }}';
+	motUsermap.poiErrorNoLat = '{{ lang('ACP_ERR_POI_NO_LAT')|e('js') }}';
+	motUsermap.poiErrorNoLng = '{{ lang('ACP_ERR_POI_NO_LNG')|e('js') }}';
+ // ]]>
+</script>
+
+<h1>{{ lang('ACP_USERMAP_POI') }}</h1>
+<p>{{ lang('ACP_USERMAP_POI_EXPLAIN') }}</p>
+
+	{% if pagination %}
+	<div class="pagination top-pagination">
+		{% include 'pagination.html' %}
+	</div>
+	{% endif %}
+
+	<h2>{{ lang('ACP_USERMAP_POI_DATA') }}</h2>
+	<table class="table1 zebra-table">
+		<thead>
+			<tr>
+				<th>{{ lang('ACP_USERMAP_POI_NAME') }}</th>
+				<th>{{ lang('ACP_USERMAP_POI_POPUP') }}</th>
+				<th>{{ lang('ACP_USERMAP_POI_LAYER') }}</th>
+				<th>{{ lang('ACP_USERMAP_POI_ICON') }}<br>{{ lang('ACP_USERMAP_POI_SIZE') }}<br>{{ lang('ACP_USERMAP_POI_ANCHOR') }}</th>
+				<th>{{ lang('ACP_USERMAP_DATABASE_LAT') }}<br>{{ lang('ACP_USERMAP_DATABASE_LNG') }}</th>
+				<th>{{ lang('ACP_USERMAP_POI_CREATOR') }}</th>
+				<th>{{ lang('OPTIONS') }}</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for poi in poi %}
+			<tr>
+				<td style="text-align: center;{% if poi.DISABLED %} background-color: #ffff40;{% endif %}">{{ poi.NAME }}</td>
+				<td style="text-align: center;{% if poi.DISABLED %} background-color: #ffff40;{% endif %}">{{ poi.POPUP }}</td>
+				<td style="text-align: center;{% if poi.DISABLED %} background-color: #ffff40;{% endif %}{% if poi.LAYER == '' %} background-color: red;{% endif %}">{{ poi.LAYER }}</td>
+				<td style="text-align: center;{% if poi.DISABLED %} background-color: #ffff40;{% endif %}">{{ poi.ICON }}<br>{{ poi.SIZE }}<br>{{ poi.ANCHOR }}</td>
+				<td style="text-align: right;{% if poi.DISABLED %} background-color: #ffff40;{% endif %}">{{ poi.LAT }}<br>{{ poi.LNG }}</td>
+				<td style="text-align: center;{% if poi.DISABLED %} background-color: #ffff40;{% endif %}">{{ poi.CREATOR }}</td>
+				<td style="text-align: center;{% if poi.DISABLED %} background-color: #ffff40;{% endif %}"><a href="{{ poi.U_DELETE }}">{{ lang('DELETE') }}</a><br><a href="{{ poi.U_EDIT }}">{{ lang('EDIT') }}</a></td>
+			</tr>
+		{% else %}
+		<tr>
+			<td colspan="5" style="text-align: center;">{{ lang('ACP_USERMAP_DATABASE_NOENTRY') }}</td>
+		</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+
+	{% if pagination %}
+	<div class="pagination">
+		{% include 'pagination.html' %}
+	</div>
+	{% endif %}
+
+{% if NEW_POI %}
+	<h2>{{ lang('ACP_USERMAP_POI_NEW') }}</h2>
+{% else %}
+	<h2>{{ lang('ACP_USERMAP_POI_EDIT') }}</h2>
+{% endif %}
+
+{# set this variable to enable display of URL bbcode #}
+{% if not S_LINKS_ALLOWED %}
+	{% set S_LINKS_ALLOWED_ORIG = S_LINKS_ALLOWED %}
+	{% set S_LINKS_ALLOWED = true %}
+{% endif %}
+<form id="acp_usermap_poi" name="acp_usermap_poi" method="post" action="{{ U_ACTION }}">
+	<fieldset>
+        <dl>
+			<dt><label for="mot_usermap_poi_name">{{ lang('ACP_USERMAP_POI_NAME') }}{{ lang('COLON') }}</label><p>{{ lang('ACP_USERMAP_POI_NAME_EXP') }}</p></dt>
+			<dd><input id="mot_usermap_poi_name" type="text" size="50" maxlength="50" name="mot_usermap_poi_name" value="{{ ACP_USERMAP_POI_NAME }}" /></dd>
+		</dl>
+        <dl>
+			<dt>
+				<label for="mot_usermap_poi_popup">{{ lang('ACP_USERMAP_POI_POPUP') }}{{ lang('COLON') }}</label>
+				<p>{{ lang('ACP_USERMAP_POI_POPUP_EXP') }}</p>
+				<p>{% include('acp_posting_buttons.html') %}</p>
+				<p id="color_palette_placeholder" data-orientation="h" data-height="12" data-width="15" data-bbcode="true"></p>
+			</dt>
+			<dd>
+				<textarea id="mot_usermap_poi_popup" name="mot_usermap_poi_popup" rows="11" cols="50" maxlength="500" accept-charset="utf-8" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();">{{ ACP_USERMAP_POI_POPUP }}</textarea>
+				<br><input class="button2" type="submit" name="preview" formaction="{{ U_ACTION_PREVIEW }}" value="{{ lang('PREVIEW') }}" />
+			</dd>
+		</dl>
+		<dl>
+			<dt><label for="preview">{{ lang('PREVIEW') }}</label></dt>
+			<dd id="preview">{{ PREVIEW_TEXT }}</dd>
+		</dl>
+		<hr>
+		<dl>
+            <dt><label for="mot_usermap_poi_layer">{{ lang('ACP_USERMAP_POI_LAYER') }}{{ lang('COLON') }}</label><p>{{ lang('ACP_USERMAP_POI_LAYER_EXP') }}</p></dt>
+			<dd>
+				<select id="mot_usermap_poi_layer" name="mot_usermap_poi_layer">
+					{% for poi_layer in poi_layer %}
+						<option value="{{ poi_layer.LAYER_ID }}" {% if MOT_USERMAP_POI_LAYER_ID == poi_layer.LAYER_ID %} selected {% endif %}>{{ poi_layer.LAYER_NAME }}</option>
+					{% endfor %}
+				</select>
+			</dd>
+        </dl>
+		<dl>
+            <dt><label for="mot_usermap_show_poi">{{ lang('ACP_USERMAP_POI_VISIBLE') }}{{ lang('COLON') }}</label><p>{{ lang('ACP_USERMAP_POI_VISIBLE_EXP') }}</p></dt>
+			<dd><label><input type="radio" class="radio" name="mot_usermap_show_poi" value="0"{% if not ACP_USERMAP_SHOW_POI %} id="mot_usermap_show_poi" checked="checked"{%  endif %} /> {{ lang('YES') }}</label>
+				<label><input type="radio" class="radio" name="mot_usermap_show_poi" value="1"{% if ACP_USERMAP_SHOW_POI %} id="mot_usermap_show_poi" checked="checked"{%  endif %} /> {{ lang('NO') }}</label>
+        </dl>
+		<hr>
+        <dl>
+			<dt>
+				<label for="mot_usermap_poi_icon">{{ lang('ACP_USERMAP_POI_ICON') }}{{ lang('COLON') }}</label>
+				<p>{{ lang('ACP_USERMAP_POI_ICON_EXP') }}</p>
+			</dt>
+			<dd>
+				<select id="mot_usermap_poi_icon" name="mot_usermap_poi_icon">
+					{% for poi_icon in poi_icon %}
+						<option value="{{ poi_icon.VALUE }}" {% if MOT_USERMAP_POI_ICON == poi_icon.VALUE %} selected {% endif %}>{{ poi_icon.VALUE }}</option>
+					{% endfor %}
+				</select>
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label for='mot_usermap_poi_icon_size'>{{ lang('ACP_USERMAP_POI_SIZE') }}{{ lang('COLON') }}</label>
+				<p>{{ lang('ACP_USERMAP_POI_SIZE_EXP') }}</p>
+			</dt>
+			<dd>
+				<input id="mot_usermap_poi_icon_size" type="text" size="11" maxlength="10" name="mot_usermap_poi_icon_size" onblur="motUsermap.cleanInput('mot_usermap_poi_icon_size', '{{ DEFAULT_POI_ICON_SIZE|e('js') }}')" value="{{ ACP_USERMAP_POI_ICON_SIZE }}" />
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label for='mot_usermap_poi_icon_anchor'>{{ lang('ACP_USERMAP_POI_ANCHOR') }}{{ lang('COLON') }}</label>
+				<p>{{ lang('ACP_USERMAP_POI_ANCHOR_EXP') }}</p>
+			</dt>
+			<dd>
+				<input id="mot_usermap_poi_icon_anchor" type="text" size="11" maxlength="10" name="mot_usermap_poi_icon_anchor" onblur="motUsermap.cleanInput('mot_usermap_poi_icon_anchor', '{{ DEFAULT_POI_ICON_ANCHOR|e('js') }}')" value="{{ ACP_USERMAP_POI_ICON_ANCHOR }}" />
+			</dd>
+		</dl>
+		<hr>
+		<dl>
+            <dt><label for="mot_usermap_poi_lat">{{ lang('ACP_USERMAP_DATABASE_LAT') }}{{ lang('COLON') }}</label><p>{{ lang('ACP_USERMAP_LAT_EXP') }}</p></dt>
+            <dd><input id="mot_usermap_poi_lat" type="text" size="11" maxlength="10" name="mot_usermap_poi_lat" value="{{ ACP_USERMAP_POI_LAT }}" /></dd>
+        </dl>
+        <dl>
+            <dt><label for="mot_usermap_poi_lon">{{ lang('ACP_USERMAP_DATABASE_LNG') }}{{ lang('COLON') }}</label><p>{{ lang('ACP_USERMAP_LON_EXP') }}</p></dt>
+            <dd><input id="mot_usermap_poi_lon" type="text" size="11" maxlength="11" name="mot_usermap_poi_lon" value="{{ ACP_USERMAP_POI_LON }}" /></dd>
+        </dl>
+		<hr>
+        <p class="submit-buttons">
+            <input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />
+        </p>
+	</fieldset> 
+	{{ S_FORM_TOKEN }}
+</form>
+
+{# if this variable was originally set to false we have to set it to this state again #}
+{% if not S_LINKS_ALLOWED_ORIG %}
+	{% set S_LINKS_ALLOWED = false %}
+{% endif %}
+
+<p class="centered_text">
+{{ USERMAP_VERSION }}
+</p>
+
+{% if !NEW_POI || ACP_USERMAP_POPUP_PREVIEW %}
+	<script>scrollToElement('acp_usermap_poi');</script>
+{% endif %}
+
+{% include 'overall_footer.html' %}
