@@ -17,6 +17,39 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class listener implements EventSubscriberInterface
 {
+	protected const ZXCVBNTS_LANGUAGE_MAP = [
+		'ar' => 'ar',
+		'cs' => 'cs',
+		'da-dk' => 'da-dk',
+		'da' => 'da-dk',
+		'de' => 'de',
+		'de-x-sie' => 'de',
+		'en' => 'en',
+		'es' => 'es-es',
+		'es-es' => 'es-es',
+		'es-x-tu' => 'es-es',
+		'fa' => 'fa',
+		'fi' => 'fi',
+		'fr' => 'fr',
+		'hr' => 'hr',
+		'hr-x-vi' => 'hr',
+		'id' => 'id',
+		'it' => 'it',
+		'ja' => 'ja',
+		'ku' => 'ku',
+		'nl' => 'nl-be',
+		'nl-be' => 'nl-be',
+		'pl' => 'pl',
+		'pt' => 'pt-br',
+		'pt-br' => 'pt-br',
+		'ro' => 'ro',
+		'th' => 'th',
+		'tr' => 'tr',
+		'zh' => 'zh',
+		'zh-cmn-hans' => 'zh',
+		'zh-cmn-hant' => 'zh',
+	];
+
 	/** @var \phpbb\config\config */
 	protected $config;
 
@@ -67,7 +100,24 @@ class listener implements EventSubscriberInterface
 		];
 		$event['lang_set_ext'] = $lang_set_ext;
 
-		$this->template->assign_var('S_USE_ZXCVBN', (bool) $this->config->offsetGet('password_strength_type'));
+		$this->template->assign_vars([
+			'S_USE_ZXCVBN'	=> (bool) $this->config->offsetGet('password_strength_type'),
+			'ZXCVBNTS_LANG'	=> $this->get_zxcvbnts_language($event['user_lang_name']),
+		]);
+	}
+
+	/**
+	 * Resolve phpBB language names to available zxcvbn-ts language package names.
+	 *
+	 * @param string $language
+	 * @return string
+	 */
+	public function get_zxcvbnts_language($language)
+	{
+		$language = strtolower(str_replace('_', '-', $language));
+		$base_language = explode('-', $language, 2)[0];
+
+		return self::ZXCVBNTS_LANGUAGE_MAP[$language] ?? self::ZXCVBNTS_LANGUAGE_MAP[$base_language] ?? 'en';
 	}
 
 	/**
@@ -89,12 +139,31 @@ class listener implements EventSubscriberInterface
 				'lang'		=> 'PASSWORD_STRENGTH_TYPE',
 				'validate'	=> 'int',
 				'type'		=> 'select',
-				'function'	=> 'build_select',
+				'function'	=> [$this, 'pws_select'],
 				'params'	=> [[0 => 'PASSWORD_STRENGTH_TYPE_COMPLEX', 1 => 'PASSWORD_STRENGTH_TYPE_ZXCVBN'], '{CONFIG_VALUE}'],
 				'explain'	=> true,
 			],
 		];
 
 		$event->update_subarray('display_vars', 'vars', phpbb_insert_config_array($event['display_vars']['vars'], $pws_config_vars, ['after' => 'pass_complex']));
+	}
+
+	/**
+	 * Get select options for ACP (phpBB3 and phpBB4 compatible)
+	 *
+	 * @param array $options
+	 * @param bool|int|string $default
+	 * @return array|string
+	 */
+	public function pws_select($options, $default)
+	{
+		$opts = build_select($options, $default);
+
+		if (phpbb_version_compare($this->config->offsetGet('version'), '4.0.0-dev', '>='))
+		{
+			return ['options' => $opts];
+		}
+
+		return $opts;
 	}
 }

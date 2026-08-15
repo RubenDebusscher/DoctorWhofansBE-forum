@@ -29,8 +29,8 @@ $lang = array_merge($lang, array(
 	'ABBC3_HIDDEN_EXPLAIN'		=> 'Je moet geregistreerd en aangemeld zijn om de verborgen inhoud te kunnen zien.',
 
 	// Spoiler BBCode
-	'ABBC3_SPOILER_SHOW'		=> '► Laat Spoiler zien',
-	'ABBC3_SPOILER_HIDE'		=> '▼ Verberg Spoiler',
+	'ABBC3_SPOILER_SHOW'		=> 'Laat Spoiler zien',
+	'ABBC3_SPOILER_HIDE'		=> 'Verberg Spoiler',
 
 	// Off Topic BBCode
 	'ABBC3_OFFTOPIC'			=> 'Off Topic',
@@ -96,11 +96,15 @@ $lang = array_merge($lang, array(
 
 	// ACP
 	'ABBC3_BBCODE_ORDERED'		 => 'De volgorde van de BBcodes is bijgewerkt.',
+	'ABBC3_BBCODE_ORDERED_FAIL'	=> 'BBCode order could not be updated.',
+	'ABBC3_BBCODE_ORDER_NO_TABLE'	=> 'No BBCode table name was received.',
+	'ABBC3_BBCODE_ORDER_NO_DATA'	=> 'No BBCode order data was received.',
+	'ABBC3_BBCODE_ORDER_NO_ORDER'	=> 'No BBCode rows were updated.',
 	'ABBC3_BBCODE_GROUP'		   => 'Beheer groepen die deze BBcode kunnen gebruiken',
 	'ABBC3_BBCODE_GROUP_INFO'	  => 'Als je geen groep hebt geselecteerd, kunnen alle groepen deze BBcode gebruiken. Gebruik CTRL+KLIK (of CMD+KLIK bij Mac) om meer dan één groep te selecteren/deselecteren.',
 
 	// BBCode FAQ
 	'ABBC3_FAQ_TITLE'			=> 'Advanced BBCode Box BBCodes',
 	'ABBC3_FAQ_SAMPLE_TEXT'		=> 'De snelle bruine vos springt over de luie hond',
-	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>Voorbeeld:</strong><br>%2$s<br><br><strong>Resultaat:</strong><br>%3$s<hr />',
+	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>Voorbeeld:</strong><br>%2$s<br><br><strong>Resultaat:</strong><br>%3$s<hr>',
 ));

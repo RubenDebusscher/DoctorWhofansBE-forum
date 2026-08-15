@@ -29,8 +29,8 @@ $lang = array_merge($lang, array(
 	'ABBC3_HIDDEN_EXPLAIN'		=> 'Registrati ed effettua l\'accesso per visualizzare questo contenuto.',
 
 	// Spoiler BBCode
-	'ABBC3_SPOILER_SHOW'		=> '► Mostra testo',
-	'ABBC3_SPOILER_HIDE'		=> '▼ Nascondi testo',
+	'ABBC3_SPOILER_SHOW'		=> 'Mostra testo',
+	'ABBC3_SPOILER_HIDE'		=> 'Nascondi testo',
 
 	// Off Topic BBCode
 	'ABBC3_OFFTOPIC'			=> 'Off Topic',
@@ -96,11 +96,15 @@ $lang = array_merge($lang, array(
 
 	// ACP
 	'ABBC3_BBCODE_ORDERED'		=> 'Ordine dei BBCode aggiornato.',
+	'ABBC3_BBCODE_ORDERED_FAIL'	=> 'BBCode order could not be updated.',
+	'ABBC3_BBCODE_ORDER_NO_TABLE'	=> 'No BBCode table name was received.',
+	'ABBC3_BBCODE_ORDER_NO_DATA'	=> 'No BBCode order data was received.',
+	'ABBC3_BBCODE_ORDER_NO_ORDER'	=> 'No BBCode rows were updated.',
 	'ABBC3_BBCODE_GROUP'		=> 'Gestisci i gruppi che possono usare questo BBCode',
 	'ABBC3_BBCODE_GROUP_INFO'	=> 'Se nessun gruppo è selezionato, allora tutti gli utenti potranno usare questo BBCode. Usa CTRL+CLICK (o CMD+CLICK su Mac) per selezionare/deselezionare più di un gruppo.',
 
 	// BBCode FAQ
 	'ABBC3_FAQ_TITLE'			=> 'BBCode dell\'Advanced BBCode Box',
 	'ABBC3_FAQ_SAMPLE_TEXT'		=> 'Qualche vago ione tipo zolfo, bromo, sodio',
-	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>Esempio:</strong><br>%2$s<br><br><strong>Risultato:</strong><br>%3$s<hr />',
+	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>Esempio:</strong><br>%2$s<br><br><strong>Risultato:</strong><br>%3$s<hr>',
 ));

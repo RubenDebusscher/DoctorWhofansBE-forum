@@ -28,8 +28,8 @@ $lang = array_merge($lang, array(
 	'ABBC3_HIDDEN_EXPLAIN'		=> 'Изисква се да бъдете регистрирани за да видите това съдържание.',
 
 	// Spoiler BBCode
-	'ABBC3_SPOILER_SHOW'		=> '► Виж съдържание',
-	'ABBC3_SPOILER_HIDE'		=> '▼ Скрий съдържание',
+	'ABBC3_SPOILER_SHOW'		=> 'Виж съдържание',
+	'ABBC3_SPOILER_HIDE'		=> 'Скрий съдържание',
 
 	// Off Topic BBCode
 	'ABBC3_OFFTOPIC'			=> 'Офтопик',
@@ -95,11 +95,15 @@ $lang = array_merge($lang, array(
 
 	// ACP
 	'ABBC3_BBCODE_ORDERED'		=> 'BBCode редът бе обновен.',
+	'ABBC3_BBCODE_ORDERED_FAIL'	=> 'BBCode order could not be updated.',
+	'ABBC3_BBCODE_ORDER_NO_TABLE'	=> 'No BBCode table name was received.',
+	'ABBC3_BBCODE_ORDER_NO_DATA'	=> 'No BBCode order data was received.',
+	'ABBC3_BBCODE_ORDER_NO_ORDER'	=> 'No BBCode rows were updated.',
 	'ABBC3_BBCODE_GROUP'		=> 'Управление на групите, които могат да използват този BBCode',
 	'ABBC3_BBCODE_GROUP_INFO'	=> 'Ако не е избрана група, всички потребители могат да ползват този BBCode. Натисни CTRL+CLICK (или CMD+CLICK на Mac) за да избереш/откажеш повече от една група.',
 
 	// BBCode FAQ
 	'ABBC3_FAQ_TITLE'			=> 'Advanced BBCode Box BBCodes',
 	'ABBC3_FAQ_SAMPLE_TEXT'		=> 'The quick brown fox jumps over the lazy dog',
-	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>Пример:</strong><br>%2$s<br><br><strong>Резултат:</strong><br>%3$s<hr />',
+	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>Пример:</strong><br>%2$s<br><br><strong>Резултат:</strong><br>%3$s<hr>',
 ));

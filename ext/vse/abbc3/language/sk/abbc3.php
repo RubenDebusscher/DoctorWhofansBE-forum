@@ -28,8 +28,8 @@ $lang = array_merge($lang, array(
 	'ABBC3_HIDDEN_EXPLAIN'		=> 'Toto fórum vyžaduje, aby ste se pre zobrazenie skrytého obsahu prihlásili.',
 
 	// Spoiler BBCode
-	'ABBC3_SPOILER_SHOW'		=> '► Ukázať spoiler',
-	'ABBC3_SPOILER_HIDE'		=> '▼ Skryť spoiler',
+	'ABBC3_SPOILER_SHOW'		=> 'Ukázať spoiler',
+	'ABBC3_SPOILER_HIDE'		=> 'Skryť spoiler',
 
 	// Off Topic BBCode
 	'ABBC3_OFFTOPIC'			=> 'Mimo tému (offtopic)',
@@ -95,11 +95,15 @@ $lang = array_merge($lang, array(
 
 	// ACP
 	'ABBC3_BBCODE_ORDERED'		=> 'Poradie BBCode bolo aktualizované',
+	'ABBC3_BBCODE_ORDERED_FAIL'	=> 'BBCode order could not be updated.',
+	'ABBC3_BBCODE_ORDER_NO_TABLE'	=> 'No BBCode table name was received.',
+	'ABBC3_BBCODE_ORDER_NO_DATA'	=> 'No BBCode order data was received.',
+	'ABBC3_BBCODE_ORDER_NO_ORDER'	=> 'No BBCode rows were updated.',
 	'ABBC3_BBCODE_GROUP'		=> 'Spravovať skupiny, ktoré môžu používať tento BBCode',
 	'ABBC3_BBCODE_GROUP_INFO'	=> 'Pokiaľ nebudú vybrané žiadne skupiny, tak tento BBCode budú môcť používať všetci uživatelia. Použite CTRL+KLIK (alebo CMD+KLIK na Mac) k vybraniu / zrušeniu výberu jednej alebo viac skupín',
 
 	// BBCode FAQ
 	'ABBC3_FAQ_TITLE'			=> 'Advanced BBCode Box BBCodes',
 	'ABBC3_FAQ_SAMPLE_TEXT'		=> 'Rýchla hnedá liška skočí cez lenivého psa',
-	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>Príklad:</strong><br>%2$s<br><br><strong>Výsledok:</strong><br>%3$s<hr />',
+	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>Príklad:</strong><br>%2$s<br><br><strong>Výsledok:</strong><br>%3$s<hr>',
 ));

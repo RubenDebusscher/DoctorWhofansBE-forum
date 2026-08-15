@@ -29,8 +29,8 @@ $lang = array_merge($lang, array(
 	'ABBC3_HIDDEN_EXPLAIN'		=> 'Vous devez être inscrit et connecté sur ce forum pour voir le contenu caché.',
 
 	// Spoiler BBCode
-	'ABBC3_SPOILER_SHOW'		=> '► Afficher le texte',
-	'ABBC3_SPOILER_HIDE'		=> '▼ Masquer le texte',
+	'ABBC3_SPOILER_SHOW'		=> 'Afficher le texte',
+	'ABBC3_SPOILER_HIDE'		=> 'Masquer le texte',
 
 	// Off Topic BBCode
 	'ABBC3_OFFTOPIC'			=> 'Hors-sujet',
@@ -96,11 +96,15 @@ $lang = array_merge($lang, array(
 
 	// ACP
 	'ABBC3_BBCODE_ORDERED'		=> 'L’ordre des BBcode a été mis à jour.',
+	'ABBC3_BBCODE_ORDERED_FAIL'	=> 'BBCode order could not be updated.',
+	'ABBC3_BBCODE_ORDER_NO_TABLE'	=> 'No BBCode table name was received.',
+	'ABBC3_BBCODE_ORDER_NO_DATA'	=> 'No BBCode order data was received.',
+	'ABBC3_BBCODE_ORDER_NO_ORDER'	=> 'No BBCode rows were updated.',
 	'ABBC3_BBCODE_GROUP'		=> 'Gestion des groupes pouvant utiliser ce BBCode',
 	'ABBC3_BBCODE_GROUP_INFO'	=> 'Si aucun groupe n’est sélectionné, tous les utilisateurs pourront utiliser ce BBCode. Appuyer sur la touche <samp>CTRL</samp> (ou <samp>&#8984;CMD</samp> sur Mac) tout en cliquant pour sélectionner / désélectionner plus d’un groupe.',
 
 	// BBCode FAQ
 	'ABBC3_FAQ_TITLE'			=> 'Boite des BBCodes avancés',
 	'ABBC3_FAQ_SAMPLE_TEXT'		=> 'Le renard brun et rapide saute sur le chien paresseux.',
-	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>Exemple :</strong><br>%2$s<br><br><strong>Résultat :</strong><br>%3$s<hr />',
+	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>Exemple :</strong><br>%2$s<br><br><strong>Résultat :</strong><br>%3$s<hr>',
 ));

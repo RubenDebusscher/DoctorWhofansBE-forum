@@ -28,8 +28,8 @@ $lang = array_merge($lang, array(
 	'ABBC3_HIDDEN_EXPLAIN'		=> 'Este foro requiere que este registrado e identificado para ver el contenido oculto.',
 
 	// Spoiler BBCode
-	'ABBC3_SPOILER_SHOW'		=> '► Mostrar Spoiler',
-	'ABBC3_SPOILER_HIDE'		=> '▼ Ocultar Spoiler',
+	'ABBC3_SPOILER_SHOW'		=> 'Mostrar Spoiler',
+	'ABBC3_SPOILER_HIDE'		=> 'Ocultar Spoiler',
 
 	// Off Topic BBCode
 	'ABBC3_OFFTOPIC'			=> 'Off Topic',
@@ -95,11 +95,15 @@ $lang = array_merge($lang, array(
 
 	// ACP
 	'ABBC3_BBCODE_ORDERED'		=> 'El orden de los BBCodes ha sido resincronizado.',
+	'ABBC3_BBCODE_ORDERED_FAIL'	=> 'BBCode order could not be updated.',
+	'ABBC3_BBCODE_ORDER_NO_TABLE'	=> 'No BBCode table name was received.',
+	'ABBC3_BBCODE_ORDER_NO_DATA'	=> 'No BBCode order data was received.',
+	'ABBC3_BBCODE_ORDER_NO_ORDER'	=> 'No BBCode rows were updated.',
 	'ABBC3_BBCODE_GROUP'		=> 'Gestionar grupos que pueden utilizar este BBCode',
 	'ABBC3_BBCODE_GROUP_INFO'	=> 'Si ningún grupo es selecionado todos los usuarios podrán utilizar este BBCode.<br>Para selecionar (o eliminar la seleción) de multiples grupos simultaneamente, pulse CTRL+CLICK (o CMD-CLICK en Mac) sobre los grupos deseados. Si usted olvida mantener pulsada la tecla CTRL/CMD cuando hace clic en un grupo de usuarios, toda seleción previa sera eliminada.',
 
 	// BBCode FAQ
 	'ABBC3_FAQ_TITLE'			=> 'BBCodes de la Caja Avanzada de BBCode',
 	'ABBC3_FAQ_SAMPLE_TEXT'		=> 'El zorro marrón rápido salta sobre el perro perezoso',
-	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>Ejemplo:</strong><br>%2$s<br><br><strong>Resultado:</strong><br>%3$s<hr />',
+	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>Ejemplo:</strong><br>%2$s<br><br><strong>Resultado:</strong><br>%3$s<hr>',
 ));

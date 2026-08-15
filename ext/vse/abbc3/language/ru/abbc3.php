@@ -28,8 +28,8 @@ $lang = array_merge($lang, array(
 	'ABBC3_HIDDEN_EXPLAIN'		=> 'Для просмотра скрытого текста необходимо быть авторизованным пользователем.',
 
 	// Spoiler BBCode
-	'ABBC3_SPOILER_SHOW'		=> '► Показать',
-	'ABBC3_SPOILER_HIDE'		=> '▼ Скрыть',
+	'ABBC3_SPOILER_SHOW'		=> 'Показать',
+	'ABBC3_SPOILER_HIDE'		=> 'Скрыть',
 
 	// Off Topic BBCode
 	'ABBC3_OFFTOPIC'			=> 'Офтопик',
@@ -95,11 +95,15 @@ $lang = array_merge($lang, array(
 
 	// ACP
 	'ABBC3_BBCODE_ORDERED'		=> 'Порядок BBCode изменён.',
+	'ABBC3_BBCODE_ORDERED_FAIL'	=> 'BBCode order could not be updated.',
+	'ABBC3_BBCODE_ORDER_NO_TABLE'	=> 'No BBCode table name was received.',
+	'ABBC3_BBCODE_ORDER_NO_DATA'	=> 'No BBCode order data was received.',
+	'ABBC3_BBCODE_ORDER_NO_ORDER'	=> 'No BBCode rows were updated.',
 	'ABBC3_BBCODE_GROUP'		=> 'Группы, которые могут использовать BBCode',
 	'ABBC3_BBCODE_GROUP_INFO'	=> 'Если группа выбрана, то все её пользователи могут использовать BBCode. Используйте CTRL+клик (или CMD+клик на Mac) для выбора нескольких групп.',
 
 	// BBCode FAQ
 	'ABBC3_FAQ_TITLE'			=> 'Advanced BBCode Box',
 	'ABBC3_FAQ_SAMPLE_TEXT'		=> 'В чащах юга жил бы цитрус? Да, но фальшивый экземпляр!',
-	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>Пример:</strong><br>%2$s<br><br><strong>Результат:</strong><br>%3$s<hr />',
+	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>Пример:</strong><br>%2$s<br><br><strong>Результат:</strong><br>%3$s<hr>',
 ));

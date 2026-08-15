@@ -29,8 +29,8 @@ $lang = array_merge($lang, array(
 	'ABBC3_HIDDEN_EXPLAIN'		=> 'يجب أن تكون عضو في هذا المنتدى أو تسجل دخولك لمُشاهدة هذا المحتوى المخفي.',
 
 	// Spoiler BBCode
-	'ABBC3_SPOILER_SHOW'		=> '► إظهار المحتوى',
-	'ABBC3_SPOILER_HIDE'		=> '▼ إخفاء المحتوى',
+	'ABBC3_SPOILER_SHOW'		=> 'إظهار المحتوى',
+	'ABBC3_SPOILER_HIDE'		=> 'إخفاء المحتوى',
 
 	// Off Topic BBCode
 	'ABBC3_OFFTOPIC'			=> 'خارج عن الموضوع',
@@ -96,11 +96,15 @@ $lang = array_merge($lang, array(
 
 	// ACP
 	'ABBC3_BBCODE_ORDERED'		=> 'تم تحديث ترتيب الـBBCode.',
+	'ABBC3_BBCODE_ORDERED_FAIL'	=> 'BBCode order could not be updated.',
+	'ABBC3_BBCODE_ORDER_NO_TABLE'	=> 'No BBCode table name was received.',
+	'ABBC3_BBCODE_ORDER_NO_DATA'	=> 'No BBCode order data was received.',
+	'ABBC3_BBCODE_ORDER_NO_ORDER'	=> 'No BBCode rows were updated.',
 	'ABBC3_BBCODE_GROUP'		=> 'إدارة المجموعات التي تستطيع استخدام هذا الـBBCode',
 	'ABBC3_BBCODE_GROUP_INFO'	=> 'إذا لم يتم تحديد أي مجموعة, فسوف يستطيع جميع الأعضاء استخدام هذا الـBBCode. تستطيع تحديد أكثر من مجموعة أو إزالة التحديد بالنقر مطولاً على زر الكنترول والنقر بالماوس على إسم المجموعة (أو CMD+CLICK في نظام الماك).',
 
 	// BBCode FAQ
 	'ABBC3_FAQ_TITLE'			=> 'محرر الكتابة المتقدم',
 	'ABBC3_FAQ_SAMPLE_TEXT'		=> 'شبكة الهتاري لدعم منتديات phpBB وترجمة الإضافات',
-	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>مثال:</strong><br>%2$s<br><br><strong>النتيجة:</strong><br>%3$s<hr />',
+	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>مثال:</strong><br>%2$s<br><br><strong>النتيجة:</strong><br>%3$s<hr>',
 ));

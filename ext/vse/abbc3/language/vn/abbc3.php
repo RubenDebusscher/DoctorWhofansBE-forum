@@ -30,8 +30,8 @@ $lang = array_merge($lang, array(
 	'ABBC3_HIDDEN_EXPLAIN'		=> 'Diễn đàn yêu cầu bạn phải đăng ký và đăng nhập để có thể xem nội dung ẩn.',
 
 	// Spoiler BBCode
-	'ABBC3_SPOILER_SHOW'		=> '► Hiển thị mô tả',
-	'ABBC3_SPOILER_HIDE'		=> '▼ Ẩn mô tả',
+	'ABBC3_SPOILER_SHOW'		=> 'Hiển thị mô tả',
+	'ABBC3_SPOILER_HIDE'		=> 'Ẩn mô tả',
 
 	// Off Topic BBCode
 	'ABBC3_OFFTOPIC'			=> 'Chủ đề đóng',
@@ -97,11 +97,15 @@ $lang = array_merge($lang, array(
 
 	// ACP
 	'ABBC3_BBCODE_ORDERED'		=> 'Thứ tự BBCode đã được cập nhật.',
+	'ABBC3_BBCODE_ORDERED_FAIL'	=> 'BBCode order could not be updated.',
+	'ABBC3_BBCODE_ORDER_NO_TABLE'	=> 'No BBCode table name was received.',
+	'ABBC3_BBCODE_ORDER_NO_DATA'	=> 'No BBCode order data was received.',
+	'ABBC3_BBCODE_ORDER_NO_ORDER'	=> 'No BBCode rows were updated.',
 	'ABBC3_BBCODE_GROUP'		=> 'Quản lý những nhóm có khả năng sử dụng BBCode này',
 	'ABBC3_BBCODE_GROUP_INFO'	=> 'Nếu không có nhóm nào được chọn, tất cả mọi thành viên đều được sử dụng BBCode này. Sử dụng CTRL+CLICK (hoặc CMD+CLICK trên các máy Mac) để chọn hoặc bỏ chọn nhiều hơn 1 nhóm.',
 
 	// BBCode FAQ
 	'ABBC3_FAQ_TITLE'			=> 'Advanced BBCode Box BBCodes',
 	'ABBC3_FAQ_SAMPLE_TEXT'		=> 'The quick brown fox jumps over the lazy dog',
-	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>Example:</strong><br>%2$s<br><br><strong>Result:</strong><br>%3$s<hr />',
+	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>Example:</strong><br>%2$s<br><br><strong>Result:</strong><br>%3$s<hr>',
 ));

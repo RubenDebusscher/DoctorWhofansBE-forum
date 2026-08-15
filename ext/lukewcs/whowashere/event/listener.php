@@ -16,16 +16,13 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class listener implements EventSubscriberInterface
 {
-	protected object $wwh;
-
 	public function __construct(
-		\lukewcs\whowashere\core\who_was_here $wwh
+		protected \lukewcs\whowashere\core\who_was_here $wwh,
 	)
 	{
-		$this->wwh = $wwh;
 	}
 
-	public static function getSubscribedEvents()
+	public static function getSubscribedEvents(): array
 	{
 		return [
 			'core.page_header_after'	=> 'update_session',
@@ -35,22 +32,22 @@ class listener implements EventSubscriberInterface
 		];
 	}
 
-	public function update_session()
+	public function update_session(): void
 	{
 		$this->wwh->update_session();
 	}
 
-	public function display()
+	public function display(): void
 	{
 		$this->wwh->display();
 	}
 
-	public function add_permissions($event)
+	public function add_permissions($event): void
 	{
 		$this->wwh->add_permissions($event);
 	}
 
-	public function clear_up($event)
+	public function clear_up($event): void
 	{
 		$this->wwh->clear_up($event);
 	}

@@ -116,6 +116,15 @@
 		</dl>
 		<dl>
 			<dt>
+				<label>{{ lang('LFWWH_DISP_USERS_BOTS_COUNT') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_DISP_USERS_BOTS_COUNT_EXP') }}</span>
+			</dt>
+			<dd>
+				{{ _self.select('lfwwh_disp_users_bots_count', LFWWH_DISP_USERS_BOTS_COUNT_OPTIONS) }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
 				<label>{{ lang('LFWWH_DISP_TIME_USERS') ~ lang('COLON') }}</label><br>
 				<span>{{ lang('LFWWH_DISP_TIME_EXP') }}</span>
 			</dt>
@@ -195,6 +204,24 @@
 		</dl>
 		<dl>
 			<dt>
+				<label>{{ lang('LFWWH_CREATE_HIDDEN_INFO') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_CREATE_HIDDEN_INFO_EXP', _self.icon('fa-info-circle'), _self.icon('fa-clock-o')) }}</span>
+			</dt>
+			<dd>
+				{{ _self.switch('lfwwh_create_hidden_info', LFWWH_CREATE_HIDDEN_INFO, switch_type) }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('LFWWH_USER_LIMIT') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('LFWWH_USER_LIMIT_EXP', _self.icon('fa fa-expand fa-flip-horizontal')) }}</span>
+			</dt>
+			<dd>
+				{{ _self.number('lfwwh_user_limit', LFWWH_USER_LIMIT, 0, 999) }}
+			</dd>
+		</dl>
+		<dl>
+			<dt>
 				<label>{{ lang('LFWWH_RECORD') ~ lang('COLON') }}</label><br>
 				<span>{{ lang('LFWWH_RECORD_EXP') }}</span>
 			</dt>
@@ -251,15 +278,6 @@
 			</dt>
 			<dd>
 				{{ _self.switch('lfwwh_template_pos_all', LFWWH_TEMPLATE_POS_ALL, switch_type) }}
-			</dd>
-		</dl>
-		<dl>
-			<dt>
-				<label>{{ lang('LFWWH_CREATE_HIDDEN_INFO') ~ lang('COLON') }}</label><br>
-				<span>{{ lang('LFWWH_CREATE_HIDDEN_INFO_EXP') }}</span>
-			</dt>
-			<dd>
-				{{ _self.switch('lfwwh_create_hidden_info', LFWWH_CREATE_HIDDEN_INFO, switch_type) }}
 			</dd>
 		</dl>
 	</fieldset>
@@ -372,23 +390,26 @@
 	{% endif %}
 {% endmacro %}
 
-{% macro icon(classes, decorative = true) -%}
-	<i class="icon {{ classes }}"{{ decorative ? ' aria-hidden="true"' }}></i>
+{% macro icon(classes, title = null, decorative = true) -%}
+	<i class="icon {{ classes }}"{{
+		(title != null ? ' title="' ~ lang(title)|e('html') ~ '"') ~
+		(decorative ? ' aria-hidden="true"')
+	}}></i>
 {%- endmacro %}
 
 {% macro footer(metadata) %}
-	<p class="{{ metadata.class  }}">
+	<p class="{{ metadata.class }}">
 		{{ metadata.ext_name }} {{ metadata.ext_ver }} &copy; {{ metadata.ext_copyright }}
 		{% if metadata.lang_ver is defined %}
 			<br>
-			{{ metadata.lang_desc|e('html') }} {{ metadata.lang_ver|e('html') }} &bull; {{ metadata.lang_author|e('html') }}
+			{{ metadata.lang_desc|e('html') }} {{ metadata.lang_ver|e('html') }} &copy; {{ metadata.lang_author|e('html') }}
 		{% endif %}
 	</p>
 {% endmacro %}
 
 {% macro switch(name, checked = false, type = 'toggle') -%}
 	{% if type == 'toggle' || type == 'checkbox' -%}
-		<input type="checkbox"{{ type == 'toggle' ? ' class="toggle"' }} name="{{ name }}" value="1"{{ checked ? ' checked' }}>
+		<input type="checkbox" class="{{ type }}" name="{{ name }}" value="1"{{ checked ? ' checked' }}>
 	{%- elseif type == 'radio' -%}
 		<label><input type="radio" class="radio" name="{{ name }}" value="1"{{ checked ? ' checked' }}> {{ lang('YES') }}</label>
 		<label><input type="radio" class="radio" name="{{ name }}" value="0"{{ !checked ? ' checked' }}> {{ lang('NO') }}</label>
@@ -427,12 +448,12 @@
 {%- endmacro %}
 
 {% macro confirmbox(name, message, default = false) -%}
-	<div id="{{ name }}_confirmbox" data-default="{{ default }}" style="display: none;">
+	<div class="lukewcs_confirmbox" data-name="{{ name }}" data-default="{{ default }}" style="display: none;">
 		<h2>{{ lang('CONFIRM') }}</h2>
 		<p>{{ message }}</p>
 		<p>
-			<input type="button" class="button1" name="{{ name }}_confirm_yes" value="{{ lang('YES') }}">&nbsp;
-			<input type="button" class="button2" name="{{ name }}_confirm_no" value="{{ lang('NO') }}">
+			<input type="button" class="button1" name="lukewcs_confirmbox_yes" value="{{ lang('YES') }}">&nbsp;
+			<input type="button" class="button2" name="lukewcs_confirmbox_no" value="{{ lang('NO') }}">
 		</p>
 	</div>
 {%- endmacro %}

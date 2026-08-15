@@ -1,5 +1,36 @@
 ## Changelog
 
+### 3.0.1 - 2026-07-25
+
+- Updated Lightbox3 to 1.2.1.
+- Fixed a stored XSS vulnerability in attachment image titles.
+- Fixed Lightbox initialization when all images are still loading.
+- Fixed gallery ID collisions for dynamically processed images and signature images.
+- Improved handling of images removed before deferred processing.
+- Improved image title entity handling.
+- Tightened validation of the gallery mode ACP setting.
+- Updated Polish translation.
+
+### 3.0.0 - 2026-06-15
+
+- Updated to the new Lightbox3 library.
+- Lightbox now works on all mobile devices with support for touch gestures (pinch to zoom, drag to pan).
+- Removed some of the border/hover effects on resized images to preserve the original image aspect ratio.
+- Fixed an issue where images in mChat were not respecting the resize constraints.
+
+### 2.0.6 - 2025-12-16
+
+- Fixed an issue where this extension stopped working with the newest releases of Chrome and Edge.
+- Fixed an issue where this extension would not work with touchscreen laptops like a Surface.
+- Added support for the updated ABBC3 spoiler BBCode.
+- Added Romanian translation.
+- Ensured continuing compatibility with phpBB3 and phpBB4
+
+### 2.0.5 - 2025-05-22
+
+- Updated Lightbox2 library to 2.11.4
+- Allow Lightbox2 to work in a progressive web application
+
 ### 2.0.4 - 2022-06-16
 
 - Fixed a bug where attached images were not being resized
@@ -19,15 +50,15 @@
 
 ### 2.0.1 - 2019-05-24
 
-- Updated Lightbox2 library to 2.11.0
+- Updated the Lightbox2 library to 2.11.0
 - Made the gallery label "Image" translatable
-- Fixed Lightbox effect in edited mChat messages
+- Fixed the Lightbox effect in edited mChat messages
 
 ### 2.0.0 - 2018-10-01
 
 - Maximum height can now be set, in addition to the maximum width, for resizing large images
 - Lightbox2 effect can now be enabled for all posted images, even images not being resized
-- Updated Lightbox2 library to 2.10.0
+- Updated the Lightbox2 library to 2.10.0
 - Requires 3.2.0 or newer (no longer compatible with phpBB 3.1.x)
 - Added Slovak translation
 
@@ -46,7 +77,7 @@
 ### 1.0.3 - 2016-11-10
 
 - Updated Lightbox2 library to 2.9.0
-- Fixed Brazilian translation package (renamed pt-br to pt_br)
+- Fixed the Brazilian translation package (renamed pt-br to pt_br)
 - Various minor code and language improvements
 
 ### 1.0.2 - 2016-02-23
@@ -54,13 +85,13 @@
 - Add support for QuickReply Reloaded extension
 - Handle attachments constrained by portrait height
 - Display recommended Lightbox2 settings in the ACP based on image attachment settings
-- Future proof compatibility for Symfony 3.0
+- Future-proof compatibility for Symfony 3.0
 - JavaScript code refactoring, improving, tweaking
 - Added Brazilian-Portuguese translation
 
 ### 1.0.1 - 2016-01-16
 
-- Updated Lightbox2 library to 2.8.2
+- Updated the Lightbox2 library to 2.8.2
 - Added the option to show/hide image names as captions
 - Added Czech translation
 
@@ -83,7 +114,7 @@
 
 ### 1.0.0-b5 - 2015-09-03
 
-- Updated Lightbox2 library from 2.7.1 to 2.8.1
+- Updated the Lightbox2 library from 2.7.1 to 2.8.1
 - Added Arabic, Spanish, French, Italian, Japanese, Dutch, Polish and Swedish translations
 
 ### 1.0.0-b4 - 2015-02-24
@@ -92,14 +123,14 @@
 
 ### 1.0.0-b3 - 2015-02-18
 
-- Added independent ACP settings to "Board features" section
-- Added option to disable resizing images in signatures (Prosilver themes only)
-- Updated javascript code
+- Added independent ACP settings to the "Board features" section
+- Added an option to disable resizing images in signatures (Prosilver themes only)
+- Updated JavaScript code
 - Updated template code to TWIG
 
 ### 1.0.0-b1 - 2014-10-30
 
-- Javascript improvements and use a settimeout to cure image ready issues
+- JavaScript improvements and use a set timeout to cure image-ready issues
 
 ### 1.0.0-a2 - 2014-07-12
 

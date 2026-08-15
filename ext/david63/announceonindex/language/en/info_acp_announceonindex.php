@@ -43,14 +43,21 @@ $lang = array_merge($lang, array(
 	'ALLOW_GUESTS_EXPLAIN'			=> 'Allow guests to see the announcements.',
 
 	'ANNOUNCE_ON_INDEX'				=> 'Announcements on index',
-	'ANNOUNCE_ON_INDEX_ENABLE'		=> 'Enable announcements',
 	'ANNOUNCE_ON_INDEX_EXPLAIN' 	=> 'Manage the announcement options.',
 	'ANNOUNCE_ON_INDEX_LOG'			=> '<strong>Announcements on index settings updated </strong>',
 	'ANNOUNCE_ON_INDEX_MANAGE'		=> 'Manage announcements',
 	'ANNOUNCE_ON_INDEX_OPTIONS'		=> 'Announcement options',
-
+	'GLOBAL_ON_INDEX_LOG'			=> '<strong>Announcements on Index settings changed</strong>',
 	'SHOW_ANNOUNCEMENTS'			=> 'Show announcements',
 	'SHOW_ANNOUNCEMENTS_EXPLAIN'	=> 'Display all announcements on the index page.',
 	'SHOW_GLOBALS'					=> 'Show global announcements',
 	'SHOW_GLOBALS_EXPLAIN'			=> 'Display all global announcements on the index page.',
+	//Donation
+	'PAYPAL_IMAGE_URL'          => 'https://www.paypalobjects.com/webstatic/en_US/i/btn/png/silver-pill-paypal-26px.png',
+	'PAYPAL_ALT'                => 'Donate using PayPal',
+	'BUY_ME_A_BEER_URL'         => 'https://paypal.me/RMcGirr83',
+	'BUY_ME_A_BEER'				=> 'Buy me a beer for creating this extension',
+	'BUY_ME_A_COFFEE'			=> '<a href="https://www.buymeacoffee.com/rmcgirr83" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 26px !important;width: auto !important;" ></a>',
+	'BUY_ME_A_BEER_SHORT'		=> 'Make a donation for this extension',
+	'BUY_ME_A_BEER_EXPLAIN'		=> 'This extension is completely free. It is a project that I spend my time on for the enjoyment and use of the phpBB community. If you enjoy using this extension, or if it has benefited your forum, please consider <a href="https://paypal.me/RMcGirr83" target="_blank" rel="noreferrer noopener">buying me a beer</a>. It would be greatly appreciated. <i class="fa fa-smile-o" style="color:green;font-size:1.5em;" aria-hidden="true"></i>',
 ));

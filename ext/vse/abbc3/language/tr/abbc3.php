@@ -29,8 +29,8 @@ $lang = array_merge($lang, array(
 	'ABBC3_HIDDEN_EXPLAIN'		=> 'Bu mesaj panosunda gizli içeriği görüntülemek için kayıt olmanız ve giriş yapmanız gerekmektedir.',
 
 	// Spoiler BBCode
-	'ABBC3_SPOILER_SHOW'		=> '► Spoiler’ı Göster',
-	'ABBC3_SPOILER_HIDE'		=> '▼ Spoiler’ı Gizle',
+	'ABBC3_SPOILER_SHOW'		=> 'Spoiler’ı Göster',
+	'ABBC3_SPOILER_HIDE'		=> 'Spoiler’ı Gizle',
 
 	// Off Topic BBCode
 	'ABBC3_OFFTOPIC'			=> 'Konu Dışı',
@@ -96,11 +96,15 @@ $lang = array_merge($lang, array(
 
 	// ACP
 	'ABBC3_BBCODE_ORDERED'		=> 'BBCode sırası güncellendi.',
+	'ABBC3_BBCODE_ORDERED_FAIL'	=> 'BBCode order could not be updated.',
+	'ABBC3_BBCODE_ORDER_NO_TABLE'	=> 'No BBCode table name was received.',
+	'ABBC3_BBCODE_ORDER_NO_DATA'	=> 'No BBCode order data was received.',
+	'ABBC3_BBCODE_ORDER_NO_ORDER'	=> 'No BBCode rows were updated.',
 	'ABBC3_BBCODE_GROUP'		=> 'Bu BBCode’u kullanabilen grupları yönetin',
 	'ABBC3_BBCODE_GROUP_INFO'	=> 'Eğer hiç bir grup seçilmezse, tüm kullanıcılar bu BBCode’u kullanabilirler. Birden fazla grup seçmek ya da seçimi bırakmak için CTRL+SAĞ TIK (ya da Mac bilgisayarlarda CMD+SAĞ TIK) klavye ile mouse kombinasyonunu kullanın.',
 
 	// BBCode FAQ
 	'ABBC3_FAQ_TITLE'			=> 'Advanced BBCode Box BBCode’ları',
 	'ABBC3_FAQ_SAMPLE_TEXT'		=> 'Hızlı kahverengi tilki tembel köpeğin üzerinden atlar',
-	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>Örnek:</strong><br>%2$s<br><br><strong>Sonuç:</strong><br>%3$s<hr />',
+	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>Örnek:</strong><br>%2$s<br><br><strong>Sonuç:</strong><br>%3$s<hr>',
 ));
