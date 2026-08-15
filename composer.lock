@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "36731305b4bafa4acef261a7cb435f03",
+    "content-hash": "2fcfb05696af9a2166d09907b59e7ba6",
     "packages": [
         {
             "name": "bantu/ini-get-wrapper",
@@ -5399,5 +5399,5 @@
     "platform-overrides": {
         "php": "7.2"
     },
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }
