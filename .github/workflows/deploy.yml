@@ -18,6 +18,7 @@ jobs:
         run: |
           echo "DIT IS EEN TEST OM TE ZIEN OF DE CODE IS BIJGEWERKT"
           date
+
       # --------------------------------------------------
       # 1. Checkout volledige Git geschiedenis
       # --------------------------------------------------
@@ -247,10 +248,8 @@ jobs:
           remote_root="/customers/e/a/c/doctorwhofans.be/httpd.www/forum"
           deploy_root="/tmp/deploy"
 
-          # Loop door alle bestanden in het deploy-pakket
           cd "$deploy_root"
           find . -type f | sort | while read -r file; do
-            # Verwijder de leading './'
             file="${file#./}"
             
             local_file="$deploy_root/$file"
@@ -259,16 +258,15 @@ jobs:
 
             echo "Uploading: $file"
 
-            # We sturen per bestand een nette, afgesloten sessie of hergebruiken sshpass
             sshpass -p "$SFTP_PASSWORD" sftp \
               -o StrictHostKeyChecking=no \
               -o BatchMode=no \
               -P 22 \
               "$SFTP_USER@$SFTP_HOST" <<EOF
-            mkdir -p "$remote_dir"
-            put "$local_file" "$remote_file"
-            bye
-            EOF
+mkdir -p "$remote_dir"
+put "$local_file" "$remote_file"
+bye
+EOF
 
             if [ $? -ne 0 ]; then
               echo "Fout bij uploaden van: $file"
@@ -316,9 +314,6 @@ jobs:
 
               path = Path(file)
 
-              # ------------------------------------------
-              # Veiligheidscontrole
-              # ------------------------------------------
               if (
                   file.startswith("/")
                   or ".." in path.parts
@@ -326,10 +321,6 @@ jobs:
                   print(f"SKIP unsafe deletion: {file}")
                   continue
 
-              # ------------------------------------------
-              # Bescherming tegen verwijderen van
-              # belangrijke root/runtime bestanden
-              # ------------------------------------------
               if file in (
                   ".env",
                   "composer.json",
@@ -379,8 +370,7 @@ jobs:
           echo "Verwijderingen uitgevoerd."
 
       # --------------------------------------------------
-      # 10. Geen delete-autorisatie:
-      #     maak rapport op one.com
+      # 10. Geen delete-autorisatie: rapport op one.com
       # --------------------------------------------------
       - name: Upload deletion report
         if: steps.delete_auth.outputs.authorized == 'false'
@@ -410,10 +400,10 @@ jobs:
             -o BatchMode=no \
             -P 22 \
             "$SFTP_USER@$SFTP_HOST" <<EOF
-          cd /customers/e/a/c/doctorwhofans.be/httpd.www/forum
-          put /tmp/DEPLOY_DELETIONS.txt DEPLOY_DELETIONS.txt
-          bye
-          EOF
+cd /customers/e/a/c/doctorwhofans.be/httpd.www/forum
+put /tmp/DEPLOY_DELETIONS.txt DEPLOY_DELETIONS.txt
+bye
+EOF
 
           echo "DEPLOY_DELETIONS.txt geüpload."
 
