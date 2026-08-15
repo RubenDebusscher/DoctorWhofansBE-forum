@@ -14,7 +14,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
+      - name: Debugging
+        run: |
+          echo "DIT IS EEN TEST OM TE ZIEN OF DE CODE IS BIJGEWERKT"
+          date
       # --------------------------------------------------
       # 1. Checkout volledige Git geschiedenis
       # --------------------------------------------------
