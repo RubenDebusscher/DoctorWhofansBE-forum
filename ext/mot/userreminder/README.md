@@ -1,14 +1,14 @@
 # Userreminder
 
-![Version: 1.8.1](https://img.shields.io/badge/Version-1.8.1-green)  
+![Version: 1.11.0](https://img.shields.io/badge/Version-1.11.0-green)  
   
-![phpBB 3.2.x Compatible](https://img.shields.io/badge/phpBB-3.2.x%20Compatible-009BDF)
-![phpBB 3.3.x Compatible](https://img.shields.io/badge/phpBB-3.3.x%20Compatible-009BDF)
-![phpBB 4.0.x-dev Compatible](https://img.shields.io/badge/phpBB-4.0.x%20dev%20Compatible-009BDF)  
+![phpBB >=3.3.4, < 3.4.0@dev](https://img.shields.io/badge/phpBB->=3.3.4,%20<3.4.0@dev-009BDF)
+
+![PHP >= 8.0.30, < 8.6.0@dev](https://img.shields.io/badge/PHP->=8.0.30,%20<8.6.0@dev-blueviolet)
 
 [![Build Status](https://github.com/Mike-on-Tour/userreminder/workflows/Tests/badge.svg)](https://github.com/Mike-on-Tour/userreminder/actions)
 
-Userreminder is an extension to the phpBB bulletin board (version 3.2.0 and later) to manage inactive users
+Userreminder is an extension to the phpBB bulletin board to manage inactive users
 
 ## Description
 Userreminder enables administrators to check their board for three different types of users:

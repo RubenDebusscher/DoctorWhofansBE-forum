@@ -2,8 +2,8 @@
 
 /**
 *
-* @package UserReminder v1.8.1
-* @copyright (c) 2019 - 2024 Mike-on-Tour
+* @package Userreminder v1.11.0
+* @copyright (c) 2019 - 2026 Mike-on-Tour
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -17,45 +17,12 @@ class common
 {
 	private const SECS_PER_DAY = 86400;
 
-	/** @var \phpbb\config\config */
-	protected $config;
-
-	/** @var \phpbb\config\db_text */
-	protected $config_text;
-
-	/** @var \phpbb\db\driver\driver_interface */
-	protected $db;
-
-	/** @var \phpbb\user */
-	protected $user;
-
-	/** @var \phpbb\log\log $log */
-	protected $log;
-
-	/** @var string phpBB root path */
-	protected $root_path;
-
-	/** @var string PHP extension */
-	protected $phpEx;
-
-	/** @var string mot.userreminder.tables.mot_userreminder_remind_queue */
-	protected $mot_userreminder_remind_queue;
-
-	public function __construct(\phpbb\config\config $config, \phpbb\config\db_text $config_text, \phpbb\db\driver\driver_interface $db,
-								\phpbb\user $user, \phpbb\log\log $log, $root_path, $phpEx, $mot_userreminder_remind_queue)
+	public function __construct(protected \phpbb\config\config $config, protected \phpbb\config\db_text $config_text, protected \phpbb\db\driver\driver_interface $db,
+								protected \phpbb\user $user, protected \phpbb\log\log $log, protected $root_path, protected $phpEx, protected $mot_userreminder_remind_queue)
 	{
-		$this->config = $config;
-		$this->config_text = $config_text;
-		$this->db = $db;
-		$this->user = $user;
-		$this->log = $log;
-		$this->root_path = $root_path;
-		$this->phpEx = $phpEx;
-		$this->mot_userreminder_remind_queue = $mot_userreminder_remind_queue;
-
 		$this->sitename = htmlspecialchars_decode($this->config['sitename'], ENT_COMPAT);
 		$script_path = (strlen($this->config['script_path']) > 1) ? $this->config['script_path'] : '';
-		$this->forgot_pass = $this->config['server_protocol'] . $this->config['server_name'] . $script_path . "/ucp.".$this->phpEx."?mode=sendpassword";
+		$this->forgot_pass = $this->config['server_protocol'] . $this->config['server_name'] . $script_path . "/ucp." . $this->phpEx . "?mode=sendpassword";
 		$this->admin_mail = $this->config['board_contact'];
 		$this->email_sig = str_replace('<br>', "\n", "-- \n" . htmlspecialchars_decode($this->config['board_email_sig'], ENT_COMPAT));
 		$this->days_inactive = $this->config['mot_ur_inactive_days'];
@@ -66,9 +33,9 @@ class common
 	/**
 	* Delete users
 	*
-	* @param	array	$users_marked	Users selected for deletion identified by their user_id
+	* @param	$users_marked	Users selected for deletion identified by their user_id
 	**/
-	public function delete_users($users_marked)
+	public function delete_users(array $users_marked)
 	{
 		if (count($users_marked) > 0)					// lets check for an empty array; just to be certain that none of the called functions throws an error or an exception
 		{
@@ -84,7 +51,7 @@ class common
 
 			// now we have one array with the user_id's and another with the respective usernames: with the first one we delete the users and with the second we log this action in the admin log
 			user_delete('retain', $users_marked);
-			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_USER_DELETED', false, [implode(', ', $username_ary)]);
+			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_MOT_USERREMINDER_USER_DELETE', false, [implode(', ', $username_ary)]);
 		}
 	}
 
@@ -92,10 +59,10 @@ class common
 	/**
 	* Remind users
 	*
-	* @param	array		$users_marked	Users selected for reminding identified by their user_id
-	*		boolean	$zeroposters	marks whether inactive users or zeroposters are to be handled, default is false to mark inactive users, set to true for handling zeroposters, necessary due to different config variables
+	* @param	$users_marked	Users selected for reminding identified by their user_id
+	*		$zeroposters	marks whether inactive users or zeroposters are to be handled, default is false to mark inactive users, set to true for handling zeroposters, necessary due to different config variables
 	**/
-	public function remind_users($users_marked, $zeroposters = false)
+	public function remind_users(array $users_marked, bool $zeroposters = false)
 	{
 		if (count($users_marked) > 0)					// lets check for an empty array; just to be certain that none of the called functions throws an error or an exception
 		{
@@ -139,11 +106,12 @@ class common
 
 				foreach ($second_reminders as $row)
 				{
-					$second_username_ary[] = $row['username'];
 					if ($mail_available > 0)
 					{
 						$this->reminder_mail($row, $messenger, 'reminder_two');
 						--$mail_available;
+						// Perceive only those users who will actually receive an e-mail
+						$second_username_ary[] = $row['username'];
 					}
 					else
 					{
@@ -188,11 +156,12 @@ class common
 				$first_username_ary = [];
 				foreach ($first_reminders as $row)
 				{
-					$first_username_ary[] = $row['username'];
 					if ($mail_available > 0)
 					{
 						$this->reminder_mail($row, $messenger, 'reminder_one');
 						--$mail_available;
+						// Perceive only those users who will actually receive an e-mail
+						$first_username_ary[] = $row['username'];
 					}
 					else
 					{
@@ -231,9 +200,9 @@ class common
 	/**
 	* Remind sleepers
 	*
-	* @param	array	$sleepers_marked	Users selected for reminding identified by their user_id
+	* @param	$sleepers_marked	Users selected for reminding identified by their user_id
 	*/
-	public function remind_sleepers($sleepers_marked)
+	public function remind_sleepers(array $sleepers_marked)
 	{
 		if (count($sleepers_marked) > 0)			// lets check for an empty array; just to be certain that none of the called functions throws an error or an exception
 		{
@@ -267,9 +236,10 @@ class common
 				{
 					if ($mail_available > 0)
 					{
-						$sleeper_username_ary[] = $row['username'];
 						$this->reminder_mail($row, $messenger, 'reminder_sleeper');
 						--$mail_available;
+						// Perceive only those users who will actually receive an e-mail
+						$sleeper_username_ary[] = $row['username'];
 					}
 					else
 					{
@@ -296,15 +266,14 @@ class common
 
 
 	/**
-	* @param array	$row			user data
-	* @param object	$messenger		messenger object to send the mails
-	* @param string	$reminder_type	either 'reminder_one', 'reminder_two' or 'reminder_sleeper'
+	* @params	$row			user data
+	* 		$messenger		messenger object to send the mails
+	* 		$reminder_type	either 'reminder_one', 'reminder_two' or 'reminder_sleeper'
 	*
 	* @return		no return value
 	*/
-	public function reminder_mail($row, $messenger, $reminder_type)
+	public function reminder_mail(array $row, object $messenger, string $reminder_type)
 	{
-		// Get
 		// Reset the messenger variables to prevent errors
 		$messenger->reset();
 
@@ -355,21 +324,7 @@ class common
 			$messenger->subject($subject[1]);
 			$messenger->msg = $text_arr[1];
 
-			switch ($row['user_notify_type'])
-			{
-				case NOTIFY_EMAIL:
-					$messenger->msg_email();
-				break;
-
-				case NOTIFY_IM:
-					$messenger->msg_jabber();
-				break;
-
-				case NOTIFY_BOTH:
-					$messenger->msg_email();
-					$messenger->msg_jabber();
-				break;
-			}
+			$messenger->msg_email();
 		}
 		// email is not in the config_text variable, load it from the file (which makes things easier since there are some convenient functions available for setting variables and sending)
 		else
@@ -389,19 +344,18 @@ class common
 				'DAYS_DEL_SLEEPERS'	=> $this->days_del_sleepers,
 			]);
 
-			$messenger->send($row['user_notify_type']);
+			$messenger->send();
 		}
 	}
 
 /* ------------------------------------------------------------------------------------------------------------------------------------------------ */
 
 	/**
-	* @param array	$user_row		user data
-	* @param string	$reminder_type	either 'reminder_one', 'reminder_two' or 'reminder_sleeper'
+	* @params	$user_row		user data
+	* 		$reminder_type	either 'reminder_one', 'reminder_two' or 'reminder_sleeper'
 	*
-	* @return		no return value
 	*/
-	private function save_user_data($user_row, $reminder_type)
+	private function save_user_data(array $user_row, string $reminder_type)
 	{
 		$user_row['remind_type'] = $reminder_type;
 		$sql = 'INSERT INTO ' . $this->mot_userreminder_remind_queue . ' ' . $this->db->sql_build_array('INSERT', $user_row);
@@ -410,14 +364,14 @@ class common
 
 
 	/**
-	* @param string	$user_lang			addressed user's language
-	* @param string	$user_timezone		addressed user's time zone
-	* @param string	$user_dateformat	addressed user's date/time format
-	* @param int	$user_timestamp		addressed user's php timestamp (registration date, last login, reminder mails as UNIX timestamp from users table)
+	* @params	$user_lang			addressed user's language
+	*		$user_timezone		addressed user's time zone
+	*		$user_dateformat		addressed user's date/time format
+	*		$user_timestamp		addressed user's php timestamp (registration date, last login, reminder mails as UNIX timestamp from users table)
 	*
-	* @return string	the timestamp in user's choosen date/time format and time zone as DateTime string
+	* @return	the timestamp in user's choosen date/time format and time zone as DateTime string
 	*/
-	private function format_date_time($user_lang, $user_timezone, $user_dateformat, $user_timestamp)
+	private function format_date_time(string $user_lang, string $user_timezone, string $user_dateformat, int $user_timestamp) : string
 	{
 		$user_timezone = (empty($user_timezone) || $user_timezone == '0') ? 'UTC' : $user_timezone;		// fallback value, just in case
 
@@ -437,7 +391,7 @@ class common
 		{
 			foreach ($matches[0] as $value)
 			{
-				$time = preg_replace("/".$value."/", $lang->lang(['datetime', $value]), $time);
+				$time = preg_replace("/" . $value . "/", $lang->lang(['datetime', $value]), $time);
 			}
 		}
 
@@ -450,7 +404,7 @@ class common
 	* Loads all language directories of ext/mot/userreminder/language
 	* Returns an array with all found directories
 	*/
-	public function load_dirs($dir)
+	public function load_dirs(string $dir) : array
 	{
 		$result = [];
 		$dir_ary = scandir($dir);
