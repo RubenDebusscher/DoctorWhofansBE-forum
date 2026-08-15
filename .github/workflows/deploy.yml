@@ -125,6 +125,9 @@ jobs:
           rm -rf /tmp/deploy
           mkdir -p /tmp/deploy
 
+          # Zorg ervoor dat dit bestand altijd schoon begint.
+          : > /tmp/deleted-files.txt
+
           while IFS=$'\t' read -r status file extra; do
 
             # ----------------------------------------------
@@ -132,6 +135,7 @@ jobs:
             # ----------------------------------------------
             if [ "$status" = "D" ]; then
               echo "$file" >> /tmp/deleted-files.txt
+              echo "DELETE: $file"
               continue
             fi
 
@@ -184,7 +188,22 @@ jobs:
           echo "Deploypakket:"
           echo "======================================"
 
-          find /tmp/deploy -type f | sort
+          if find /tmp/deploy -type f -print -quit | grep -q .; then
+            find /tmp/deploy -type f | sort
+          else
+            echo "Geen bestanden."
+          fi
+
+          echo
+          echo "======================================"
+          echo "Te verwijderen:"
+          echo "======================================"
+
+          if [ -s /tmp/deleted-files.txt ]; then
+            cat /tmp/deleted-files.txt
+          else
+            echo "Geen verwijderde bestanden."
+          fi
 
       # --------------------------------------------------
       # 8. Upload alle bestanden via ÉÉN SFTP sessie
@@ -193,7 +212,7 @@ jobs:
         env:
           SFTP_HOST: ${{ secrets.ONECOM_HOST }}
           SFTP_USER: ${{ secrets.ONECOM_USER }}
-          SFTP_PASSWORD: ${{ secrets.ONECOM_PASSWORD }}
+          SSHPASS: ${{ secrets.ONECOM_PASSWORD }}
         run: |
 
           if ! find /tmp/deploy -type f -print -quit | grep -q .; then
@@ -202,19 +221,18 @@ jobs:
           fi
 
           python3 <<'PY'
-
           from pathlib import Path
 
+          local_root = Path("/tmp/deploy")
           remote_root = "/customers/e/a/c/doctorwhofans.be/httpd.www/forum"
 
           files = sorted(
-              p.relative_to("/tmp/deploy").as_posix()
-              for p in Path("/tmp/deploy").rglob("*")
+              p.relative_to(local_root).as_posix()
+              for p in local_root.rglob("*")
               if p.is_file()
           )
 
           commands = []
-
           created_dirs = set()
 
           for file in files:
@@ -226,8 +244,8 @@ jobs:
                   print(f"SKIP unsafe path: {file}")
                   continue
 
-              # Maak alle benodigde parent directories aan.
-              # mkdir mag falen wanneer directory al bestaat.
+              # Maak alle benodigde directories aan.
+              # - voor mkdir = fout negeren als directory al bestaat.
               current = remote_root
 
               for part in path.parent.parts:
@@ -238,13 +256,14 @@ jobs:
                   current = f"{current}/{part}"
 
                   if current not in created_dirs:
-                      commands.append(f'mkdir "{current}"')
+                      commands.append(f'-mkdir "{current}"')
                       created_dirs.add(current)
 
               remote = f"{remote_root}/{file}"
+              local = local_root / file
 
               commands.append(
-                  f'put "{Path("/tmp/deploy") / file}" "{remote}"'
+                  f'put "{local}" "{remote}"'
               )
 
           commands.append("bye")
@@ -254,16 +273,32 @@ jobs:
           )
 
           print(f"Prepared {len(files)} files for upload.")
-
           PY
 
           echo
           echo "======================================"
-          echo "Starting single SFTP session..."
+          echo "Testing SFTP authentication..."
           echo "======================================"
 
-          sshpass -p "$SFTP_PASSWORD" sftp \
+          sshpass -e sftp \
             -o StrictHostKeyChecking=no \
+            -o PreferredAuthentications=password \
+            -o PubkeyAuthentication=no \
+            -P 22 \
+            "$SFTP_USER@$SFTP_HOST" <<'EOF'
+          pwd
+          bye
+          EOF
+
+          echo
+          echo "======================================"
+          echo "Starting single SFTP upload session..."
+          echo "======================================"
+
+          sshpass -e sftp \
+            -o StrictHostKeyChecking=no \
+            -o PreferredAuthentications=password \
+            -o PubkeyAuthentication=no \
             -P 22 \
             -b /tmp/sftp-upload.txt \
             "$SFTP_USER@$SFTP_HOST"
@@ -276,7 +311,7 @@ jobs:
         env:
           SFTP_HOST: ${{ secrets.ONECOM_HOST }}
           SFTP_USER: ${{ secrets.ONECOM_USER }}
-          SFTP_PASSWORD: ${{ secrets.ONECOM_PASSWORD }}
+          SSHPASS: ${{ secrets.ONECOM_PASSWORD }}
         run: |
 
           if [ ! -s /tmp/deleted-files.txt ]; then
@@ -285,7 +320,6 @@ jobs:
           fi
 
           python3 <<'PY'
-
           from pathlib import Path
 
           remote_root = "/customers/e/a/c/doctorwhofans.be/httpd.www/forum"
@@ -306,17 +340,15 @@ jobs:
               path = Path(file)
 
               # Extra veiligheidscontrole
-              if (
-                  file.startswith("/")
-                  or ".." in path.parts
-              ):
+              if file.startswith("/") or ".." in path.parts:
                   print(f"SKIP unsafe deletion: {file}")
                   continue
 
               remote = f"{remote_root}/{file}"
 
+              # - voor rm = fout negeren als bestand al verdwenen is.
               commands.append(
-                  f'rm "{remote}"'
+                  f'-rm "{remote}"'
               )
 
           commands.append("bye")
@@ -324,13 +356,17 @@ jobs:
           Path("/tmp/sftp-delete.txt").write_text(
               "\n".join(commands) + "\n"
           )
-
           PY
 
+          echo
+          echo "======================================"
           echo "Deleting authorized files..."
+          echo "======================================"
 
-          sshpass -p "$SFTP_PASSWORD" sftp \
+          sshpass -e sftp \
             -o StrictHostKeyChecking=no \
+            -o PreferredAuthentications=password \
+            -o PubkeyAuthentication=no \
             -P 22 \
             -b /tmp/sftp-delete.txt \
             "$SFTP_USER@$SFTP_HOST"
@@ -344,7 +380,7 @@ jobs:
         env:
           SFTP_HOST: ${{ secrets.ONECOM_HOST }}
           SFTP_USER: ${{ secrets.ONECOM_USER }}
-          SFTP_PASSWORD: ${{ secrets.ONECOM_PASSWORD }}
+          SSHPASS: ${{ secrets.ONECOM_PASSWORD }}
         run: |
 
           if [ ! -s /tmp/deleted-files.txt ]; then
@@ -358,10 +394,12 @@ jobs:
           cp /tmp/deleted-files.txt \
             /tmp/DEPLOY_DELETIONS.txt
 
-          sshpass -p "$SFTP_PASSWORD" sftp \
+          sshpass -e sftp \
             -o StrictHostKeyChecking=no \
+            -o PreferredAuthentications=password \
+            -o PubkeyAuthentication=no \
             -P 22 \
-            "$SFTP_USER@$SFTP_HOST" <<EOF
+            "$SFTP_USER@$SFTP_HOST" <<'EOF'
           cd /customers/e/a/c/doctorwhofans.be/httpd.www/forum
           put /tmp/DEPLOY_DELETIONS.txt DEPLOY_DELETIONS.txt
           bye
