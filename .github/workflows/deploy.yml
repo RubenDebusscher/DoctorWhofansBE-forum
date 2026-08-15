@@ -222,7 +222,7 @@ jobs:
           fi
 
       # --------------------------------------------------
-      # 8. Upload alle bestanden via ÉÉN SFTP sessie
+      # 8. Upload bestanden in batches via SFTP
       # --------------------------------------------------
       - name: Deploy changed files
         env:
@@ -237,7 +237,6 @@ jobs:
           fi
 
           python3 <<'PY'
-
           from pathlib import Path
 
           remote_root = "/customers/e/a/c/doctorwhofans.be/httpd.www/forum"
@@ -249,49 +248,32 @@ jobs:
               if p.is_file()
           )
 
-          commands = []
-
+          all_commands = []
           for file in files:
-
               path = Path(file)
-
-              # Veiligheidscontrole
               if file.startswith("/") or ".." in path.parts:
                   print(f"SKIP unsafe path: {file}")
                   continue
 
-              # ------------------------------------------
-              # Maak parent directory aan.
-              #
-              # -p zorgt ervoor dat bestaande directories
-              # geen probleem vormen.
-              # ------------------------------------------
               parent = path.parent
-
               if str(parent) not in ("", "."):
                   remote_dir = f"{remote_root}/{parent.as_posix()}"
-                  commands.append(
-                      f'mkdir -p "{remote_dir}"'
-                  )
+                  all_commands.append(f'mkdir -p "{remote_dir}"')
 
-              # ------------------------------------------
-              # Upload bestand
-              # ------------------------------------------
               local_file = deploy_root / file
               remote_file = f"{remote_root}/{file}"
+              all_commands.append(f'put "{local_file}" "{remote_file}"')
 
-              commands.append(
-                  f'put "{local_file}" "{remote_file}"'
-              )
+          # Batch opdelen in groepen van maximaal 50 commando's
+          batch_size = 50
+          batches = [all_commands[i:i + batch_size] for i in range(0, len(all_commands), batch_size)]
 
-          commands.append("bye")
+          for index, batch in enumerate(batches):
+              batch_file = f"/tmp/sftp-upload-{index}.txt"
+              batch_content = "\n".join(batch) + "\nbye\n"
+              Path(batch_file).write_text(batch_content, encoding="utf-8", newline="\n")
 
-          Path("/tmp/sftp-upload.txt").write_text(
-              "\n".join(commands) + "\n"
-          )
-
-          print(f"Prepared {len(files)} files for upload.")
-
+          print(f"Prepared {len(files)} files in {len(batches)} batches for upload.")
           PY
 
           echo
@@ -310,15 +292,18 @@ jobs:
 
           echo
           echo "======================================"
-          echo "Starting single SFTP upload session..."
+          echo "Starting batch SFTP upload sessions..."
           echo "======================================"
 
-          sshpass -p "$SFTP_PASSWORD" sftp \
-            -o StrictHostKeyChecking=no \
-            -o BatchMode=no \
-            -P 22 \
-            -b /tmp/sftp-upload.txt \
-            "$SFTP_USER@$SFTP_HOST"
+          for batch_file in /tmp/sftp-upload-*.txt; do
+            echo "Uploading batch: $(basename "$batch_file")..."
+            sshpass -p "$SFTP_PASSWORD" sftp \
+              -o StrictHostKeyChecking=no \
+              -o BatchMode=no \
+              -P 22 \
+              -b "$batch_file" \
+              "$SFTP_USER@$SFTP_HOST"
+          done
 
           echo
           echo "Upload succesvol."
@@ -400,7 +385,9 @@ jobs:
           commands.append("bye")
 
           Path("/tmp/sftp-delete.txt").write_text(
-              "\n".join(commands) + "\n"
+              "\n".join(commands) + "\n",
+              encoding="utf-8",
+              newline="\n"
           )
 
           PY
