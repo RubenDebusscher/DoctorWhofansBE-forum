@@ -1,9 +1,47 @@
 # Changelog
 
+## 2.5.0 - 2026-08-01
+
+- Improved rich-text preview truncation so the ACP character limit applies consistently to visible post content while preserving valid formatting and placing the ellipsis at the actual cutoff, including within formatted text, code blocks, lists, links, Unicode text, and censored text.
+- Fixed attachments appearing beyond the preview cutoff. Inline attachments after the cutoff and detached attachments on truncated posts are now hidden, while visible inline attachments retain their correct order.
+- Prevented post previews from being shown to users who may list topics but do not have permission to read the forum.
+- Prevented attachment details from being loaded or displayed without the required global and per-forum download permissions.
+- Validated submitted ACP theme names against available themes, with a safe fallback when an invalid theme is submitted.
+- Fixed word censoring so rendered HTML attributes, classes, and attachment URLs are not corrupted.
+- Prevented preview processing from changing libxml error handling for the remainder of the request.
+
+## 2.4.1 - 2026-06-15
+
+- Fixed an issue so that attachments will be sorted in the correct order in the topic preview.
+- Fixed an issue so that attachments removed from the post will stay hidden, for example, by any BBCode/template that removes, conditionally hides, or fails to render attachment markers: hidden, permission-based BBCodes, custom spoiler/hide BBCodes, etc.
+- Add support for Avathar's Recent Topics extension
+
+## 2.4.0 - 2025-12-16
+
+- Topic previews now display rendered post-content including images, media, and formatted text for a better preview experience.
+- Added an option in the ACP to switch back to simple text previews for forums with limited server resources.
+- Fixed display issues with special characters like < and > symbols.
+- Modernized the look and code of the topic preview themes and made it easier for theme designers to customize preview appearance.
+- Use our pure CSS "No Avatar" image instead of the no-avatar.gif as a fallback for broken/un-loadable avatar images.
+- Added support for the Recent Topics NG extension.
+- Ready for phpBB 4 and already works with phpBB 4.0.0-a1.
+- Requires phpBB 3.3+ and PHP 7.2 or newer (older versions are no longer supported).
+
+## 2.3.3 - 2025-06-01
+
+- Future-proof away serious issues with future major phpBB versions.
+- Ajaxified the ACP settings form.
+- Various code improvements and optimizations.
+
+## 2.3.2 - 2020-01-10
+
+- Fixed potential JavaScript issues in phpBB 3.3.x by removing deprecated code.
+- Miscellaneous minor code improvements.
+
 ## 2.3.1 - 2019-03-30
 
-- Switched to a pure CSS "No Avatar" image instead of the no-avatar.gif that was not always available in some 3rd-party styles.
-- Fix possible install issues related to its ACP modules.
+- Switched to a pure CSS "No Avatar" image instead of the no-avatar.gif that was not always available in some third-party styles.
+- Fix possible installation issues related to its ACP modules.
 - Miscellaneous minor code improvements.
 
 ## 2.3.0 - 2018-01-20
@@ -15,14 +53,14 @@
 
 - Refactored themes to inherit from a parent theme for easier theming
 - Added Neon theme originally by PayBas
-- Added fixes for we_universal and we_clearblue styles
+- Added fixes for We_Universal and We_Clearblue styles
 - Internal code improvements
 
 ## 2.2.3 - 2016-05-01
 
 - Improve compatibility with phpBB 3.1.x and 3.2.x
 - Added support for phpBB 3.2's s9e/textformatter utilities
-- Added missing ALT attribute to fallback no-avatar image in HTML
+- Added the missing ALT attribute to the fallback no-avatar image in HTML
 - Refactored topic preview's trim tools
 - Improved TWIG code
 - Added Bulgarian Translation
@@ -50,18 +88,18 @@
 ## 2.2.0 - 2015-01-30
 
 - Improved handling of nested bbcodes
-- Improved theme handling (fallback to No theme if expected theme is missing)
-- Removed version number displayed in ACP module title
-- Major internal coding revisions for improving code quality
+- Improved theme handling (fallback to No theme if the expected theme is missing)
+- Removed version number displayed in the ACP module title
+- Major internal coding revisions to improve code quality
 
 ## 2.1.0-RC1 - 2014-12-03
 
-- Fix issue where recursive BBCode stripping could fail
+- Fix the issue where recursive BBCode stripping could fail
 - Fix some issues with broken avatars
 - Fix handling of missing CSS theme files
 - Add support for Top Five extension
 - Use UTF8 chars in language files
-- Various code refactoring
+- Various code refactorings
 
 ## 2.1.0-b3 - 2014-07-12
 
@@ -72,7 +110,7 @@
 - Avatar icons keep their original proportions when scaled to fit
 - Refactored the codebase along with minor improvements and updates
 - Complete Persian translation
-- Ensure Similar Topics is installed on phpBB 3.1.0-b4 or later
+- Ensure Similar Topics extension is installed on phpBB 3.1.0-b4 or later
 - Switched to phpBB test framework
 - Added additional test coverage of the codebase
 

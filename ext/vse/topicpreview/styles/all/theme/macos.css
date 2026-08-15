@@ -1,38 +1,46 @@
-/**
-* Topic Preview - Mac OS Theme
-*
-* Color schema:
-* backgrounds: #ffffc2
-* borders:     #989898
-* box shadows: #888888
-* font colors: #000000
-*/
+/** Topic Preview - Mac OS Theme */
 @import url("light.css");
+
+:root {
+	--tp-bg: rgba(255, 255, 255, 0.7);
+	--tp-border: #d3d3d3;
+	--tp-shadow: #888888;
+	--tp-text: #000000;
+	--tp-backdrop: blur(12px) saturate(160%);
+	--tp-border-style: 8px solid;
+}
 
 .topic_preview_container {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	background: #ffffc2;
-	border: 1px solid #989898;
-	-moz-box-shadow: 0 4px 8px #888888;
-	-webkit-box-shadow: 0 4px 8px #888888;
-	box-shadow: 0 4px 8px #888888;
-	color: #000000;
+	box-shadow: 0 4px 8px var(--tp-shadow);
+	-webkit-backdrop-filter: var(--tp-backdrop);
+	backdrop-filter: var(--tp-backdrop);
 }
 
-.topic_preview_container:before {
-	/* Upper Triangle */
-	background: #ffffc2;
-	border-top: 1px solid #989898;
-	border-right: 1px solid #989898;
+/* Triangles */
+.topic_preview_container:after,
+.topic_preview_container.invert:before {
+	background: var(--tp-border);
+	border-right: var(--tp-border-style) transparent;
+	border-left: var(--tp-border-style) transparent;
+	box-shadow: 0 4px 8px var(--tp-shadow);
+	width: 0;
+	height: 0;
+	transform: none;
+	-webkit-backdrop-filter: var(--tp-backdrop);
+	backdrop-filter: var(--tp-backdrop);
 }
 
-.topic_preview_container.invert:after {
-	/* Lower Triangle */
-	background: #ffffc2;
-	border-bottom: 1px solid #989898;
-	border-left: 1px solid #989898;
+/* Upper Triangle */
+.topic_preview_container.invert:before {
+	border-bottom: var(--tp-border-style) var(--tp-bg);
+	margin-top: -18px;
+	clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
 }
 
-.topic_preview_avatar img {
-	border: solid 1px #989898;
+/* Lower Triangle */
+.topic_preview_container:after {
+	border-top: var(--tp-border-style) var(--tp-bg);
+	margin-top: 0;
+	clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
 }

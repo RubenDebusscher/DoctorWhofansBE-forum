@@ -10,8 +10,34 @@
 
 namespace vse\topicpreview\core;
 
+use phpbb\auth\auth;
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
+use phpbb\user;
+
 class data extends base
 {
+	/** @var auth */
+	protected $auth;
+
+	/** @var driver_interface */
+	protected $db;
+
+	/**
+	 * Constructor
+	 *
+	 * @param auth   $auth   Auth object
+	 * @param config $config Config object
+	 * @param user   $user   User object
+	 * @param driver_interface $db Database driver
+	 */
+	public function __construct(auth $auth, config $config, user $user, driver_interface $db)
+	{
+		$this->auth = $auth;
+		$this->db = $db;
+		parent::__construct($config, $user);
+	}
+
 	/**
 	 * Update an SQL SELECT statement to get data needed for topic previews
 	 *
@@ -113,10 +139,10 @@ class data extends base
 
 	/**
 	 * Build select statement for user avatar fields, e.g.:
-	 * ', fpu.user_avatar AS fp_avatar
-	 *  , fpu.user_avatar_type AS fp_avatar_type
-	 *  , fpu.user_avatar_width AS fp_avatar_width
-	 *  , fpu.user_avatar_height AS fp_avatar_height'
+	 * ', fpu.user_avatar AS fp_user_avatar
+	 *  , fpu.user_avatar_type AS fp_user_avatar_type
+	 *  , fpu.user_avatar_width AS fp_user_avatar_width
+	 *  , fpu.user_avatar_height AS fp_user_avatar_height'
 	 *
 	 * @param string $prefix First or last post (fp|lp)
 	 *
@@ -127,15 +153,17 @@ class data extends base
 		$sql = '';
 
 		$avatar_ary = array(
-			'user_avatar'        => 'avatar',
-			'user_avatar_type'   => 'avatar_type',
-			'user_avatar_width'  => 'avatar_width',
-			'user_avatar_height' => 'avatar_height',
+			'user_avatar',
+			'user_avatar_type',
+			'user_avatar_width',
+			'user_avatar_height',
+			'username',
+			'user_id'
 		);
 
-		foreach ($avatar_ary as $key => $var)
+		foreach ($avatar_ary as $var)
 		{
-			$sql .= ", {$prefix}u.{$key} AS {$prefix}_$var";
+			$sql .= ", {$prefix}u.$var AS {$prefix}_$var";
 		}
 
 		return $sql;
@@ -177,5 +205,69 @@ class data extends base
 		}
 
 		return $sql_stmt;
+	}
+
+	/**
+	 * Get attachments for topics from a rowset
+	 *
+	 * @param array $rowset Array of topic rows
+	 * @return array Attachments grouped by post_id
+	 */
+	public function get_attachments_for_topics($rowset)
+	{
+		if (!$this->is_enabled() || !$this->attachments_enabled() || !$this->auth->acl_get('u_download'))
+		{
+			return [];
+		}
+
+		$post_ids = [];
+		foreach ($rowset as $row)
+		{
+			if ($row['topic_attachment'] && $this->auth->acl_get('f_download', (int) $row['forum_id']))
+			{
+				$post_ids[] = $row['topic_first_post_id'];
+				if ($this->last_post_enabled() && $row['topic_first_post_id'] !== $row['topic_last_post_id'])
+				{
+					$post_ids[] = $row['topic_last_post_id'];
+				}
+			}
+		}
+
+		if (empty($post_ids))
+		{
+			return [];
+		}
+
+		return $this->get_attachments(array_unique($post_ids));
+	}
+
+	/**
+	 * Get attachments for multiple posts
+	 *
+	 * @param array $post_ids Array of post IDs
+	 * @return array Attachments grouped by post_id
+	 */
+	protected function get_attachments($post_ids)
+	{
+		if (empty($post_ids))
+		{
+			return [];
+		}
+
+		$sql = 'SELECT *
+			FROM ' . ATTACHMENTS_TABLE . '
+			WHERE ' . $this->db->sql_in_set('post_msg_id', $post_ids) . '
+				AND in_message = 0
+			ORDER BY attach_id DESC, post_msg_id ASC';
+		$result = $this->db->sql_query($sql);
+
+		$attachments = [];
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$attachments[$row['post_msg_id']][] = $row;
+		}
+		$this->db->sql_freeresult($result);
+
+		return $attachments;
 	}
 }
