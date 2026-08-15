@@ -105,28 +105,44 @@ class listener implements EventSubscriberInterface
     $flast = array_unique(array_keys($flast));
     $flast = array_merge($flast, array(0));
 	
-//Last active topics
-    $sql = 'SELECT forum_id, topic_id, topic_title, topic_time, topic_views, topic_poster, topic_posts_approved, topic_first_poster_name, topic_first_poster_colour, topic_last_post_id, topic_last_poster_name, topic_last_poster_colour, topic_last_post_time, topic_last_view_time, topic_last_poster_id
-		FROM ' . TOPICS_TABLE . '
-        WHERE ' . $this->db->sql_in_set('forum_id', $flast) . '
-        AND ' . $this->content_visibility->get_visibility_sql('topic', 'topic') . '
-		ORDER BY topic_last_post_time DESC';
+    // Modifica la query per includere la tabella phpbb_forums
+    $sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, t.topic_time, t.topic_views, t.topic_poster, t.topic_posts_approved, t.topic_first_poster_name, t.topic_first_poster_colour, t.topic_last_post_id, t.topic_last_poster_name, t.topic_last_poster_colour, t.topic_last_post_time, t.topic_last_view_time, t.topic_last_poster_id, u.user_id, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, f.forum_name, f.forum_image
+        FROM ' . TOPICS_TABLE . ' t
+        JOIN ' . USERS_TABLE . ' u ON u.user_id = t.topic_last_poster_id
+        JOIN ' . FORUMS_TABLE . ' f ON f.forum_id = t.forum_id
+        WHERE ' . $this->db->sql_in_set('t.forum_id', $flast) . '
+        AND ' . $this->content_visibility->get_visibility_sql('topic', 't') . '
+        ORDER BY t.topic_last_post_time DESC';
 	$result = $this->db->sql_query_limit($sql, $this->config['last_total']);
 	
 	while ($row = $this->db->sql_fetchrow($result))
 	{
-	$this->template->assign_block_vars('last_topic', array(
-            'LAST_LINK'      => append_sid("{$this->phpbb_root_path}viewtopic.$this->phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
-		    'U_LAST_TOPIC'   => append_sid("{$this->phpbb_root_path}viewtopic.$this->phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id']),
-            'LAST_POSTER'     => append_sid("{$this->phpbb_root_path}memberlist.$this->phpEx", 'mode=viewprofile' . '&amp;u=' . $row['topic_poster']),
-		    'USERNAME_LAST'	 => append_sid("{$this->phpbb_root_path}memberlist.$this->phpEx", 'mode=viewprofile' . '&amp;u=' . $row['topic_last_poster_id']),
+		/* Map arguments for  phpbb_get_avatar() */
+		$row_avatar = array(
+			'avatar'		 => $row['user_avatar'],
+			'avatar_type'	 => $row['user_avatar_type'],
+			'avatar_height'	 => 50,
+			'avatar_width'	 => 50,
+		);
+
+		$topic_last_poster_av = (!empty($row['user_avatar'])) ? phpbb_get_avatar($row_avatar, '') : '';
+
+		$this->template->assign_block_vars('last_topic', array(
+			'LAST_LINK'						=> append_sid("{$this->phpbb_root_path}viewtopic.$this->phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
+			'U_LAST_TOPIC'					=> append_sid("{$this->phpbb_root_path}viewtopic.$this->phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id']),
+            'WIEWFORUM_URL'                 => append_sid("{$this->phpbb_root_path}viewforum.$this->phpEx", 'f=' . $row['forum_id']),
+			'LAST_POSTER'					=> append_sid("{$this->phpbb_root_path}memberlist.$this->phpEx", 'mode=viewprofile' . '&amp;u=' . $row['topic_poster']),
+			'USERNAME_LAST'					=> append_sid("{$this->phpbb_root_path}memberlist.$this->phpEx", 'mode=viewprofile' . '&amp;u=' . $row['topic_last_poster_id']),
 			'TOPIC_TITLE'					=> $row['topic_title'],
 			'TOPIC_VIEWS'					=> $row['topic_views'],
-    	    'TOPIC_REPLIES'	                => $row['topic_posts_approved'],
+			'TOPIC_REPLIES'					=> $row['topic_posts_approved'],
 			'TOPIC_LAST_POSTER_NAME'		=> $row['topic_last_poster_name'],
 			'TOPIC_LAST_POSTER_COLOUR'		=> $row['topic_last_poster_colour'],
 			'TOPIC_LAST_POST_TIME'			=> $this->user->format_date($row['topic_last_post_time']),
 			'TOPIC_LAST_VIEW_TIME'			=> $this->user->format_date($row['topic_last_view_time']),
+			'FORUM_NAME'					=> $row['forum_name'],
+			'FORUM_IMAGE'					=> $row['forum_image'],
+			'TOPIC_LAST_POSTER_AV'			=> $topic_last_poster_av,
 		));
 	}
 	$this->db->sql_freeresult($result);

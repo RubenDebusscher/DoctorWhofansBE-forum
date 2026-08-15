@@ -1,39 +1,174 @@
 /**
-*
-* @package phpBB Extension - Advanced Active Topics
-* @copyright (c) 2016 Galandas
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
-*
+* CSS per Advanced Active Topics
+* Gestione layout a due righe e posizionamento avatar
 */
 
-#vertical-ticker{
-	height:20px;
-	overflow:hidden;
-    position:relative;
+/* Contenitore del testo */
+.last-topics-content {
+    display: block !important;
+    overflow: hidden;
+    line-height: 1.4em;
+    padding-left: 2px;
 }
 
-#vertical-ticker li {
+/* Stile per il Titolo */
+.last-topics-title {
+    font-size: 1.1em;
+    font-weight: bold;
+    display: block !important;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Stile per i Dettagli */
+.last-topics-meta {
+    font-size: 0.95em;
+    color: #666;
+    display: block !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.last-topics-meta i {
+    color: #888;
+    margin: 0 3px;
+}
+
+/* --- GESTIONE AVATAR --- */
+
+.last-topics-avatar {
+    float: left;
+    margin-right: 10px;
+    margin-left: 5px;
+    margin-top: -3px;
+}
+
+.last-topics-avatar img {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.last-topics-avatar i.avatar {
+    font-size: 40px !important;
+    line-height: 40px !important;
+    width: 40px !important;
+    height: 40px !important;
+    display: inline-block;
+    text-align: center;
+    color: #888;
+}
+
+/* --- STILI GENERALI DEL TICKER --- */
+
+#vertical-ticker-lastactive {
+    height: 60px;
+    overflow: hidden;
+    position: relative;
+}
+
+#vertical-ticker-lastactive li {
     display: block;
     line-height: 1.3em;
-    font-size: 1.1em;
+    font-size: 1.2em;
+    border-bottom: 1px solid transparent;
 }
 
-#jsdisplay_buttons_top {
-    position: relative;
-    margin-left: 145px;
-    margin-bottom: -15px;
-    bottom: -4px;
+#vertical-ticker-lastactive,
+#vertical-ticker-lastactive li,
+#vertical-ticker-lastactive .row-item {
+    overflow-anchor: none;
 }
 
-#jsdisplay_buttons_fut {
-    position: relative;
-    margin-left: 145px;
-    margin-bottom: 5px;
-    bottom: 38px;
+.ltticker {
+    position: absolute;
+    top: 2px;
+    right: 20px;
 }
+
+i.lttopic {
+    color: #fff;
+    padding-left: 2px;
+    font-size: 20px;
+    line-height: 18px;
+    font-weight: 100;
+}
+
+#vertical-ticker-lastactive .list-inner {
+    padding-left: 0;
+    overflow: visible;
+}
+
+#vertical-ticker-lastactive .row-item dt,
+#vertical-ticker-lastactive .row-item .list-inner {
+    /* Manteniamo semplice come nel backup */
+}
+
+#vertical-ticker-lastactive .row-item .list-inner > a.forumtitle {
+    margin-right: 8px;
+}
+
+
+/* ============================================
+   RESPONSIVE DESIGN (MOBILE)
+   ============================================ */
 
 @media all and (max-width: 700px), all and (max-device-width: 700px) {
-	#last-topics {
-		display: none;
-	}
+    
+    #last-topics {
+        display: block !important;
+    }
+
+    #vertical-ticker-lastactive {
+        height: 60px; 
+    }
+
+    .last-topics-title {
+        font-size: 14px;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        width: 100%;
+        display: block;
+    }
+
+    .last-topics-meta {
+        font-size: 11px;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        width: 100%;
+        display: block;
+        margin-top: 2px;
+    }
+
+    #last-topics dd.topics, 
+    #last-topics dd.posts, 
+    #last-topics dd.lastpost {
+        display: none !important;
+    }
+
+    .last-topics-avatar {
+        margin-right: 8px;
+        margin-left: 0;
+    }
+}
+
+/* ============================================
+   NASCONDE COMPLETAMENTE I DUE BLOCCHI
+   ============================================ */
+
+@media all and (max-width: 700px), all and (max-device-width: 700px) {
+    
+    .last-topics-top-block {
+        display: none !important;
+    }
+	
+    #last-topics.last-topics-mobile-hide {
+        display: none !important;
+    }
 }

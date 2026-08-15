@@ -1,18 +1,23 @@
-<!-- IF LASTAT_ENABLE -->
-<!-- INCLUDEJS jquery.totemticker.js -->
-<script type="text/javascript">
-// <![CDATA[
-    $( document ).ready(function () {
-        $('#vertical-ticker').totemticker({
-        row_height  :   '20px',
-		next		:	'#ticker-next',
-		previous	:	'#ticker-previous',
-		stop		:	'#stop',
-		start		:	'#start',
-		mousestop	:	true,
-		direction	:	'<!-- IF LASTAT_DIRECTION -->down<!-- ELSE -->up<!-- ENDIF -->'
+{% if LASTAT_ENABLE %}
+{% INCLUDEJS '@galandas_lasttopics/jquery.totemticker.js' %}
+<script>
+(function($){
+    'use strict';
+    $(document).ready(function () {
+        var $ticker = $('#vertical-ticker-lastactive'); // ID unico
+        if (!$ticker.length) return;
+
+        $ticker.totemticker({
+            row_height  : '50px',
+            max_items   : 1,  // mostra 1 elemento alla volta
+            next        : '#ticker-lastactive-next',
+            previous    : '#ticker-lastactive-previous',
+            stop        : '#ticker-lastactive-stop',
+            start       : '#ticker-lastactive-start',
+            mousestop   : true,
+            direction   : '{% if LASTAT_DIRECTION %}down{% else %}up{% endif %}'
+        });
     });
-});
-// ]]>	
+})(jQuery);
 </script>
-<!-- ENDIF -->
+{% endif %}

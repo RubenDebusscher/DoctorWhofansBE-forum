@@ -19,7 +19,7 @@ class lasttopics_install extends \phpbb\db\migration\migration
     {
       return array(
         // Add configs
-        array('config.add', array('last_topic_version', '1.0.1')),		 
+        array('config.add', array('last_topic_version', '2.0.0')),		 
         array('config.add', array('last_total', 5)),
         array('config.add', array('lastat_direction', 0)),
         array('config.add', array('lastat_type', 0)),		 
