@@ -1,18 +1,30 @@
-name: Build phpBB
+name: Deploy phpBB to one.com
 
 on:
   push:
     branches:
       - main
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      # ---------------------------------------------------------
+      # 1. Checkout
+      # ---------------------------------------------------------
+      - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+      # ---------------------------------------------------------
+      # 2. Setup PHP
+      # ---------------------------------------------------------
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -20,11 +32,297 @@ jobs:
           extensions: mbstring, json
           coverage: none
 
+      # ---------------------------------------------------------
+      # 3. Build vendor
+      # ---------------------------------------------------------
       - name: Install Composer dependencies
-        run: composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+        run: |
+          composer install \
+            --no-dev \
+            --prefer-dist \
+            --no-interaction \
+            --optimize-autoloader
 
       - name: Verify build
         run: |
-          test -d vendor
           test -f vendor/autoload.php
           echo "Build succesvol"
+
+      # ---------------------------------------------------------
+      # 4. Determine changed files
+      # ---------------------------------------------------------
+      - name: Determine changed files
+        id: changes
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          echo "Changes between:"
+          echo "$BEFORE"
+          echo "$AFTER"
+
+          git diff --name-status "$BEFORE" "$AFTER"
+
+          # Added / Modified / Renamed / Copied files
+          git diff --name-only \
+            --diff-filter=ACMRT \
+            "$BEFORE" "$AFTER" \
+            > /tmp/changed-files.txt
+
+          # Deleted files
+          git diff --name-only \
+            --diff-filter=D \
+            "$BEFORE" "$AFTER" \
+            > /tmp/deleted-files.txt
+
+          echo
+          echo "Changed files:"
+          cat /tmp/changed-files.txt || true
+
+          echo
+          echo "Deleted files:"
+          cat /tmp/deleted-files.txt || true
+
+      # ---------------------------------------------------------
+      # 5. Check whether Composer files changed
+      # ---------------------------------------------------------
+      - name: Check Composer changes
+        id: composer
+        run: |
+          if grep -Eq '^(composer\.json|composer\.lock)$' /tmp/changed-files.txt; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Composer files changed: full vendor deployment required."
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Composer files unchanged."
+          fi
+
+      # ---------------------------------------------------------
+      # 6. Find PR associated with this commit
+      # ---------------------------------------------------------
+      - name: Check deployment delete authorization
+        id: delete_auth
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          echo "Checking associated pull request..."
+
+          PR_BODY=$(curl -fsSL \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "X-GitHub-Api-Version: 2026-03-10" \
+            "https://api.github.com/repos/$REPO/commits/$SHA/pulls" \
+            | jq -r '.[0].body // ""')
+
+          if printf '%s' "$PR_BODY" | grep -q 'DEPLOY_DELETE'; then
+            echo "authorized=true" >> "$GITHUB_OUTPUT"
+            echo "DEPLOY_DELETE found in pull request."
+            echo "Deleted files WILL be removed from one.com."
+          else
+            echo "authorized=false" >> "$GITHUB_OUTPUT"
+            echo "DEPLOY_DELETE not found."
+            echo "Deleted files will NOT be removed from one.com."
+          fi
+
+      # ---------------------------------------------------------
+      # 7. Install SFTP tooling
+      # ---------------------------------------------------------
+      - name: Install SFTP tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass
+
+      # ---------------------------------------------------------
+      # 8. Prepare deployment lists
+      # ---------------------------------------------------------
+      - name: Prepare deployment
+        env:
+          COMPOSER_CHANGED: ${{ steps.composer.outputs.changed }}
+          DELETE_AUTHORIZED: ${{ steps.delete_auth.outputs.authorized }}
+        run: |
+          mkdir -p /tmp/deploy
+
+          # -----------------------------------------------------
+          # Files that are explicitly changed in Git
+          # -----------------------------------------------------
+          grep -vE '^(\\.env|cache/|files/|store/)' \
+            /tmp/changed-files.txt \
+            > /tmp/deploy/files.txt || true
+
+          # Never upload workflow files
+          grep -v '^\.github/' \
+            /tmp/deploy/files.txt \
+            > /tmp/deploy/files.tmp || true
+
+          mv /tmp/deploy/files.tmp /tmp/deploy/files.txt
+
+          # -----------------------------------------------------
+          # If composer.json or composer.lock changed,
+          # deploy the complete generated vendor directory.
+          # -----------------------------------------------------
+          if [ "$COMPOSER_CHANGED" = "true" ]; then
+            echo "Composer changed: deploying complete vendor directory."
+
+            find vendor -type f \
+              >> /tmp/deploy/files.txt
+          fi
+
+          # Remove duplicates
+          sort -u /tmp/deploy/files.txt -o /tmp/deploy/files.txt
+
+          echo
+          echo "Files to deploy:"
+          cat /tmp/deploy/files.txt || true
+
+          # -----------------------------------------------------
+          # Deleted files
+          # -----------------------------------------------------
+          if [ -s /tmp/deleted-files.txt ]; then
+            echo
+            echo "Deleted files detected:"
+            cat /tmp/deleted-files.txt
+
+            if [ "$DELETE_AUTHORIZED" = "true" ]; then
+              cp /tmp/deleted-files.txt /tmp/deploy/delete.txt
+            else
+              cp /tmp/deleted-files.txt /tmp/deploy/DEPLOY_DELETIONS.txt
+            fi
+          fi
+
+      # ---------------------------------------------------------
+      # 9. Upload changed files
+      # ---------------------------------------------------------
+      - name: Upload changed files
+        env:
+          SFTP_HOST: ${{ secrets.ONECOM_HOST }}
+          SFTP_USER: ${{ secrets.ONECOM_USER }}
+          SFTP_PASSWORD: ${{ secrets.ONECOM_PASSWORD }}
+        run: |
+          if [ ! -s /tmp/deploy/files.txt ]; then
+            echo "No files need to be uploaded."
+            exit 0
+          fi
+
+          cd "$GITHUB_WORKSPACE"
+
+          python3 <<'PY'
+          from pathlib import Path
+
+          remote_root = "/customers/e/a/c/doctorwhofans.be/httpd.www/forum"
+          files = Path("/tmp/deploy/files.txt").read_text().splitlines()
+
+          with open("/tmp/sftp-upload.txt", "w") as f:
+              for file in files:
+                  file = file.strip()
+
+                  if not file:
+                      continue
+
+                  remote = f"{remote_root}/{file}"
+                  remote_dir = remote.rsplit("/", 1)[0]
+
+                  # mkdir may fail when directory already exists.
+                  # SFTP continues because the command is wrapped
+                  # in a shell-level conditional.
+                  f.write(f'mkdir "{remote_dir}"\n')
+                  f.write(f'put "{file}" "{remote}"\n')
+
+              f.write("bye\n")
+          PY
+
+          echo "Starting SFTP upload..."
+
+          sshpass -p "$SFTP_PASSWORD" sftp \
+            -o StrictHostKeyChecking=no \
+            -P 22 \
+            -b /tmp/sftp-upload.txt \
+            "$SFTP_USER@$SFTP_HOST"
+
+      # ---------------------------------------------------------
+      # 10. Delete files when explicitly authorized
+      # ---------------------------------------------------------
+      - name: Delete removed files
+        if: steps.delete_auth.outputs.authorized == 'true' && hashFiles('/tmp/deploy/delete.txt') != ''
+        env:
+          SFTP_HOST: ${{ secrets.ONECOM_HOST }}
+          SFTP_USER: ${{ secrets.ONECOM_USER }}
+          SFTP_PASSWORD: ${{ secrets.ONECOM_PASSWORD }}
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          remote_root = "/customers/e/a/c/doctorwhofans.be/httpd.www/forum"
+          files = Path("/tmp/deploy/delete.txt").read_text().splitlines()
+
+          with open("/tmp/sftp-delete.txt", "w") as f:
+              for file in files:
+                  file = file.strip()
+
+                  if not file:
+                      continue
+
+                  # Safety: never allow deletion outside forum/
+                  if (
+                      not file
+                      or file.startswith("/")
+                      or ".." in Path(file).parts
+                  ):
+                      print(f"Skipping unsafe deletion: {file}")
+                      continue
+
+                  remote = f"{remote_root}/{file}"
+                  f.write(f'remote rm "{remote}"\n')
+
+              f.write("bye\n")
+          PY
+
+          echo "Deleting files from one.com..."
+
+          sshpass -p "$SFTP_PASSWORD" sftp \
+            -o StrictHostKeyChecking=no \
+            -P 22 \
+            -b /tmp/sftp-delete.txt \
+            "$SFTP_USER@$SFTP_HOST"
+
+      # ---------------------------------------------------------
+      # 11. Create deletion report when deletion wasn't authorized
+      # ---------------------------------------------------------
+      - name: Upload deletion report
+        if: steps.delete_auth.outputs.authorized == 'false' && hashFiles('/tmp/deploy/DEPLOY_DELETIONS.txt') != ''
+        env:
+          SFTP_HOST: ${{ secrets.ONECOM_HOST }}
+          SFTP_USER: ${{ secrets.ONECOM_USER }}
+          SFTP_PASSWORD: ${{ secrets.ONECOM_PASSWORD }}
+        run: |
+          echo "Creating deletion report on one.com..."
+
+          sshpass -p "$SFTP_PASSWORD" sftp \
+            -o StrictHostKeyChecking=no \
+            -P 22 \
+            "$SFTP_USER@$SFTP_HOST" <<EOF
+          cd /customers/e/a/c/doctorwhofans.be/httpd.www/forum
+          put /tmp/deploy/DEPLOY_DELETIONS.txt DEPLOY_DELETIONS.txt
+          bye
+          EOF
+
+      # ---------------------------------------------------------
+      # 12. Summary
+      # ---------------------------------------------------------
+      - name: Deployment summary
+        env:
+          DELETE_AUTHORIZED: ${{ steps.delete_auth.outputs.authorized }}
+          COMPOSER_CHANGED: ${{ steps.composer.outputs.changed }}
+        run: |
+          echo "=========================================="
+          echo "Deployment completed"
+          echo "=========================================="
+          echo "Commit:             $GITHUB_SHA"
+          echo "Composer changed:   $COMPOSER_CHANGED"
+          echo "Delete authorized:  $DELETE_AUTHORIZED"
+          echo
+          echo "Files deployed:"
+          cat /tmp/deploy/files.txt || true
+          echo
+          echo "=========================================="
