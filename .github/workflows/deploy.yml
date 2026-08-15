@@ -10,10 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Install sshpass
         run: sudo apt-get update && sudo apt-get install -y sshpass
 
-      - name: Test SFTP connection
+      - name: Upload test file
         env:
           SFTP_HOST: ${{ secrets.ONECOM_HOST }}
           SFTP_USER: ${{ secrets.ONECOM_USER }}
@@ -23,10 +26,7 @@ jobs:
             -o StrictHostKeyChecking=no \
             -P 22 \
             "$SFTP_USER@$SFTP_HOST" <<'EOF'
-          pwd
-          ls -la
-          cd forum
-          pwd
-          ls -la
+          cd /customers/e/a/c/doctorwhofans.be/httpd.www/forum
+          put deploy-test.txt
           bye
           EOF
