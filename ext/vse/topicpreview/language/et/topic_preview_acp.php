@@ -2,8 +2,9 @@
 /**
 *
 * Topic Preview [Estonian]
+* Estonian translation by phpBBeesti.ee [Exabot]
 *
-* @copyright (c) 2013 Matt Friedman, (c) 2014 phpbbeesti.com
+* @copyright (c) 2013 Matt Friedman
 * @license GNU General Public License, version 2 (GPL-2.0)
 *
 */
@@ -43,6 +44,10 @@ $lang = array_merge($lang, array(
 	'TOPIC_PREVIEW_STRIP_EXPLAIN'	=> 'Sisesta nimekiri BBkoodidest, mida sa ei soovi näidata teema eelvaates (näiteks, spoilerid ja peidetud teksti BBkoodid). Eralda mitu BBkoodi kasutades | sümbolit, näiteks: spoiler|hide|code',
 	'TOPIC_PREVIEW_AVATARS'			=> 'Näita avatare teema eelvaates',
 	'TOPIC_PREVIEW_LAST_POST'		=> 'Näita “viimase postituse” teksti teema eelvaates',
+	'TOPIC_PREVIEW_RICH_TEXT'		=> 'Display rich-text previews',
+	'TOPIC_PREVIEW_RICH_TEXT_EXPLAIN'=> 'Previews will display formatted content with full BBCode rendering. When disabled, previews show plain text only.',
+	'TOPIC_PREVIEW_RICH_ATT'		=> 'Display attachments in rich-text previews',
+	'TOPIC_PREVIEW_RICH_ATT_EXPLAIN'=> 'Show attached files in rich-text previews. Disable this if you want to reduce server load.',
 	'CHARS'							=> 'Sümbolid',
 
 	'TOPIC_PREVIEW_STYLE_SETTINGS'	=> 'Teema eelvaate stiili seaded',

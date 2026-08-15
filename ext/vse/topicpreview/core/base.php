@@ -50,7 +50,7 @@ class base
 	 */
 	public function avatars_enabled()
 	{
-		return (bool) $this->config['topic_preview_avatars'] && $this->config['allow_avatar'] && $this->user->optionget('viewavatars');
+		return $this->config['topic_preview_avatars'] && $this->config['allow_avatar'] && $this->user->optionget('viewavatars');
 	}
 
 	/**
@@ -61,5 +61,15 @@ class base
 	public function last_post_enabled()
 	{
 		return (bool) $this->config['topic_preview_last_post'];
+	}
+
+	/**
+	 * Show attachments, given current board configuration
+	 *
+	 * @return bool
+	 */
+	public function attachments_enabled()
+	{
+		return $this->config['topic_preview_rich_text'] && $this->config['topic_preview_rich_attachments'] && $this->config['allow_attachments'];
 	}
 }

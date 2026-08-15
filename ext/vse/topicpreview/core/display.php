@@ -10,23 +10,27 @@
 
 namespace vse\topicpreview\core;
 
+use phpbb\avatar\helper as avatar_helper;
+use phpbb\auth\auth;
 use phpbb\config\config;
 use phpbb\event\dispatcher_interface;
 use phpbb\language\language;
 use phpbb\template\template;
 use phpbb\user;
-use vse\topicpreview\core\trim\trim;
 
 class display extends base
 {
 	/** @var int default width of topic preview */
-	const PREVIEW_SIZE = 360;
-
-	/** @var int default height and width of topic preview avatars */
-	const AVATAR_SIZE = 60;
+	public const PREVIEW_SIZE = 360;
 
 	/** @var string */
-	const NO_AVATAR = 'no-avatar';
+	public const NO_AVATAR = 'no-avatar';
+
+	/** @var avatar_helper|null */
+	protected $avatar_helper;
+
+	/** @var auth */
+	protected $auth;
 
 	/** @var dispatcher_interface */
 	protected $dispatcher;
@@ -40,26 +44,36 @@ class display extends base
 	/** @var string phpBB root path */
 	protected $root_path;
 
-	/** @var trim */
-	protected $trim;
+	/** @var renderer */
+	protected $renderer;
+
+	/** @var string|false */
+	protected $topic_preview_theme;
+
+	/** @var array */
+	protected $attachments_cache = [];
 
 	/**
 	 * Constructor
 	 *
+	 * @param auth                 $auth       Auth object
 	 * @param config               $config     Config object
 	 * @param dispatcher_interface $dispatcher Event dispatcher object
 	 * @param language             $language   Language object
 	 * @param template             $template   Template object
-	 * @param trim                 $trim       Trim text object
+	 * @param renderer             $renderer   Text renderer object
 	 * @param user                 $user       User object
 	 * @param string               $root_path
+	 * @param avatar_helper|null   $avatar_helper Avatar helper object (phpBB 4.0.0)
 	 */
-	public function __construct(config $config, dispatcher_interface $dispatcher, language $language, template $template, trim $trim, user $user, $root_path)
+	public function __construct(auth $auth, config $config, dispatcher_interface $dispatcher, language $language, template $template, renderer $renderer, user $user, $root_path, avatar_helper $avatar_helper = null)
 	{
+		$this->avatar_helper = $avatar_helper;
+		$this->auth = $auth;
 		$this->dispatcher = $dispatcher;
 		$this->language = $language;
 		$this->template = $template;
-		$this->trim = $trim;
+		$this->renderer = $renderer;
 		$this->root_path = $root_path;
 		parent::__construct($config, $user);
 
@@ -71,15 +85,18 @@ class display extends base
 	 */
 	public function setup()
 	{
-		// Load our language file (only needed if showing last post text)
+		// Load language file (needed since we're rendering post-content)
 		if ($this->last_post_enabled())
 		{
+			$this->language->add_lang('viewtopic');
 			$this->language->add_lang('topic_preview', 'vse/topicpreview');
 		}
 
+		$this->topic_preview_theme = $this->get_theme();
+
 		$this->template->assign_vars(array(
 			'S_TOPICPREVIEW'		=> $this->is_enabled(),
-			'TOPICPREVIEW_THEME'	=> $this->get_theme(),
+			'TOPICPREVIEW_THEME'	=> $this->topic_preview_theme,
 			'TOPICPREVIEW_DELAY'	=> $this->config['topic_preview_delay'],
 			'TOPICPREVIEW_DRIFT'	=> $this->config['topic_preview_drift'],
 			'TOPICPREVIEW_WIDTH'	=> !empty($this->config['topic_preview_width']) ? $this->config['topic_preview_width'] : self::PREVIEW_SIZE,
@@ -96,7 +113,7 @@ class display extends base
 	 */
 	public function display_topic_preview($row, $block)
 	{
-		if (!$this->is_enabled())
+		if (!$this->is_enabled() || !$this->auth->acl_get('f_read', (int) $row['forum_id']))
 		{
 			return $block;
 		}
@@ -130,7 +147,7 @@ class display extends base
 	 * This handles the trimming and censoring
 	 *
 	 * @param array  $row  User row data
-	 * @param string $post The first or last post text column key
+	 * @param string $post The first or last post-text column key
 	 *
 	 * @return string The trimmed and censored topic preview text
 	 */
@@ -142,7 +159,22 @@ class display extends base
 			return '';
 		}
 
-		return censor_text($this->trim->trim_text($row[$post], $this->config['topic_preview_limit']));
+		$attachments = [];
+		if ($this->attachments_cache)
+		{
+			$post_id = $post === 'first_post_text' ? $row['topic_first_post_id'] : $row['topic_last_post_id'];
+			$attachments = $this->attachments_cache[$post_id] ?? [];
+		}
+
+		return $this->renderer->render_text(
+			$row[$post],
+			(int) $this->config['topic_preview_limit'],
+			$this->config['topic_preview_strip_bbcodes'],
+			(bool) $this->config['topic_preview_rich_text'],
+			(bool) $this->topic_preview_theme,
+			$attachments,
+			$row['forum_id']
+		);
 	}
 
 	/**
@@ -151,7 +183,7 @@ class display extends base
 	 * @param array  $row    User row data
 	 * @param string $poster Type of poster, fp or lp
 	 *
-	 * @return string Avatar image
+	 * @return string|array Avatar image
 	 */
 	protected function get_user_avatar_helper($row, $poster)
 	{
@@ -160,27 +192,40 @@ class display extends base
 			return '';
 		}
 
-		$avatar = '';
-		if (!empty($row[$poster . '_avatar']))
+		$fields = [
+			'user_avatar',
+			'user_avatar_type',
+			'user_avatar_width',
+			'user_avatar_height',
+			'username',
+			'user_id',
+		];
+
+		$map = [];
+		foreach ($fields as $field)
 		{
-			$map = array(
-				'avatar'		=> $row[$poster . '_avatar'],
-				'avatar_type'	=> $row[$poster . '_avatar_type'],
-				'avatar_width'	=> $row[$poster . '_avatar_width'],
-				'avatar_height'	=> $row[$poster . '_avatar_height'],
-			);
+			$map[$field] = $row[$poster . '_' . $field] ?? '';
+		}
+
+		$avatar = '';
+		if ($this->avatar_helper !== null)
+		{
+			$avatar = $this->avatar_helper->get_user_avatar($map, 'USER_AVATAR', false, true);
+		}
+		else if (!empty($row[$poster . '_user_avatar']) && function_exists('phpbb_get_user_avatar'))
+		{
 			$avatar = phpbb_get_user_avatar($map, 'USER_AVATAR', false, true);
 		}
 
-		// If avatar string is empty, fall back to no_avatar.gif
+		// If the avatar string is empty, fall back to no_avatar.gif
 		return $avatar ?: self::NO_AVATAR;
 	}
 
 	/**
-	 * Get user's style topic preview theme
+	 * Get a user's style topic preview theme
 	 * Fall back to no theme if expected theme not found
 	 *
-	 * @return mixed Theme name if theme file found, false otherwise
+	 * @return mixed Theme name if a theme file found, false otherwise
 	 */
 	protected function get_theme()
 	{
@@ -190,5 +235,15 @@ class display extends base
 		}
 
 		return false;
+	}
+
+	/**
+	 * Set attachments cache
+	 *
+	 * @param array $attachments Attachments grouped by post_id
+	 */
+	public function set_attachments_cache($attachments)
+	{
+		$this->attachments_cache = $attachments;
 	}
 }

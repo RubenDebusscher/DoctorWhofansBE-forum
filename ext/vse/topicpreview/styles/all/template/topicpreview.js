@@ -1,6 +1,6 @@
 /**
  * jQuery ToolTips for Topic Preview
- * https://github.com/VSEphpbb/topic_preview
+ * https://github.com/iMattPro/topic_preview
  *
  * Copyright 2013, Matt Friedman
  * Licensed under the GPL Version 2 license.
@@ -21,16 +21,17 @@
 				position: { left: 35, top: 25 }
 			}, options),
 			previewTimeout,
+			hideTimeout,
 			previewContainer = $('<div id="topic_preview" class="topic_preview_container"></div>').css('width', settings.width).appendTo('body');
 
-		// Do not allow delay times less than 300ms to prevent tooltip madness
+		// Do not allow delay times less than 300 ms to prevent tooltip madness
 		settings.delay = Math.max(settings.delay, 300);
 
 		$('.topic_preview_avatar')
 			// Add rtl class for right-to-left languages to avatar images
 			.toggleClass('rtl', (settings.dir === 'rtl'))
 			.children('img')
-			.brokenImage({ replacement: settings.noavatar })
+			.brokenImage({})
 		;
 
 		// Display the topic preview tooltip
@@ -47,7 +48,12 @@
 
 			// clear any existing timeouts
 			if (previewTimeout) {
-				previewTimeout = clearTimeout(previewTimeout);
+				clearTimeout(previewTimeout);
+				previewTimeout = undefined;
+			}
+			if (hideTimeout) {
+				clearTimeout(hideTimeout);
+				hideTimeout = undefined;
 			}
 
 			// remove original titles to prevent overlap
@@ -60,17 +66,19 @@
 				// clear the timeout var after delay and function begins to execute
 				previewTimeout = undefined;
 
-				// Fill the topic preview
-				previewContainer.html(content);
+				// Fill the topic preview with scrollable content
+				previewContainer.html('<div class="topic_preview_scrollable">' + content + '</div>');
+
+				// Remove postimage class from images to prevent lightbox extension styling
+				previewContainer.find('img.postimage').removeClass('postimage');
 
 				// Pointer offset
 				var pointerOffset = 8;
 
-				// Window bottom edge detection, invert topic preview if needed
-				var previewTop = obj.offset().top + settings.position.top,
-					previewBottom = previewTop + previewContainer.height() + pointerOffset;
-				previewContainer.toggleClass('invert', edgeDetect(previewBottom));
-				previewTop = edgeDetect(previewBottom) ? obj.offset().top - previewContainer.outerHeight(true) - pointerOffset : previewTop;
+				// Window top-edge detection, invert topic preview if needed
+				var previewTop = obj.offset().top - previewContainer.outerHeight(true) - pointerOffset;
+				previewContainer.toggleClass('invert', !topEdgeDetect(previewTop));
+				previewTop = topEdgeDetect(previewTop) ? previewTop : obj.offset().top + settings.position.top;
 
 				// Display the topic preview positioned relative to the hover object
 				previewContainer
@@ -81,6 +89,20 @@
 					})
 					.fadeIn('fast') // display the topic preview with a fadein
 				;
+
+				// Add hover handlers to the preview container to keep it visible
+				previewContainer
+					.off('mouseenter mouseleave') // Remove any existing handlers
+					.on('mouseenter', function() {
+						if (hideTimeout) {
+							clearTimeout(hideTimeout);
+							hideTimeout = undefined;
+						}
+					})
+					.on('mouseleave', function() {
+						hideTopicPreview.call(obj);
+					})
+				;
 			}, settings.delay); // Use a delay before showing in topic preview
 		};
 
@@ -90,29 +112,40 @@
 
 			// clear any existing timeouts
 			if (previewTimeout) {
-				previewTimeout = clearTimeout(previewTimeout);
+				clearTimeout(previewTimeout);
+				previewTimeout = undefined;
 			}
 
-			// Remove topic preview
-			previewContainer
-				.stop(true, true) // stop any running animations first
-				.fadeOut('fast') // hide the topic preview with a fadeout
-				.animate({
-					top: '-=' + settings.drift + 'px'
-				}, {
-					duration: 'fast',
-					queue: false,
-					complete: function() {
-						// animation complete
-					}
-				})
-			;
-			obj.restoreTitles('dt').restoreTitles('dl'); // reinstate original title attributes
+			// Add a small delay before hiding to allow mouse to move to tooltip
+			hideTimeout = setTimeout(function() {
+				hideTimeout = undefined;
+
+				// Remove topic preview
+				previewContainer
+					.stop(true, true) // stop any running animations first
+					.fadeOut('fast') // hide the topic preview with a fadeout
+					.animate({
+						top: '-=' + settings.drift + 'px'
+					}, {
+						duration: 'fast',
+						queue: false,
+						complete: function() {
+							// animation complete
+						}
+					})
+				;
+				obj.restoreTitles('dt').restoreTitles('dl'); // reinstate original title attributes
+			}, 100); // Small delay to allow mouse movement to tooltip
 		};
 
-		// Check if y coord is within 50 pixels of bottom edge of browser window
-		var edgeDetect = function(y) {
-			return (y >= ($(window).scrollTop() + $(window).height() - 50));
+		// Check if y coordinate is within 50 pixels of the bottom edge of a browser window
+		// var bottomEdgeDetect = function(y) {
+		// 	return (y >= ($(window).scrollTop() + $(window).height() - 50));
+		// };
+
+		// Check if y coordinate is within 50 pixels of the top edge of a browser window
+		var topEdgeDetect = function(y) {
+			return (y >= ($(window).scrollTop() + 50));
 		};
 
 		return this.each(function() {
@@ -120,11 +153,16 @@
 				.on('mouseenter', showTopicPreview)
 				.on('mouseleave', hideTopicPreview)
 				.on('click', function() {
-					// Remove topic preview immediately on click as failsafe
+					// Remove the topic preview immediately on click as failsafe
 					previewContainer.hide();
 					// clear any existing timeouts
 					if (previewTimeout) {
-						previewTimeout = clearTimeout(previewTimeout);
+						clearTimeout(previewTimeout);
+						previewTimeout = undefined;
+					}
+					if (hideTimeout) {
+						clearTimeout(hideTimeout);
+						hideTimeout = undefined;
 					}
 				})
 			;
@@ -154,20 +192,16 @@
 				});
 
 				setTimeout(function() {
-					var test = new Image(); // Virgin image with no styles to affect dimensions
-					test.src = image.src;
-
-					if (test.height === 0) {
+					// Check if the image failed to load with fallback for older browsers
+					var isIncomplete = image.complete !== undefined ? !image.complete : false;
+					var hasNoHeight = image.naturalHeight !== undefined ? image.naturalHeight === 0 : image.height === 0;
+					if (isIncomplete || hasNoHeight) {
 						insertPlaceholder();
 					}
 				}, options.timeout);
 
 				function insertPlaceholder() {
-					if (options.replacement) {
-						image.src = options.replacement;
-					} else {
-						$(image).css('visibility', 'hidden');
-					}
+					$(image).replaceWith('<div class="topic_preview_no_avatar"></div>');
 				}
 			});
 		},
