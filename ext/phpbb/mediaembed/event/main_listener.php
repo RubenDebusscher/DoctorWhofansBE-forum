@@ -25,6 +25,9 @@ use Symfony\Component\Yaml\Yaml;
  */
 class main_listener implements EventSubscriberInterface
 {
+	/** @var string A link to a rich content media site for demo purposes */
+	public const MEDIA_DEMO_URL = 'https://youtu.be/Ne18ZQ7LLI0';
+
 	/** @var auth */
 	protected $auth;
 
@@ -52,13 +55,16 @@ class main_listener implements EventSubscriberInterface
 	/** @var bool Disable the media tag (bbcode parsing) */
 	protected $disable_tag = false;
 
+	/** @var bool|null Cached result of is_phpbb4() */
+	protected $is_phpbb4;
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public static function getSubscribedEvents()
 	{
 		return [
-			'core.text_formatter_s9e_configure_after'	=> [['add_custom_sites', 3], ['enable_media_sites', 2], ['configure_url_parsing', 1]],
+			'core.text_formatter_s9e_configure_after'	=> [['add_custom_sites', 3], ['enable_media_sites', 2], ['configure_url_parsing', 1], ['modify_tag_templates', 0]],
 			'core.display_custom_bbcodes'				=> 'setup_media_bbcode',
 			'core.permissions'							=> 'set_permissions',
 			'core.help_manager_add_block_before'		=> 'media_embed_help',
@@ -67,19 +73,20 @@ class main_listener implements EventSubscriberInterface
 			'core.message_parser_check_message'			=> [['check_signature'], ['check_magic_urls'], ['check_bbcode_enabled']],
 			'core.text_formatter_s9e_parser_setup'		=> [['disable_media_embed'], ['setup_cache_dir']],
 			'core.page_header' 							=> 'setup_media_configs',
+			'core.page_footer'							=> 'append_agreement',
 		];
 	}
 
 	/**
 	 * Constructor
 	 *
-	 * @param auth                  $auth
-	 * @param config                $config
-	 * @param db_text               $config_text
-	 * @param language              $language
-	 * @param template              $template
-	 * @param customsitescollection $custom_sites
-	 * @param string                $cache_dir
+	 * @param auth					$auth
+	 * @param config				$config
+	 * @param db_text				$config_text
+	 * @param language				$language
+	 * @param template				$template
+	 * @param customsitescollection	$custom_sites
+	 * @param string				$cache_dir
 	 */
 	public function __construct(auth $auth, config $config, db_text $config_text, language $language, template $template, customsitescollection $custom_sites, $cache_dir)
 	{
@@ -100,12 +107,29 @@ class main_listener implements EventSubscriberInterface
 	 */
 	public function add_custom_sites($event)
 	{
+		$phpbb4_builtins = array_flip([
+			'applepodcasts',
+			'bluesky',
+			'bunny',
+			'facebook',
+			'mastodon',
+			'pastebin',
+			'threads',
+			'twitter',
+			'vk',
+		]);
+
 		foreach ($this->custom_sites->get_collection() as $site)
 		{
-			$event['configurator']->MediaEmbed->defaultSites->add(
-				basename($site, ext::YML),
-				Yaml::parse(file_get_contents($site))
-			);
+			$name = basename($site, ext::YML);
+
+			// Skip built-in sites when running phpBB 4
+			if (isset($phpbb4_builtins[$name]) && $this->is_phpbb4())
+			{
+				continue;
+			}
+
+			$event['configurator']->MediaEmbed->defaultSites->add($name, Yaml::parseFile($site));
 		}
 	}
 
@@ -153,6 +177,32 @@ class main_listener implements EventSubscriberInterface
 	}
 
 	/**
+	 * Modify bbcode tag templates
+	 *
+	 * @param \phpbb\event\data $event The event object
+	 * @return void
+	 */
+	public function modify_tag_templates($event)
+	{
+		try
+		{
+			// force YouTube to use the no cookies until the user starts video playback, and fix referrer policy issues
+			$tag = $event['configurator']->tags['YOUTUBE'];
+			$tag->template = str_replace('www.youtube.com', 'www.youtube-nocookie.com', $tag->template);
+			if (!$this->is_phpbb4())
+			{
+				$tag->template = str_replace(' allowfullscreen', ' referrerpolicy="origin" allowfullscreen', $tag->template);
+			}
+
+			$event['configurator']->finalize();
+		}
+		catch (\RuntimeException $e)
+		{
+			// do nothing
+		}
+	}
+
+	/**
 	 * Set template switch for displaying the [media] BBCode button
 	 *
 	 * @return void
@@ -193,14 +243,14 @@ class main_listener implements EventSubscriberInterface
 			]);
 
 			$uid = $bitfield = $flags = '';
-			$demo_text = $this->language->lang('HELP_EMBEDDING_MEDIA_DEMO');
+			$demo_text = self::MEDIA_DEMO_URL;
 			generate_text_for_storage($demo_text, $uid, $bitfield, $flags, true, true);
 			$demo_display = generate_text_for_display($demo_text, $uid, $bitfield, $flags);
 			$list_sites = implode(', ', $this->get_siteIds());
 
 			$this->template->assign_block_vars('faq_block.faq_row', [
 				'FAQ_QUESTION'	=> $this->language->lang('HELP_EMBEDDING_MEDIA_QUESTION'),
-				'FAQ_ANSWER'	=> $this->language->lang('HELP_EMBEDDING_MEDIA_ANSWER', $demo_text, $demo_display, $list_sites),
+				'FAQ_ANSWER'	=> $this->language->lang('HELP_EMBEDDING_MEDIA_ANSWER', self::MEDIA_DEMO_URL, $demo_display, $list_sites),
 			]);
 		}
 	}
@@ -340,5 +390,35 @@ class main_listener implements EventSubscriberInterface
 		$siteIds = $this->config_text->get('media_embed_sites');
 
 		return $siteIds ? json_decode($siteIds, true) : [];
+	}
+
+	/**
+	 * Appends additional language to the privacy policy agreement text.
+	 *
+	 * @return void
+	 */
+	public function append_agreement()
+	{
+		if (!$this->template->retrieve_var('S_AGREEMENT') || ($this->template->retrieve_var('AGREEMENT_TITLE') !== $this->language->lang('PRIVACY')))
+		{
+			return;
+		}
+
+		$this->language->add_lang('ucp', 'phpbb/mediaembed');
+
+		$this->template->append_var('AGREEMENT_TEXT', $this->language->lang('MEDIA_EMBED_PRIVACY_POLICY', $this->config['sitename']));
+	}
+
+	/**
+	 * @return mixed
+	 */
+	private function is_phpbb4()
+	{
+		if ($this->is_phpbb4 === null)
+		{
+			$this->is_phpbb4 = phpbb_version_compare($this->config['version'], '4.0.0-a1', '>=');
+		}
+
+		return $this->is_phpbb4;
 	}
 }

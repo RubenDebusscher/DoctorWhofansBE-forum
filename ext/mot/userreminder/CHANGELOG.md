@@ -4,6 +4,91 @@ All changes to `Userreminder for phpBB` will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.11.0] - 2026-02-01
+
+### Added
+-	A check for bots to the `check_user_login()` function of `event/main_listener.php` in order to reduce the load on that function since known bots (those with a user id) are
+	logging in every few seconds (in addition this is assumed to prevent simultaneous reminding in automatic mode and thus sending out redundant reminder mails)
+-	A new config variable `mot_ur_block_login_proc` to mark the checking process for automatic reminding and deletion as blocked for users who log in simultaneously
+  
+### Changed
+-	Minimum version of phpBB to 3.3.4 and PHP versions to minimum 8.0.30 and maximum version to 8.5.x
+-	Re-wrote the `sleeper()` function of `controller/ur_acp.php` in order to clean up, improve and optimize it, e.g. for usage of TWIG array functions
+-	Re-wrote the ACP sleepers tab's template in order to tidy it up
+-	Improved the code of the `reminder()` and `zeroposter()` functions of `controller/ur_acp.php` in order to optimize it for usage of TWIG array functions
+-	Added to the link description the number of members to be reminded or deleted if the expert mode is activated in order to clarify how many members are due for the intended action
+-	In the sleeper and zeroposter tabs the "Remind all" button of the expert mode is now only displayed if the remind function is activated
+-	In the `remind_users()` function of `common.php` now only the username of those users who will actually receive an e-mail will be logged and no longer users who
+	will be stored in the reminder queue (which resulted in at least some users being mentioned more than once)
+-	Renamed the cron task's file and class name to have them match the task's CONFIG_TABLE variable names
+  
+### Fixed
+-	A missing sort key dropdown field within the sleepers tab
+-	A faulty computation of the dates to remind or delete sleepers within the `sleeper()` function of `controller/ur_acp.php`
+-	A faulty language variable in `language/en/info_acp_mot_userreminder.php`
+-	The wrong sequence of first querying the DB and then validate the `$start` parameter which resulted in an empty table if a user manually selected a higher than the maximum
+	page number when pagination was active
+   
+### Removed
+-	Removed the Jabber notification in the `reminder_mail()` function of `common.php` (using only e-mail from now on)
+  
+  
+## [1.10.1] - 2025-09-29
+
+### Added
+  
+### Changed
+-	All constructor declarations to [Constructor Property Promotion](https://www.php.net/releases/8.0/de.php#constructor-property-promotion) (a new PHP feature starting with PHP 8.0)
+  
+### Fixed
+  
+### Removed
+  
+  
+## [1.10.0] - 2025-06-14
+
+### Added
+-	A language key to log deleting users which contains a reference to Userreminder in order to distinguish this log from the system log entry
+  
+### Changed
+-	All function declarations into parameters with type declarations
+-	Minimum PHP version to 8.0.0 due to usage of `mixed` type declaration in `controller/ur_acp.php`
+-	The custom function `init_ur` within `migrations/ur_v_0_5_0.php` to deal with the 10,000 rows insert limitation of MySQL (many thanks to the team of phpbb.com for the code)
+  
+### Fixed
+  
+### Removed
+  
+  
+## [1.9.1] - 2025-01-06
+
+### Added
+  
+### Changed
+-	Code improvements for the `select` dropdown selects and multi selects with a TWIG macro (many thanks to LukeWCS for the macro and the controller structure)
+  
+### Fixed
+  
+### Removed
+  
+  
+## [1.9.0] - 2025-01-05
+
+### Added
+  
+### Changed
+-	The maximum possible PHP version to 8.4.x
+-	The look of the fieldset legends in the ACP
+-	Code improvements for the `select` dropdown selects with a TWIG macro (many thanks to LukeWCS for the macro)
+-	Code improvements within `controller/ur_acp.php`
+  
+### Fixed
+-	An SQL query in `cron/task/mot_ur_reminder_cron.php` which had incorrect single quotation marks for PostgreSQL 
+  
+### Removed
+-	The duplicate function `load_dirs()` from the `controller/ur_acp.php` file which uses the same function from `common.php`
+  
+  
 ## [1.8.1] - 2024-06-24
 
 ### Added
@@ -11,7 +96,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
   
 ### Fixed
--	A bug which could lead to a fatal error if the reminder mails were not edited by the admin (`common.php`)
+-	A bug which could lead to a fatal error when sending reminder mails if the reminder mails were not edited by the admin (`common.php`)
   
 ### Removed
   
@@ -33,7 +118,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 -	A duplicate language key in the `language/xx/info_acp_mot_userreminder.php` and `adm/style/acp_ur_sleeper.html` files
 -	A missing ` alt=""` within the language key `ACP_USERREMINDER_VERSION` in the `language/xx/info_acp_mot_userreminder.php` files
 -	A problem reported in conjunction with the cron job not running properly because the config variable holding the time stamp of the last run was not dynamic
--	A bug which could lead to a fatal error if the reminder mails were not edited by the admin (`common.php`)
   
 ### Removed
   
