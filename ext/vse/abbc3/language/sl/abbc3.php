@@ -28,8 +28,8 @@ $lang = array_merge($lang, array(
 	'ABBC3_HIDDEN_EXPLAIN'		=> 'Ta tabla zahteva, da ste registrirani in prijavljeni za ogled skrite vsebine.',
 
 	// Spoiler BBCode
-	'ABBC3_SPOILER_SHOW'		=> '► Prikaži “Spoiler”',
-	'ABBC3_SPOILER_HIDE'		=> '▼ Skrij “Spoiler”',
+	'ABBC3_SPOILER_SHOW'		=> 'Prikaži “Spoiler”',
+	'ABBC3_SPOILER_HIDE'		=> 'Skrij “Spoiler”',
 
 	// Off Topic BBCode
 	'ABBC3_OFFTOPIC'			=> 'Izven teme',
@@ -95,11 +95,15 @@ $lang = array_merge($lang, array(
 
 	// ACP
 	'ABBC3_BBCODE_ORDERED'		=> 'Vrstni red BBKode je bil posodobljen.',
+	'ABBC3_BBCODE_ORDERED_FAIL'	=> 'BBCode order could not be updated.',
+	'ABBC3_BBCODE_ORDER_NO_TABLE'	=> 'No BBCode table name was received.',
+	'ABBC3_BBCODE_ORDER_NO_DATA'	=> 'No BBCode order data was received.',
+	'ABBC3_BBCODE_ORDER_NO_ORDER'	=> 'No BBCode rows were updated.',
 	'ABBC3_BBCODE_GROUP'		=> 'Upravljajte skupine, ki lahko uporabljajo to BBKodo',
 	'ABBC3_BBCODE_GROUP_INFO'	=> 'Če ni izbrana nobena skupina, lahko vsi uporabniki uporabljajo to BBKodo. Uporabite CTRL+CLIK (ali CMD+CLIK na Macu), da izberete/prekličete izbiro več kot ene skupine.',
 
 	// BBCode FAQ
 	'ABBC3_FAQ_TITLE'			=> 'Advanced BBCode Box BBCodes',
 	'ABBC3_FAQ_SAMPLE_TEXT'		=> 'The quick brown fox jumps over the lazy dog',
-	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>Example:</strong><br>%2$s<br><br><strong>Result:</strong><br>%3$s<hr />',
+	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>Example:</strong><br>%2$s<br><br><strong>Result:</strong><br>%3$s<hr>',
 ));

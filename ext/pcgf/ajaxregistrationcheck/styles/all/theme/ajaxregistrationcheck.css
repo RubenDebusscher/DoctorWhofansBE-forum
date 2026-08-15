@@ -21,13 +21,6 @@ div.valid {
     color: rgb(0, 200, 0);
 }
 
-progress#pcgf-ajaxregistrationcheck-security {
-    border: 1px solid rgb(100, 100, 100);
-    width: 150px;
-    height: 14px;
-    line-height: 100%;
-}
-
 div.loading-circle {
     display: inline-block;
     width: 24px;
@@ -271,6 +264,16 @@ div.password-strength {
     padding-left: 0;
 }
 
+span.pcgf-ajaxregistrationcheck-strength-label,
+span.pcgf-ajaxregistrationcheck-strength-text {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+span.pcgf-ajaxregistrationcheck-strength-text {
+    min-width: 80px;
+}
+
 div#pcgf-ajaxregistrationcheck-security {
     width: 0;
 }
@@ -284,11 +287,12 @@ div.progressbar {
     border-radius: 5px;
     background-color: rgb(190, 190, 190);
     width: 200px;
-    height: 2em;
+    height: 14px;
+    vertical-align: middle;
 }
 
 div.progressbar > div {
-    height: 100%;
+    height: 14px;
     text-align: center;
     white-space: nowrap;
     background-image: -moz-linear-gradient(135deg, rgba(0, 0, 0, 0.10) 25%, transparent 25%, transparent 50%, rgba(0, 0, 0, 0.10) 50%, rgba(0, 0, 0, 0.10) 75%, transparent 75%, transparent);

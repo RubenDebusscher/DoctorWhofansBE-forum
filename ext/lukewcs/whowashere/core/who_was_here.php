@@ -14,14 +14,12 @@ namespace lukewcs\whowashere\core;
 
 class who_was_here
 {
-	protected const  PERM_STATS				= 1;
-	protected const  PERM_RECORD			= 2;
-	protected const  PERM_USERS				= 4;
-	protected const  PERM_BOTS				= 8;
-
 	protected const  BOTS_DISABLED			= 0;
 	protected const  BOTS_WITH_USERS		= 1;
 	protected const  BOTS_OWN_LINE			= 2;
+
+	protected const  COUNT_BOTS_SEPARATELY	= 0;
+	protected const  COUNT_BOTS_WITH_USERS	= 1;
 
 	protected const  DISP_DISABLED			= 0;
 	protected const  DISP_BEHIND_NAME		= 1;
@@ -37,46 +35,31 @@ class who_was_here
 	protected const  SORT_BY_ID_ASC			= 4;
 	protected const  SORT_BY_ID_DESC		= 5;
 
+	protected const  PERM_STATS				= 1;
+	protected const  PERM_RECORD			= 2;
+	protected const  PERM_USERS				= 4;
+	protected const  PERM_BOTS				= 8;
+
 	protected const  BUTTON_ICON_NOTHING	= 0;
 	protected const  BUTTON_ICON_CLOCK		= 1;
 	protected const  BUTTON_ICON_INFO		= 2;
 
-	protected object $template;
-	protected object $config;
-	protected object $user;
-	protected object $auth;
-	protected object $cache;
-	protected object $db;
-	protected object $language;
-	protected string $table_prefix;
-	protected string $php_ext;
-
 	protected string $lfwwh_table;
 
 	public function __construct(
-		\phpbb\template\template $template,
-		\phpbb\config\config $config,
-		\phpbb\user $user,
-		\phpbb\auth\auth $auth,
-		\phpbb\cache\driver\driver_interface $cache,
-		\phpbb\db\driver\driver_interface $db,
-		\phpbb\event\dispatcher_interface $dispatcher,
-		\phpbb\language\language $language,
-		$table_prefix,
-		$php_ext
+		protected \phpbb\template\template $template,
+		protected \phpbb\config\config $config,
+		protected \phpbb\user $user,
+		protected \phpbb\auth\auth $auth,
+		protected \phpbb\cache\driver\driver_interface $cache,
+		protected \phpbb\db\driver\driver_interface $db,
+		protected \phpbb\event\dispatcher_interface $phpbb_dispatcher,
+		protected \phpbb\language\language $language,
+		protected $table_prefix,
+		protected $php_ext,
 	)
 	{
-		$this->template			= $template;
-		$this->config			= $config;
-		$this->user				= $user;
-		$this->auth				= $auth;
-		$this->cache			= $cache;
-		$this->db				= $db;
-		$this->phpbb_dispatcher	= $dispatcher;
-		$this->language			= $language;
-
-		$this->lfwwh_table		= $table_prefix . 'lfwwh';
-		$this->php_ext			= $php_ext;
+		$this->lfwwh_table = $table_prefix . 'lfwwh';
 	}
 
 	/* DB config
@@ -93,6 +76,7 @@ class who_was_here
 		'lfwwh_disp_time_bots'			(int)
 		'lfwwh_disp_time_format'		(string)
 		'lfwwh_disp_time_users'			(int)
+		'lfwwh_disp_users_bots_count'	(int)
 		'lfwwh_last_clean'				(int)
 		'lfwwh_period_of_time_h'		(int)
 		'lfwwh_period_of_time_m'		(int)
@@ -301,19 +285,20 @@ class who_was_here
 			return;
 		}
 
-		/* Default count total or ids */
+		/* Default count total */
 		$count = [
-			'count_guests'	=> 0,
+			'count_guest'	=> 0,
 			'count_bot'		=> 0,
 			'count_reg'		=> 0,
 			'count_hidden'	=> 0,
 			'count_total'	=> 0,
-			'ids_reg'		=> [],
-			'ids_hidden'	=> [],
-			'ids_bot'		=> [],
+			'shown_user'	=> 0,
+			'shown_bot'		=> 0,
 		];
 
-		$wwh_username_full = $users_list = $bots_list = '';
+		$wwh_username_full	= '';
+		$users_list			= '';
+		$bots_list			= '';
 
 		/* Load cache who_was_here */
 		if ($this->config['lfwwh_use_cache'])
@@ -334,7 +319,10 @@ class who_was_here
 			$view_state = $this->view_state();
 		}
 
-		$show_button_users = $show_button_bots = 0;
+		$users_info_button	= 0;
+		$bots_info_button	= 0;
+		$users_all_button	= false;
+		$bots_all_button	= false;
 		foreach ($view_state as $row)
 		{
 			if ($row['user_id'] != ANONYMOUS)
@@ -414,7 +402,7 @@ class who_was_here
 						$hover_info = ' title="' . $time . '"';
 					}
 
-					if (!$show_button_users && $hover_info)
+					if (!$users_info_button && $hover_info)
 					{
 						if (
 							(
@@ -429,10 +417,10 @@ class who_was_here
 							|| $show_ip_hover
 						)
 						{
-							$show_button_users = $this->auth->acl_get('a_') ? self::BUTTON_ICON_INFO : self::BUTTON_ICON_CLOCK;
+							$users_info_button = $this->auth->acl_get('a_') ? self::BUTTON_ICON_INFO : self::BUTTON_ICON_CLOCK;
 						}
 					}
-					if (!$show_button_bots && $hover_info && $user_type == USER_IGNORE)
+					if (!$bots_info_button && $hover_info && $user_type == USER_IGNORE)
 					{
 						if (
 							$this->config['lfwwh_disp_bots'] == self::BOTS_OWN_LINE
@@ -442,7 +430,7 @@ class who_was_here
 							)
 						)
 						{
-							$show_button_bots = $this->auth->acl_get('a_') ? self::BUTTON_ICON_INFO : self::BUTTON_ICON_CLOCK;
+							$bots_info_button = $this->auth->acl_get('a_') ? self::BUTTON_ICON_INFO : self::BUTTON_ICON_CLOCK;
 						}
 					}
 				}
@@ -457,40 +445,54 @@ class who_was_here
 				{
 					if ($this->config['lfwwh_disp_bots'] == self::BOTS_OWN_LINE && $user_type == USER_IGNORE)
 					{
+						$count['shown_bot']++;
+						if ($this->config['lfwwh_user_limit'] > 0 && $count['shown_bot'] == $this->config['lfwwh_user_limit'] + 1)
+						{
+							$bots_list .= '<span class="lfwwh_hidden_all_bots" style="display: none;">';
+							$bots_all_button = true;
+						}
 						$bots_list .= $this->language->lang('COMMA_SEPARATOR') . '<span' . $hover_info . '>' . $wwh_username_full . '</span>' . $disp_info;
 					}
 					else
 					{
+						$count['shown_user']++;
+						if ($this->config['lfwwh_user_limit'] > 0 && $count['shown_user'] == $this->config['lfwwh_user_limit'] + 1)
+						{
+							$users_list .= '<span class="lfwwh_hidden_all_users" style="display: none;">';
+							$users_all_button = true;
+						}
 						$users_list .= $this->language->lang('COMMA_SEPARATOR') . '<span' . $hover_info . '>' . $wwh_username_full . '</span>' . $disp_info;
 					}
 				}
 			}
 			else if ($wwh_disp_permission_hidden || $row['user_id'] == $this->user->data['user_id'])
 			{
+				$count['shown_user']++;
+				if ($this->config['lfwwh_user_limit'] > 0 && $count['shown_user'] == $this->config['lfwwh_user_limit'] + 1)
+				{
+					$users_list .= '<span class="lfwwh_hidden_all_users" style="display: none;">';
+					$users_all_button = true;
+				}
 				$users_list .= $this->language->lang('COMMA_SEPARATOR') . '<em' . $hover_info . '>' .$wwh_username_full . '</em>' . $disp_info;
 			}
 
 			/* At the end let's count them =) */
-			if ($row['user_id'] == ANONYMOUS)
-			{
-				$count['count_guests']++;
-			}
-			else if ($user_type == USER_IGNORE)
-			{
-				$count['count_bot']++;
-				$count['ids_bot'][] = (int) $row['user_id'];
-			}
-			else if ($row['viewonline'] == 1)
-			{
-				$count['count_reg']++;
-				$count['ids_reg'][] = (int) $row['user_id'];
-			}
-			else
-			{
-				$count['count_hidden']++;
-				$count['ids_hidden'][] = (int) $row['user_id'];
-			}
+			$count[match (true) {
+				$row['user_id'] == ANONYMOUS	=> 'count_guest',
+				$user_type == USER_IGNORE		=> 'count_bot',
+				$row['viewonline'] == 1			=> 'count_reg',
+				default							=> 'count_hidden',
+			}]++;
 			$count['count_total']++;
+		}
+
+		if ($users_all_button)
+		{
+			$users_list .= '</span>';
+		}
+		if ($bots_all_button)
+		{
+			$bots_list .= '</span>';
 		}
 
 		if ($users_list == '')
@@ -529,7 +531,7 @@ class who_was_here
 		}
 		if (!$this->config['lfwwh_disp_guests'])
 		{
-			$count['count_total'] -= $count['count_guests'];
+			$count['count_total'] -= $count['count_guest'];
 		}
 		/* Need to update the record? */
 		if ($this->config['lfwwh_record_ips'] < $count['count_total'])
@@ -539,7 +541,8 @@ class who_was_here
 		}
 		if (!$this->config['lfwwh_create_hidden_info'])
 		{
-			$show_button_users = $show_button_bots = 0;
+			$users_info_button = 0;
+			$bots_info_button = 0;
 		}
 
 		$this->template->assign_vars([
@@ -548,8 +551,10 @@ class who_was_here
 			'LFWWH_RECORD'				=> $wwh_disp_permission_record ? $this->get_record_string((bool) $this->config['lfwwh_record'], (int) $this->config['lfwwh_time_mode']) : '',
 			'LFWWH_USERS'				=> $wwh_disp_permission_users || ($wwh_disp_permission_bots && $this->config['lfwwh_disp_bots'] == self::BOTS_WITH_USERS) ? $users_list : '',
 			'LFWWH_BOTS'				=> $wwh_disp_permission_bots ? $bots_list : '',
-			'LFWWH_USERS_SHOW_BUTTON'	=> $show_button_users,
-			'LFWWH_BOTS_SHOW_BUTTON'	=> $show_button_bots,
+			'LFWWH_USERS_INFO_BUTTON'	=> $users_info_button,
+			'LFWWH_BOTS_INFO_BUTTON'	=> $bots_info_button,
+			'LFWWH_USERS_ALL_BUTTON'	=> $users_all_button,
+			'LFWWH_BOTS_ALL_BUTTON'		=> $bots_all_button,
 			'LFWWH_POS'					=> $this->config['lfwwh_template_pos_all'] ? 7 : 2 ** $this->config['lfwwh_template_pos'],
 			'LFWWH_API_MODE'			=> $this->config['lfwwh_api_mode'] || $force_api_mode,
 			'LFWWH_SHOW'				=> (
@@ -596,7 +601,7 @@ class who_was_here
 	}
 
 	/*
-		Cleans up the table and delete the cache when user accounts have been deleted. Inserts also a notification if clean up was necessary. (LukeWCS)
+		Cleans up the table and delete the cache when user accounts have been deleted. Inserts also a notification if clean up was necessary.
 	*/
 	public function clear_up($event): void
 	{
@@ -636,7 +641,7 @@ class who_was_here
 	}
 
 	/*
-		Adds permissions. (LukeWCS)
+		Adds permissions.
 	*/
 	public function add_permissions($event): void
 	{
@@ -665,22 +670,12 @@ class who_was_here
 	*/
 	private function view_state(): array
 	{
-		switch ($this->config['lfwwh_sort_by'])
-		{
-			case self::SORT_BY_NAME_AZ:
-			case self::SORT_BY_NAME_ZA:
-				$sql_order_by = 'username_clean';
-			break;
-			case self::SORT_BY_ID_ASC:
-			case self::SORT_BY_ID_DESC:
-				$sql_order_by = 'user_id';
-			break;
-			case self::SORT_BY_VISIT_ASC:
-			case self::SORT_BY_VISIT_DESC:
-			default:
-				$sql_order_by = 'wwh_lastpage';
-			break;
-		}
+		$sql_order_by = match ($this->config['lfwwh_sort_by']) {
+			self::SORT_BY_NAME_AZ	, self::SORT_BY_NAME_ZA		=> 'username_clean',
+			self::SORT_BY_ID_ASC	, self::SORT_BY_ID_DESC		=> 'user_id',
+			self::SORT_BY_VISIT_ASC	, self::SORT_BY_VISIT_DESC	=> 'wwh_lastpage',
+			default												=> 'wwh_lastpage',
+		};
 		$sql_ordering = (($this->config['lfwwh_sort_by'] % 2) == 0) ? 'ASC' : 'DESC';
 
 		/* Let's try another method, to deny duplicate appearance of usernames. */
@@ -716,7 +711,7 @@ class who_was_here
 	}
 
 	/*
-		Returns a string encapsulated in <span> tags for hidden text and set CSS class depending to the user type (user/bot). (LukeWCS)
+		Returns a string encapsulated in <span> tags for hidden text and set CSS class depending to the user type (user/bot).
 	*/
 	private function get_hidden_span(int $user_type, string $text): string
 	{
@@ -724,11 +719,11 @@ class who_was_here
 		{
 			return '';
 		}
-		return '<span class="lfwwh_info_' . (($user_type != USER_IGNORE || $this->config['lfwwh_disp_bots'] == self::BOTS_WITH_USERS) ? 'u' : 'b') . '" style="display: none;">' . $text . '</span>';
+		return '<span class="lfwwh_hidden_' . (($user_type != USER_IGNORE || $this->config['lfwwh_disp_bots'] == self::BOTS_WITH_USERS) ? 'info_users' : 'info_bots') . '" style="display: none;">' . $text . '</span>';
 	}
 
 	/*
-		Returns a string encapsulated in <span> tags with a specific CSS class. (LukeWCS)
+		Returns a string encapsulated in <span> tags with a specific CSS class.
 	*/
 	private function get_class_span(string $class, string $text): string
 	{
@@ -736,7 +731,7 @@ class who_was_here
 	}
 
 	/*
-		Returns a formated time string with replaced placeholders for LFWWH_LAST1 - LFWWH_LAST3. (LukeWCS)
+		Returns a formated time string with replaced placeholders for LFWWH_LAST1 - LFWWH_LAST3.
 	*/
 	private function get_formatted_time(int $timestamp): string
 	{
@@ -745,17 +740,17 @@ class who_was_here
 	}
 
 	/*
-		Returns a formated record time string. (LukeWCS)
+		Returns a formated record time string.
 	*/
 	private function get_formatted_record_time(int $timestamp): string
 	{
 		return $this->user->format_date($timestamp, $this->config['lfwwh_record_time_format']);
 	}
 
-	/**
-	* Returns the Explanation string for the online list:
-	* Demo:	based on users active today
-	*		based on users active over the past 30 minutes
+	/*
+		Returns the Explanation string for the online list:
+		Demo:	based on users active today
+				based on users active over the past 30 minutes
 	*/
 	private function get_explanation_string(int $mode): string
 	{
@@ -770,22 +765,18 @@ class who_was_here
 			$explanation .= $this->language->lang('LFWWH_MINUTES', (int) $this->config['lfwwh_period_of_time_m']);
 			$explanation .= $this->language->lang('LFWWH_SECONDS', (int) $this->config['lfwwh_period_of_time_s']);
 
-			switch (substr_count($explanation, '%s'))
-			{
-				case 3:
-					return sprintf($explanation, '', $this->language->lang('COMMA_SEPARATOR'), $this->language->lang('LFWWH_AND_SEPARATOR'));
-				case 2:
-					return sprintf($explanation, '', $this->language->lang('LFWWH_AND_SEPARATOR'));
-				default:
-					return sprintf($explanation, '');
-			}
+			return match (substr_count($explanation, '%s')) {
+				3		=> sprintf($explanation, '', $this->language->lang('COMMA_SEPARATOR'), $this->language->lang('LFWWH_AND_SEPARATOR')),
+				2		=> sprintf($explanation, '', $this->language->lang('LFWWH_AND_SEPARATOR')),
+				default	=> sprintf($explanation, ''),
+			};
 		}
 	}
 
-	/**
-	* Returns the Record string for the online list:
-	* Demo:	Most users ever online was 1 on Mon 7. Sep 2009
-	*		Most users ever online was 1 between Mon 7. Sep 2009 and Tue 8. Sep 2009
+	/*
+		Returns the Record string for the online list:
+		Demo:	Most users ever online was 1 on Mon 7. Sep 2009
+				Most users ever online was 1 between Mon 7. Sep 2009 and Tue 8. Sep 2009
 	*/
 	private function get_record_string(bool $active, int $mode): string
 	{
@@ -799,47 +790,61 @@ class who_was_here
 		}
 		else /* period of time */
 		{
-			$record_time_start = (int) $this->config['lfwwh_record_time'] - (3600 * $this->config['lfwwh_period_of_time_h']) - (60 * $this->config['lfwwh_period_of_time_m']) - $this->config['lfwwh_period_of_time_s'];
-			return $this->language->lang('LFWWH_RECORD_TIME', $this->config['lfwwh_record_ips'], $this->get_formatted_record_time($record_time_start), $this->get_formatted_record_time((int) $this->config['lfwwh_record_time']));
+			$record_time_start = (int) $this->config['lfwwh_record_time']
+				- (3600 * $this->config['lfwwh_period_of_time_h'])
+				- (60 * $this->config['lfwwh_period_of_time_m'])
+				- $this->config['lfwwh_period_of_time_s']
+			;
+			return $this->language->lang('LFWWH_RECORD_TIME',
+				$this->config['lfwwh_record_ips'],
+				$this->get_formatted_record_time($record_time_start),
+				$this->get_formatted_record_time((int) $this->config['lfwwh_record_time'])
+			);
 		}
 	}
 
-	/**
-	* Returns the Total string for the online list:
-	* Demo:	In total there was 1 user online :: 1 registered, 0 hidden, 0 bots and 0 guests
+	/*
+		Returns the Total string for the online list:
+		Demo:	In total there was 1 user online :: 1 registered, 0 hidden, 0 bots and 0 guests
 	*/
 	private function get_total_users_string(array $count): string
 	{
 		$total_users_string = $this->language->lang('LFWWH_STATS', $count['count_total']);
 		if ($this->config['lfwwh_disp_reg_users'])
 		{
-			$total_users_string .= '%s ' . $this->language->lang('LFWWH_REG_USERS', $count['count_reg']);
+			$total_users_string .= '%s ' . $this->language->lang('LFWWH_REG_USERS',
+				$count['count_reg'] + (($this->config['lfwwh_disp_bots'] && $this->config['lfwwh_disp_users_bots_count'] == self::COUNT_BOTS_WITH_USERS) ? $count['count_bot'] : 0)
+			);
 		}
 		if ($this->config['lfwwh_disp_hidden'])
 		{
 			$total_users_string .= '%s ' . $this->language->lang('LFWWH_HIDDEN', $count['count_hidden']);
 		}
-		if ($this->config['lfwwh_disp_bots'])
+		if ($this->config['lfwwh_disp_bots'] && !$this->config['lfwwh_disp_users_bots_count'])
 		{
 			$total_users_string .= '%s ' . $this->language->lang('LFWWH_BOTS', $count['count_bot']);
 		}
 		if ($this->config['lfwwh_disp_guests'])
 		{
-			$total_users_string .= '%s ' . $this->language->lang('LFWWH_GUESTS', $count['count_guests']);
+			$total_users_string .= '%s ' . $this->language->lang('LFWWH_GUESTS', $count['count_guest']);
 		}
 
-		switch (substr_count($total_users_string, '%s'))
-		{
-			case 4:
-				return sprintf($total_users_string, $this->language->lang('LFWWH_STATS_SEPARATOR'), $this->language->lang('COMMA_SEPARATOR'), $this->language->lang('COMMA_SEPARATOR'), $this->language->lang('LFWWH_AND_SEPARATOR'));
-			case 3:
-				return sprintf($total_users_string, $this->language->lang('LFWWH_STATS_SEPARATOR'), $this->language->lang('COMMA_SEPARATOR'), $this->language->lang('LFWWH_AND_SEPARATOR'));
-			case 2:
-				return sprintf($total_users_string, $this->language->lang('LFWWH_STATS_SEPARATOR'), $this->language->lang('LFWWH_AND_SEPARATOR'));
-			case 1:
-				return sprintf($total_users_string, $this->language->lang('LFWWH_STATS_SEPARATOR'));
-			default:
-				return $total_users_string;
-		}
+		return match (substr_count($total_users_string, '%s')) {
+			4		=>	sprintf($total_users_string,
+							$this->language->lang('LFWWH_STATS_SEPARATOR'),
+							$this->language->lang('COMMA_SEPARATOR'),
+							$this->language->lang('COMMA_SEPARATOR'),
+							$this->language->lang('LFWWH_AND_SEPARATOR')),
+			3		=>	sprintf($total_users_string,
+							$this->language->lang('LFWWH_STATS_SEPARATOR'),
+							$this->language->lang('COMMA_SEPARATOR'),
+							$this->language->lang('LFWWH_AND_SEPARATOR')),
+			2		=>	sprintf($total_users_string,
+							$this->language->lang('LFWWH_STATS_SEPARATOR'),
+							$this->language->lang('LFWWH_AND_SEPARATOR')),
+			1		=>	sprintf($total_users_string,
+							$this->language->lang('LFWWH_STATS_SEPARATOR')),
+			default	=>	$total_users_string,
+		};
 	}
 }

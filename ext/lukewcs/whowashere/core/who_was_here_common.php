@@ -14,27 +14,19 @@ namespace lukewcs\whowashere\core;
 
 class who_was_here_common
 {
-	protected object $language;
-	protected object $template;
-	protected object $ext_manager;
-
 	protected array  $metadata;
 	public    string $u_action;
 
 	public function __construct(
-		\phpbb\language\language $language,
-		\phpbb\template\template $template,
-		\phpbb\extension\manager $ext_manager
+		protected \phpbb\language\language $language,
+		protected \phpbb\template\template $template,
+		protected \phpbb\extension\manager $ext_manager,
 	)
 	{
-		$this->language		= $language;
-		$this->template		= $template;
-		$this->ext_manager	= $ext_manager;
-
 		$this->metadata		= $this->ext_manager->create_extension_metadata_manager('lukewcs/whowashere')->get_metadata('all');
 	}
 
-	public function check_form_key_error(string $key): void
+	public function check_form_key_(string $key): void
 	{
 		if (!check_form_key($key))
 		{
@@ -42,7 +34,7 @@ class who_was_here_common
 		}
 	}
 
-	public function back_link(?string $lang_var = null): string
+	public function back_link(string|null $lang_var = null): string
 	{
 		return sprintf('<br><br><a href="%1$s">%2$s</a>',
 			/* 1 */ $this->u_action,

@@ -30,8 +30,8 @@ $lang = array_merge($lang, array(
 	'ABBC3_HIDDEN_EXPLAIN'		=> 'Este forum requer que esteja registado e conectado para ver o conteúdo oculto.',
 
 	// Spoiler BBCode
-	'ABBC3_SPOILER_SHOW'		=> '► Mostrar «spoiler»',
-	'ABBC3_SPOILER_HIDE'		=> '▼ Esconder «spoiler»',
+	'ABBC3_SPOILER_SHOW'		=> 'Mostrar «spoiler»',
+	'ABBC3_SPOILER_HIDE'		=> 'Esconder «spoiler»',
 
 	// Off Topic BBCode
 	'ABBC3_OFFTOPIC'			=> 'Fora de tópico',
@@ -97,11 +97,15 @@ $lang = array_merge($lang, array(
 
 	// ACP
 	'ABBC3_BBCODE_ORDERED'		=> 'A ordem do BBCode foi actualizada.',
+	'ABBC3_BBCODE_ORDERED_FAIL'	=> 'BBCode order could not be updated.',
+	'ABBC3_BBCODE_ORDER_NO_TABLE'	=> 'No BBCode table name was received.',
+	'ABBC3_BBCODE_ORDER_NO_DATA'	=> 'No BBCode order data was received.',
+	'ABBC3_BBCODE_ORDER_NO_ORDER'	=> 'No BBCode rows were updated.',
 	'ABBC3_BBCODE_GROUP'		=> 'Gerir os grupos que podem usar este BBCode',
 	'ABBC3_BBCODE_GROUP_INFO'	=> 'Se nenhum grupo for seleccionado, então todos os utilizadores podem usar estes BBCode. Use CTRL+CLIQUE (or CMD+CLIQUE no Mac) para seleccionar/desmarcar mais de um grupo.',
 
 	// BBCode FAQ
 	'ABBC3_FAQ_TITLE'			=> 'Advanced BBCode Box BBCodes',
 	'ABBC3_FAQ_SAMPLE_TEXT'		=> 'Bancos fúteis pagavam-lhe queijo, whisky e xadrez.',
-	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>Exemplo:</strong><br>%2$s<br><br><strong>Resultado:</strong><br>%3$s<hr />',
+	'ABBC3_FAQ_ANSWER'			=> '%1$s<br><br><strong>Exemplo:</strong><br>%2$s<br><br><strong>Resultado:</strong><br>%3$s<hr>',
 ));

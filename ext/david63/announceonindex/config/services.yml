@@ -10,6 +10,8 @@ services:
             - '%core.php_ext%'
             - '@service_container'
             - '@auth'
-            - '@cache'						
+            - '@cache'
+            - '@?phpbb.collapsiblecategories.operator'
+            - '@?rmcgirr83.nationalflags.nationalflags'
         tags:
             - { name: event.listener }
