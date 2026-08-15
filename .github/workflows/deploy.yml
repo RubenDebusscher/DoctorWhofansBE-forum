@@ -222,7 +222,7 @@ jobs:
           fi
 
       # --------------------------------------------------
-      # 8. Upload bestanden in batches via SFTP
+      # 8. Upload bestanden stabiel per stuk via SFTP
       # --------------------------------------------------
       - name: Deploy changed files
         env:
@@ -236,73 +236,41 @@ jobs:
             exit 0
           fi
 
-          python3 <<'PY'
-          from pathlib import Path
-
-          remote_root = "/customers/e/a/c/doctorwhofans.be/httpd.www/forum"
-          deploy_root = Path("/tmp/deploy")
-
-          files = sorted(
-              p.relative_to(deploy_root).as_posix()
-              for p in deploy_root.rglob("*")
-              if p.is_file()
-          )
-
-          all_commands = []
-          for file in files:
-              path = Path(file)
-              if file.startswith("/") or ".." in path.parts:
-                  print(f"SKIP unsafe path: {file}")
-                  continue
-
-              parent = path.parent
-              if str(parent) not in ("", "."):
-                  remote_dir = f"{remote_root}/{parent.as_posix()}"
-                  all_commands.append(f'mkdir -p "{remote_dir}"')
-
-              local_file = deploy_root / file
-              remote_file = f"{remote_root}/{file}"
-              all_commands.append(f'put "{local_file}" "{remote_file}"')
-
-          # Batch opdelen in groepen van maximaal 50 commando's
-          batch_size = 50
-          batches = [all_commands[i:i + batch_size] for i in range(0, len(all_commands), batch_size)]
-
-          for index, batch in enumerate(batches):
-              batch_file = f"/tmp/sftp-upload-{index}.txt"
-              batch_content = "\n".join(batch) + "\nbye\n"
-              Path(batch_file).write_text(batch_content, encoding="utf-8", newline="\n")
-
-          print(f"Prepared {len(files)} files in {len(batches)} batches for upload.")
-          PY
-
           echo
           echo "======================================"
-          echo "Testing SFTP authentication..."
+          echo "Starting stable file upload..."
           echo "======================================"
 
-          sshpass -p "$SFTP_PASSWORD" sftp \
-            -o StrictHostKeyChecking=no \
-            -o BatchMode=no \
-            -P 22 \
-            "$SFTP_USER@$SFTP_HOST" <<'EOF'
-          pwd
-          bye
-          EOF
+          remote_root="/customers/e/a/c/doctorwhofans.be/httpd.www/forum"
+          deploy_root="/tmp/deploy"
 
-          echo
-          echo "======================================"
-          echo "Starting batch SFTP upload sessions..."
-          echo "======================================"
+          # Loop door alle bestanden in het deploy-pakket
+          cd "$deploy_root"
+          find . -type f | sort | while read -r file; do
+            # Verwijder de leading './'
+            file="${file#./}"
+            
+            local_file="$deploy_root/$file"
+            remote_file="$remote_root/$file"
+            remote_dir="$(dirname "$remote_file")"
 
-          for batch_file in /tmp/sftp-upload-*.txt; do
-            echo "Uploading batch: $(basename "$batch_file")..."
+            echo "Uploading: $file"
+
+            # We sturen per bestand een nette, afgesloten sessie of hergebruiken sshpass
             sshpass -p "$SFTP_PASSWORD" sftp \
               -o StrictHostKeyChecking=no \
               -o BatchMode=no \
               -P 22 \
-              -b "$batch_file" \
-              "$SFTP_USER@$SFTP_HOST"
+              "$SFTP_USER@$SFTP_HOST" <<EOF
+            mkdir -p "$remote_dir"
+            put "$local_file" "$remote_file"
+            bye
+            EOF
+
+            if [ $? -ne 0 ]; then
+              echo "Fout bij uploaden van: $file"
+              exit 1
+            fi
           done
 
           echo
