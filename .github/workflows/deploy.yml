@@ -1,4 +1,4 @@
-name: Test one.com SFTP
+name: Build and deploy phpBB
 
 on:
   push:
@@ -6,27 +6,146 @@ on:
       - main
 
 jobs:
-  test-sftp:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
+      # --------------------------------------------------
+      # 1. Checkout volledige Git geschiedenis
+      # --------------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+      # --------------------------------------------------
+      # 2. PHP + Composer
+      # --------------------------------------------------
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, json
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: |
+          composer install \
+            --no-dev \
+            --prefer-dist \
+            --no-interaction \
+            --optimize-autoloader
+
+      - name: Verify build
+        run: |
+          test -d vendor
+          test -f vendor/autoload.php
+          echo "Build succesvol"
+
+      # --------------------------------------------------
+      # 3. Bepaal gewijzigde bestanden
+      # --------------------------------------------------
+      - name: Determine changed files
+        id: changes
+        run: |
+          BEFORE="${{ github.event.before }}"
+          AFTER="${{ github.sha }}"
+
+          echo "Before: $BEFORE"
+          echo "After:  $AFTER"
+
+          git diff --name-status "$BEFORE" "$AFTER" > /tmp/changes.txt
+
+          echo "Gewijzigde bestanden:"
+          cat /tmp/changes.txt
+
+      # --------------------------------------------------
+      # 4. Installeer SFTP client
+      # --------------------------------------------------
       - name: Install sshpass
-        run: sudo apt-get update && sudo apt-get install -y sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass
 
-      - name: Upload test file
+      # --------------------------------------------------
+      # 5. Maak deploypakket
+      # --------------------------------------------------
+      - name: Prepare deploy package
+        run: |
+          rm -rf /tmp/deploy
+          mkdir -p /tmp/deploy
+
+          while IFS=$'\t' read -r status file; do
+            # Verwijderde bestanden voorlopig overslaan
+            if [ "$status" = "D" ]; then
+              echo "SKIP deleted: $file"
+              continue
+            fi
+
+            # Runtime/config bestanden nooit deployen
+            case "$file" in
+              .env|.env.*)
+                echo "SKIP environment: $file"
+                continue
+                ;;
+              cache/*|files/*|store/*)
+                echo "SKIP runtime: $file"
+                continue
+                ;;
+            esac
+
+            # Alleen bestaande bestanden kopiëren
+            if [ -f "$file" ]; then
+              mkdir -p "/tmp/deploy/$(dirname "$file")"
+              cp "$file" "/tmp/deploy/$file"
+              echo "ADD: $file"
+            fi
+          done < /tmp/changes.txt
+
+          echo
+          echo "Deploypakket:"
+          find /tmp/deploy -type f | sort
+
+      # --------------------------------------------------
+      # 6. Upload gewijzigde bestanden naar One.com
+      # --------------------------------------------------
+      - name: Deploy changed files
         env:
           SFTP_HOST: ${{ secrets.ONECOM_HOST }}
           SFTP_USER: ${{ secrets.ONECOM_USER }}
           SFTP_PASSWORD: ${{ secrets.ONECOM_PASSWORD }}
         run: |
-          sshpass -p "$SFTP_PASSWORD" sftp \
-            -o StrictHostKeyChecking=no \
-            -P 22 \
-            "$SFTP_USER@$SFTP_HOST" <<'EOF'
-          cd /customers/e/a/c/doctorwhofans.be/httpd.www/forum
-          put deploy-test.txt
+          cd /tmp/deploy
+
+          find . -type f -print0 | while IFS= read -r -d '' file; do
+            file="${file#./}"
+            dir="$(dirname "$file")"
+
+            echo "Uploading: $file"
+
+            if [ "$dir" = "." ]; then
+              remote_dir="/customers/e/a/c/doctorwhofans.be/httpd.www/forum"
+            else
+              remote_dir="/customers/e/a/c/doctorwhofans.be/httpd.www/forum/$dir"
+            fi
+
+            sshpass -p "$SFTP_PASSWORD" sftp \
+              -o StrictHostKeyChecking=no \
+              -P 22 \
+              "$SFTP_USER@$SFTP_HOST" <<EOF
+          mkdir "$remote_dir"
+          cd "$remote_dir"
+          put "$file"
           bye
           EOF
+          done
+
+      # --------------------------------------------------
+      # 7. Samenvatting
+      # --------------------------------------------------
+      - name: Deployment complete
+        run: |
+          echo "======================================"
+          echo "Deployment succesvol"
+          echo "Commit: $GITHUB_SHA"
+          echo "======================================"
