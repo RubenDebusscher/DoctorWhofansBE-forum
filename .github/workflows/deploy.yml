@@ -5,21 +5,11 @@ on:
     branches:
       - main
 
-permissions:
-  contents: read
-  pull-requests: read
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
-
     steps:
-      - name: Debugging
-        run: |
-          echo "DIT IS EEN TEST OM TE ZIEN OF DE CODE IS BIJGEWERKT"
-          date
-
       # --------------------------------------------------
       # 1. Checkout volledige Git geschiedenis
       # --------------------------------------------------
@@ -53,9 +43,10 @@ jobs:
           echo "Build succesvol"
 
       # --------------------------------------------------
-      # 3. Bepaal gewijzigde en verwijderde bestanden
+      # 3. Bepaal gewijzigde bestanden
       # --------------------------------------------------
       - name: Determine changed files
+        id: changes
         run: |
           BEFORE="${{ github.event.before }}"
           AFTER="${{ github.sha }}"
@@ -65,73 +56,11 @@ jobs:
 
           git diff --name-status "$BEFORE" "$AFTER" > /tmp/changes.txt
 
-          echo
-          echo "======================================"
-          echo "Git wijzigingen:"
-          echo "======================================"
+          echo "Gewijzigde bestanden:"
           cat /tmp/changes.txt
 
-          touch /tmp/deleted-files.txt
-
       # --------------------------------------------------
-      # 4. Controleer root Composer wijzigingen
-      # --------------------------------------------------
-      - name: Check root Composer changes
-        id: composer
-        run: |
-          if grep -Eq '^[ACMRT][[:space:]]+(composer\.json|composer\.lock)$' /tmp/changes.txt; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-
-            echo "======================================"
-            echo "Root Composer gewijzigd"
-            echo "Volledige vendor/ wordt gedeployed."
-            echo "======================================"
-          else
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-
-            echo "Root Composer niet gewijzigd."
-            echo "Alleen gewijzigde bestanden worden gedeployed."
-          fi
-
-      # --------------------------------------------------
-      # 5. Controleer DEPLOY_DELETE in gekoppelde PR
-      # --------------------------------------------------
-      - name: Check delete authorization
-        id: delete_auth
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-          SHA: ${{ github.sha }}
-        run: |
-          echo "Zoeken naar gekoppelde Pull Request..."
-
-          PR_BODY=$(curl -fsSL \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            -H "X-GitHub-Api-Version: 2026-03-10" \
-            "https://api.github.com/repos/$REPO/commits/$SHA/pulls" \
-            | jq -r '.[0].body // ""')
-
-          if printf '%s' "$PR_BODY" | grep -q 'DEPLOY_DELETE'; then
-            echo "authorized=true" >> "$GITHUB_OUTPUT"
-
-            echo
-            echo "======================================"
-            echo "DEPLOY_DELETE gevonden."
-            echo "Verwijderen van bestanden is toegestaan."
-            echo "======================================"
-          else
-            echo "authorized=false" >> "$GITHUB_OUTPUT"
-
-            echo
-            echo "======================================"
-            echo "DEPLOY_DELETE niet gevonden."
-            echo "Bestanden worden NIET automatisch verwijderd."
-            echo "======================================"
-          fi
-
-      # --------------------------------------------------
-      # 6. Installeer SFTP client
+      # 4. Installeer SFTP client
       # --------------------------------------------------
       - name: Install sshpass
         run: |
@@ -139,32 +68,21 @@ jobs:
           sudo apt-get install -y sshpass
 
       # --------------------------------------------------
-      # 7. Maak deploypakket
+      # 5. Maak deploypakket
       # --------------------------------------------------
       - name: Prepare deploy package
-        env:
-          COMPOSER_CHANGED: ${{ steps.composer.outputs.changed }}
         run: |
-
           rm -rf /tmp/deploy
           mkdir -p /tmp/deploy
 
-          touch /tmp/deleted-files.txt
-
-          while IFS=$'\t' read -r status file extra; do
-
-            # ----------------------------------------------
-            # Verwijderde bestanden bewaren voor later
-            # ----------------------------------------------
+          while IFS=$'\t' read -r status file; do
+            # Verwijderde bestanden voorlopig overslaan
             if [ "$status" = "D" ]; then
-              echo "$file" >> /tmp/deleted-files.txt
-              echo "DELETE: $file"
+              echo "SKIP deleted: $file"
               continue
             fi
 
-            # ----------------------------------------------
             # Runtime/config bestanden nooit deployen
-            # ----------------------------------------------
             case "$file" in
               .env|.env.*)
                 echo "SKIP environment: $file"
@@ -174,60 +92,22 @@ jobs:
                 echo "SKIP runtime: $file"
                 continue
                 ;;
-              .github/*)
-                echo "SKIP GitHub: $file"
-                continue
-                ;;
             esac
 
-            # ----------------------------------------------
-            # Alleen bestaande bestanden toevoegen
-            # ----------------------------------------------
+            # Alleen bestaande bestanden kopiëren
             if [ -f "$file" ]; then
               mkdir -p "/tmp/deploy/$(dirname "$file")"
               cp "$file" "/tmp/deploy/$file"
               echo "ADD: $file"
             fi
-
           done < /tmp/changes.txt
 
-          # ----------------------------------------------
-          # Root Composer gewijzigd:
-          # volledige opgebouwde vendor deployen
-          # ----------------------------------------------
-          if [ "$COMPOSER_CHANGED" = "true" ]; then
-
-            echo
-            echo "======================================"
-            echo "Root Composer gewijzigd."
-            echo "Volledige vendor/ toevoegen."
-            echo "======================================"
-
-            mkdir -p /tmp/deploy/vendor
-            cp -a vendor/. /tmp/deploy/vendor/
-
-          fi
-
           echo
-          echo "======================================"
           echo "Deploypakket:"
-          echo "======================================"
-
           find /tmp/deploy -type f | sort
 
-          echo
-          echo "======================================"
-          echo "Verwijderde bestanden:"
-          echo "======================================"
-
-          if [ -s /tmp/deleted-files.txt ]; then
-            cat /tmp/deleted-files.txt
-          else
-            echo "Geen verwijderde bestanden."
-          fi
-
       # --------------------------------------------------
-      # 8. Upload bestanden stabiel per stuk via SFTP
+      # 6. Upload gewijzigde bestanden naar One.com
       # --------------------------------------------------
       - name: Deploy changed files
         env:
@@ -235,200 +115,37 @@ jobs:
           SFTP_USER: ${{ secrets.ONECOM_USER }}
           SFTP_PASSWORD: ${{ secrets.ONECOM_PASSWORD }}
         run: |
+          cd /tmp/deploy
 
-          if ! find /tmp/deploy -type f -print -quit | grep -q .; then
-            echo "Geen bestanden om te deployen."
-            exit 0
-          fi
-
-          echo
-          echo "======================================"
-          echo "Starting stable file upload..."
-          echo "======================================"
-
-          remote_root="/customers/e/a/c/doctorwhofans.be/httpd.www/forum"
-          deploy_root="/tmp/deploy"
-
-          cd "$deploy_root"
-          find . -type f | sort | while read -r file; do
+          find . -type f -print0 | while IFS= read -r -d '' file; do
             file="${file#./}"
-            
-            local_file="$deploy_root/$file"
-            remote_file="$remote_root/$file"
-            remote_dir="$(dirname "$remote_file")"
+            dir="$(dirname "$file")"
 
             echo "Uploading: $file"
 
+            if [ "$dir" = "." ]; then
+              remote_dir="/customers/e/a/c/doctorwhofans.be/httpd.www/forum"
+            else
+              remote_dir="/customers/e/a/c/doctorwhofans.be/httpd.www/forum/$dir"
+            fi
+
             sshpass -p "$SFTP_PASSWORD" sftp \
               -o StrictHostKeyChecking=no \
-              -o BatchMode=no \
               -P 22 \
               "$SFTP_USER@$SFTP_HOST" <<EOF
-mkdir -p "$remote_dir"
-put "$local_file" "$remote_file"
-bye
-EOF
-
-            if [ $? -ne 0 ]; then
-              echo "Fout bij uploaden van: $file"
-              exit 1
-            fi
+          mkdir "$remote_dir"
+          cd "$remote_dir"
+          put "$file"
+          bye
+          EOF
           done
 
-          echo
-          echo "Upload succesvol."
-
       # --------------------------------------------------
-      # 9. Verwijder bestanden indien DEPLOY_DELETE aanwezig
-      # --------------------------------------------------
-      - name: Delete removed files
-        if: steps.delete_auth.outputs.authorized == 'true'
-        env:
-          SFTP_HOST: ${{ secrets.ONECOM_HOST }}
-          SFTP_USER: ${{ secrets.ONECOM_USER }}
-          SFTP_PASSWORD: ${{ secrets.ONECOM_PASSWORD }}
-        run: |
-
-          if [ ! -s /tmp/deleted-files.txt ]; then
-            echo "Geen verwijderde bestanden."
-            exit 0
-          fi
-
-          python3 <<'PY'
-
-          from pathlib import Path
-
-          remote_root = "/customers/e/a/c/doctorwhofans.be/httpd.www/forum"
-
-          files = Path(
-              "/tmp/deleted-files.txt"
-          ).read_text().splitlines()
-
-          commands = []
-
-          for file in files:
-
-              file = file.strip()
-
-              if not file:
-                  continue
-
-              path = Path(file)
-
-              if (
-                  file.startswith("/")
-                  or ".." in path.parts
-              ):
-                  print(f"SKIP unsafe deletion: {file}")
-                  continue
-
-              if file in (
-                  ".env",
-                  "composer.json",
-                  "composer.lock",
-              ):
-                  print(f"SKIP protected deletion: {file}")
-                  continue
-
-              if (
-                  file.startswith("cache/")
-                  or file.startswith("files/")
-                  or file.startswith("store/")
-                  or file.startswith(".github/")
-              ):
-                  print(f"SKIP protected deletion: {file}")
-                  continue
-
-              remote = f"{remote_root}/{file}"
-
-              commands.append(
-                  f'rm "{remote}"'
-              )
-
-          commands.append("bye")
-
-          Path("/tmp/sftp-delete.txt").write_text(
-              "\n".join(commands) + "\n",
-              encoding="utf-8",
-              newline="\n"
-          )
-
-          PY
-
-          echo
-          echo "======================================"
-          echo "Deleting authorized files..."
-          echo "======================================"
-
-          sshpass -p "$SFTP_PASSWORD" sftp \
-            -o StrictHostKeyChecking=no \
-            -o BatchMode=no \
-            -P 22 \
-            -b /tmp/sftp-delete.txt \
-            "$SFTP_USER@$SFTP_HOST"
-
-          echo
-          echo "Verwijderingen uitgevoerd."
-
-      # --------------------------------------------------
-      # 10. Geen delete-autorisatie: rapport op one.com
-      # --------------------------------------------------
-      - name: Upload deletion report
-        if: steps.delete_auth.outputs.authorized == 'false'
-        env:
-          SFTP_HOST: ${{ secrets.ONECOM_HOST }}
-          SFTP_USER: ${{ secrets.ONECOM_USER }}
-          SFTP_PASSWORD: ${{ secrets.ONECOM_PASSWORD }}
-        run: |
-
-          if [ ! -s /tmp/deleted-files.txt ]; then
-            echo "Geen verwijderde bestanden."
-            exit 0
-          fi
-
-          echo
-          echo "======================================"
-          echo "DEPLOY_DELETE ontbreekt."
-          echo "Verwijderde bestanden worden NIET verwijderd."
-          echo "Rapport wordt geüpload."
-          echo "======================================"
-
-          cp /tmp/deleted-files.txt \
-            /tmp/DEPLOY_DELETIONS.txt
-
-          sshpass -p "$SFTP_PASSWORD" sftp \
-            -o StrictHostKeyChecking=no \
-            -o BatchMode=no \
-            -P 22 \
-            "$SFTP_USER@$SFTP_HOST" <<EOF
-cd /customers/e/a/c/doctorwhofans.be/httpd.www/forum
-put /tmp/DEPLOY_DELETIONS.txt DEPLOY_DELETIONS.txt
-bye
-EOF
-
-          echo "DEPLOY_DELETIONS.txt geüpload."
-
-      # --------------------------------------------------
-      # 11. Samenvatting
+      # 7. Samenvatting
       # --------------------------------------------------
       - name: Deployment complete
         run: |
-
-          echo
           echo "======================================"
           echo "Deployment succesvol"
-          echo "======================================"
-
-          echo "Commit:"
-          echo "$GITHUB_SHA"
-
-          echo
-          echo "Root Composer gewijzigd:"
-          echo "${{ steps.composer.outputs.changed }}"
-
-          echo
-          echo "Delete geautoriseerd:"
-          echo "${{ steps.delete_auth.outputs.authorized }}"
-
-          echo
+          echo "Commit: $GITHUB_SHA"
           echo "======================================"
