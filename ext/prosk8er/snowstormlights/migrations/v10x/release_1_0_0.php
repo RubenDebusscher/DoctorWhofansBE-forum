@@ -2,7 +2,7 @@
 /**
 *
 * @package Snowstorm and Lights
-* @copyright (c) 2021 Prosk8er <https://www.gotskillslounge.com>
+* @copyright (c) 2025 Prosk8er <https://www.gotskillslounge.com>
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -16,9 +16,9 @@ class release_1_0_0 extends \phpbb\db\migration\migration
 		return isset($this->config['snowstorm_lights_version']) && version_compare($this->config['snowstorm_lights_version'], '1.0.0', '>=');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
-		return ['\phpbb\db\migration\data\v320\v320'];
+		return ['\phpbb\db\migration\data\v330\v330'];
 	}
 
 	public function update_schema()

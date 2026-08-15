@@ -2,7 +2,7 @@
 
 /**
  * SEO Metadata extension for phpBB.
- * @author Alfredo Ramos <alfredo.ramos@protonmail.com>
+ * @author Alfredo Ramos <alfredo.ramos@proton.me>
  * @copyright 2018 Alfredo Ramos
  * @license GNU GPL-2.0-only
  */
@@ -68,6 +68,12 @@ class helper
 	/** @var array */
 	protected $tables;
 
+	/** @var integer */
+	public const MIN_IMAGE_DIMENSION = 200;
+
+	/** @var integer */
+	public const MAX_IMG_EXTRACTION = 10;
+
 	/**
 	 * Helper constructor.
 	 *
@@ -89,7 +95,7 @@ class helper
 	 *
 	 * @return void
 	 */
-	public function __construct(database $db, config $config, user $user, request $request, template $template, language $language, filesystem $filesystem, cache $cache, controller_helper $controller_helper, dispatcher $dispatcher, FastImageSize $imagesize, $root_path, $php_ext, $posts_table, $attachments_table)
+	public function __construct(database $db, config $config, user $user, request $request, template $template, language $language, filesystem $filesystem, cache $cache, controller_helper $controller_helper, dispatcher $dispatcher, FastImageSize $imagesize, $root_path, $php_ext, $users_table, $posts_table, $attachments_table)
 	{
 		$this->db = $db;
 		$this->config = $config;
@@ -110,6 +116,7 @@ class helper
 		if (empty($this->tables))
 		{
 			$this->tables = [
+				'users' => $users_table,
 				'posts' => $posts_table,
 				'attachments' => $attachments_table
 			];
@@ -129,12 +136,12 @@ class helper
 		if (empty($this->metadata))
 		{
 			$default = [
-				'description' => $this->clean_description($this->config['site_desc']),
+				'description' => $this->clean_description($this->config->offsetGet('site_desc')),
 				'image' => [
-					'url' => $this->clean_image($this->config['seo_metadata_default_image']),
-					'width' => (int) $this->config['seo_metadata_default_image_width'],
-					'height' => (int) $this->config['seo_metadata_default_image_height'],
-					'type' => trim($this->config['seo_metadata_default_image_type'])
+					'url' => $this->clean_image($this->config->offsetGet('seo_metadata_default_image')),
+					'width' => (int) $this->config->offsetGet('seo_metadata_default_image_width'),
+					'height' => (int) $this->config->offsetGet('seo_metadata_default_image_height'),
+					'type' => trim($this->config->offsetGet('seo_metadata_default_image_type'))
 				],
 				'url' => $this->clean_url($this->controller_helper->get_current_url())
 			];
@@ -147,15 +154,15 @@ class helper
 						$default['image']['width'],
 						$default['image']['height']
 					) ? 'summary_large_image' : 'summary',
-					'twitter:site' => trim($this->config['seo_metadata_twitter_publisher']),
+					'twitter:site' => trim($this->config->offsetGet('seo_metadata_twitter_publisher')),
 					'twitter:title' => '',
 					'twitter:description' => $default['description'],
 					'twitter:image' => $default['image']['url']
 				],
 				'open_graph' => [
-					'fb:app_id' => trim($this->config['seo_metadata_facebook_application']),
+					'fb:app_id' => trim($this->config->offsetGet('seo_metadata_facebook_application')),
 					'og:locale' => $this->extract_locale($this->language->lang('USER_LANG')),
-					'og:site_name' => trim($this->config['sitename']),
+					'og:site_name' => trim($this->config->offsetGet('sitename')),
 					'og:url' => $default['url'],
 					'og:type' => 'website',
 					'og:title' => '',
@@ -164,34 +171,50 @@ class helper
 					'og:image:type' => $default['image']['type'],
 					'og:image:width' => $default['image']['width'],
 					'og:image:height' => $default['image']['height'],
+					'article:author' => '',
 					'article:published_time' => '',
 					'article:section' => '',
-					'article:publisher' => trim($this->config['seo_metadata_facebook_publisher'])
+					'article:publisher' => trim($this->config->offsetGet('seo_metadata_facebook_publisher'))
 				],
 				'json_ld' => [
 					'@context' => 'https://schema.org',
 					'@type' => 'DiscussionForumPosting',
 					'url' => $default['url'],
+					'mainEntityOfPage' => $default['url'],
 					'headline' => '',
 					'description' => $default['description'],
 					'text' => $default['description'],
 					'image' => $default['image']['url'],
 					'author' => [
 						'@type' => 'Person',
-						'name' => ''
+						'name' => '',
+						'url' => ''
 					],
 					'datePublished' => '',
 					'articleSection' => '',
 					'publisher' => [
 						'@type' => 'Organization',
-						'name' => trim($this->config['sitename']),
+						'name' => trim($this->config->offsetGet('sitename')),
 						'url' => generate_board_url(),
 						'logo' => [
 							'@type' => 'ImageObject',
-							'url' => $this->clean_image($this->config['seo_metadata_json_ld_logo']),
-							'width' => (int) $this->config['seo_metadata_json_ld_logo_width'],
-							'height' => (int) $this->config['seo_metadata_json_ld_logo_height']
+							'url' => $this->clean_image($this->config->offsetGet('seo_metadata_json_ld_logo')),
+							'width' => (int) $this->config->offsetGet('seo_metadata_json_ld_logo_width'),
+							'height' => (int) $this->config->offsetGet('seo_metadata_json_ld_logo_height')
 						]
+					],
+					'comment' => [
+						// ! Template
+						// [
+						// 	'@type' => 'Comment',
+						// 	'identifier' => '',
+						// 	'text' => '',
+						// 	'author' => [
+						// 		'@type' => 'Person',
+						// 		'name' => '',
+						// 		'url' => ''
+						// 	]
+						// ]
 					]
 				]
 			];
@@ -203,14 +226,7 @@ class helper
 		// Map values to correct properties
 		foreach ($data as $key => $value)
 		{
-			if (is_string($value))
-			{
-				$value = trim($value);
-			}
-			else if (is_array($value))
-			{
-				$value = array_map('trim', $value);
-			}
+			$value = $this->trim_items($value);
 
 			switch ($key)
 			{
@@ -275,7 +291,51 @@ class helper
 				break;
 
 				case 'author':
-					$this->metadata['json_ld']['author']['name'] = $value;
+					if (isset($value['name']))
+					{
+						$this->metadata['open_graph']['article:author'] = $value['name'];
+						$this->metadata['json_ld']['author']['name'] = $value['name'];
+					}
+
+					if (isset($value['url']))
+					{
+						$this->metadata['json_ld']['author']['url'] = $value['url'];
+					}
+				break;
+
+				case 'comment':
+					if (isset($value['text'], $value['identifier']))
+					{
+						$data = [
+							'identifier' => $value['identifier'],
+							'text' => $value['text'],
+						];
+						$default = [
+							'@type' => 'Comment',
+							'identifier' => '',
+							'text' => '',
+							'author' => [
+								'@type' => 'Person',
+								'name' => '',
+								'url' => ''
+							]
+						];
+
+						if (isset($value['author']['name']))
+						{
+							$data['author']['name'] = $value['author']['name'];
+						}
+
+						if (isset($value['author']['url']))
+						{
+							$data['author']['url'] = $value['author']['url'];
+						}
+
+						if (!$this->comment_exists($this->metadata['json_ld']['comment'], $value['identifier']))
+						{
+							$this->metadata['json_ld']['comment'][] = array_replace_recursive($default, $data);
+						}
+					}
 				break;
 			}
 		}
@@ -327,6 +387,7 @@ class helper
 		if ($data['open_graph']['og:type'] !== 'article')
 		{
 			unset(
+				$data['open_graph']['article:author'],
 				$data['open_graph']['article:published_time'],
 				$data['open_graph']['article:section'],
 				$data['open_graph']['article:publisher']
@@ -351,10 +412,19 @@ class helper
 			unset($data['json_ld']['publisher']['logo']);
 		}
 
+		// JSON-LD comment
+		foreach ($data['json_ld']['comment'] as $key => $value)
+		{
+			if (empty($value['text']))
+			{
+				unset($data['json_ld']['comment'][$key]);
+			}
+		}
+
 		// Ignore disabled options
 		foreach ($data as $key => $value)
 		{
-			if ((int) $this->config[sprintf('seo_metadata_%s', $key)] !== 1 ||
+			if ((int) $this->config->offsetGet(sprintf('seo_metadata_%s', $key)) !== 1 ||
 				empty($value))
 			{
 				unset($data[$key]);
@@ -368,17 +438,19 @@ class helper
 		// Assign data to template
 		foreach ($data as $key => $value)
 		{
+			$type = strtoupper($key);
+
 			$this->template->assign_block_vars(
 				'SEO_METADATA',
 				[
-					'NAME' => strtoupper($key),
+					'NAME' => $type,
 				]
 			);
 
 			if ($key === 'json_ld')
 			{
 				$this->template->assign_block_vars(
-					sprintf('SEO_METADATA.%s', strtoupper($key)),
+					sprintf('SEO_METADATA.%s', $type),
 					[
 						'CONTENT' => json_encode($data[$key], JSON_UNESCAPED_SLASHES)
 					]
@@ -390,7 +462,7 @@ class helper
 				foreach ($value as $k => $v)
 				{
 					$this->template->assign_block_vars(
-						sprintf('SEO_METADATA.%s', strtoupper($key)),
+						sprintf('SEO_METADATA.%s', $type),
 						[
 							'PROPERTY' => $k,
 							'CONTENT' => $v
@@ -402,36 +474,31 @@ class helper
 	}
 
 	/**
-	 * Clean text to be used as description.
+	 * Clean post text.
 	 *
-	 * @param string $description
+	 * @param string $post_data
 	 *
 	 * @return string
 	 */
-	public function clean_description($description = '')
+	public function clean_post_data($post_data = '')
 	{
-		// Cast values
-		$description = trim($description);
-		$max_length = abs((int) $this->config['seo_metadata_desc_length']);
-		$strategy = abs((int) $this->config['seo_metadata_desc_strategy']);
-
-		if (empty($description))
+		if (empty($post_data))
 		{
 			return '';
 		}
 
 		// Ensure it's XML
-		if (!preg_match('#^<[rt][ >]#', $description))
+		if (!preg_match('#^<[rt][ >]#', $post_data))
 		{
-			$description = sprintf('<t>%s</t>', $description);
+			$post_data = sprintf('<t>%s</t>', $post_data);
 		}
 
 		// Try to fix XML
-		if (!$this->is_valid_xml($description))
+		if (!$this->is_valid_xml($post_data))
 		{
 			$uid = $bitfield = $flags = null;
-			generate_text_for_storage($description, $uid, $bitfield, $flags, true, true, true);
-			$description = generate_text_for_display($description, $uid, $bitfield, $flags);
+			generate_text_for_storage($post_data, $uid, $bitfield, $flags, true, true, true);
+			$post_data = generate_text_for_display($post_data, $uid, $bitfield, $flags);
 		}
 
 		// Global encoding
@@ -439,7 +506,7 @@ class helper
 
 		// DOM manipulation
 		$dom = new \DOMDocument;
-		$dom->loadXML($description);
+		$dom->loadXML($post_data);
 		$xpath = new \DOMXPath($dom);
 
 		// Remove images
@@ -488,28 +555,54 @@ class helper
 		}
 
 		// Save changes
-		$description = $dom->saveXML($dom->documentElement);
+		$post_data = $dom->saveXML($dom->documentElement);
 
 		/**
-		 * Manipulate description after it has been cleaned.
+		 * Manipulate post data after it has been cleaned.
 		 *
-		 * @event alfredoramos.seometadata.clean_description_after
+		 * @event alfredoramos.seometadata.clean_post_data_after
 		 *
-		 * @var string description The XML string of the post description.
+		 * @var string post_data The XML string of the post data.
 		 *
-		 * @since 1.0.0
+		 * @since 2.0.0
 		 */
-		$vars = ['description'];
-		extract($this->dispatcher->trigger_event('alfredoramos.seometadata.clean_description_after', compact($vars)));
+		$vars = ['post_data'];
+		extract($this->dispatcher->trigger_event('alfredoramos.seometadata.clean_post_data_after', compact($vars)));
 
 		// Text censoring
-		$description = censor_text($description);
+		$post_data = censor_text($post_data);
 
 		// Remove BBCode
-		strip_bbcode($description);
+		strip_bbcode($post_data);
 
 		// Remove whitespaces
-		$description = trim(preg_replace('#\s+#', ' ', $description));
+		$post_data = trim(preg_replace('#\s+#', ' ', $post_data));
+
+		return $post_data;
+	}
+
+	/**
+	 * Clean text to be used as description.
+	 *
+	 * @param string $description
+	 *
+	 * @return string
+	 */
+	public function clean_description($description = '')
+	{
+		$description = $this->clean_post_data($description);
+
+		if (empty($description))
+		{
+			return '';
+		}
+
+		// Cast values
+		$max_length = abs((int) $this->config->offsetGet('seo_metadata_desc_length'));
+		$strategy = abs((int) $this->config->offsetGet('seo_metadata_desc_strategy'));
+
+		// Global encoding
+		$encoding = 'UTF-8';
 
 		// Check description length
 		if (mb_strlen($description, $encoding) > $max_length)
@@ -594,11 +687,7 @@ class helper
 		}
 
 		// Absolute URL
-		$url = sprintf(
-			'%s/%s',
-			generate_board_url(),
-			$image_path
-		);
+		$url = sprintf('%s/%s', generate_board_url(), $image_path);
 
 		return $url;
 	}
@@ -623,7 +712,7 @@ class helper
 		$url = htmlspecialchars($url, ENT_COMPAT, 'UTF-8', false);
 
 		// Remove app.php/ from URL
-		if ((int) $this->config['enable_mod_rewrite'] === 1)
+		if ((int) $this->config->offsetGet('enable_mod_rewrite') === 1)
 		{
 			$url = preg_replace('#app\.' . $this->php_ext . '/(.+)$#', '\1', $url);
 		}
@@ -712,11 +801,10 @@ class helper
 	 * @param string	$description
 	 * @param integer	$post_id
 	 * @param integer	$forum_id
-	 * @param integer	$max_images
 	 *
 	 * @return array	url, width, height and type
 	 */
-	public function extract_image($description = '', $post_id = 0, $forum_id = 0, $max_images = 3)
+	public function extract_image($description = '', $post_id = 0, $forum_id = 0)
 	{
 		$description = trim($description);
 		$post_id = (int) $post_id;
@@ -753,14 +841,14 @@ class helper
 			return $cached['topic']['image'];
 		}
 
-		$server_name = trim($this->config['server_name']);
-		$image_strategy = abs((int) $this->config['seo_metadata_image_strategy']);
-		$local_images = ((int) $this->config['seo_metadata_local_images'] === 1) && !empty($server_name);
-		$use_attachments = ((int) $this->config['seo_metadata_attachments'] === 1);
-		$prefer_attachments = ((int) $this->config['seo_metadata_prefer_attachments'] === 1);
-		$max_images = abs((int) $max_images);
-		$max_images = empty($max_images) ? 5 : $max_images;
-		$max_images = ($max_images > 5) ? 5 : $max_images;
+		$server_name = trim($this->config->offsetGet('server_name'));
+		$image_strategy = abs((int) $this->config->offsetGet('seo_metadata_image_strategy'));
+		$local_images = ((int) $this->config->offsetGet('seo_metadata_local_images') === 1) && !empty($server_name);
+		$use_attachments = ((int) $this->config->offsetGet('seo_metadata_attachments') === 1);
+		$prefer_attachments = ((int) $this->config->offsetGet('seo_metadata_prefer_attachments') === 1);
+		$max_images = abs((int) $this->config->offsetGet('seo_metadata_max_images'));
+		$max_images = empty($max_images) ? self::MAX_IMG_EXTRACTION : $max_images;
+		$max_images = ($max_images > self::MAX_IMG_EXTRACTION) ? self::MAX_IMG_EXTRACTION : $max_images;
 		$images = [];
 
 		// Ensure it's XML
@@ -786,6 +874,11 @@ class helper
 		// Get post images
 		foreach ($xpath->query('//IMG') as $node)
 		{
+			if (count($images) > $max_images)
+			{
+				continue;
+			}
+
 			// Get image URL
 			$url = trim($node->getAttribute('src'));
 
@@ -818,6 +911,11 @@ class helper
 				{
 					continue;
 				}
+			}
+
+			if (in_array($url, $images))
+			{
+				continue;
 			}
 
 			$images[] = $url;
@@ -1089,8 +1187,8 @@ class helper
 
 		// Minimum dimensions
 		$min = [
-			'width' => !empty($extra[0]) ? (int) $extra[0] : 200,
-			'height' => !empty($extra[1]) ? (int) $extra[1] : 200
+			'width' => !empty($extra[0]) ? (int) $extra[0] : self::MIN_IMAGE_DIMENSION,
+			'height' => !empty($extra[1]) ? (int) $extra[1] : self::MIN_IMAGE_DIMENSION
 		];
 
 		// Allowed mime types
@@ -1222,7 +1320,7 @@ class helper
 	 */
 	public function check_replies()
 	{
-		return ((int) $this->config['seo_metadata_post_metadata'] === 1);
+		return ((int) $this->config->offsetGet('seo_metadata_post_metadata') === 1);
 	}
 
 	/**
@@ -1249,9 +1347,7 @@ class helper
 		// Get post ID
 		$pid = $this->request->variable('p', 0);
 
-		$is_reply = !empty($pid) &&
-			in_array($pid, $post_list, true) &&
-			$pid !== $first_post_id;
+		$is_reply = !empty($pid) && in_array($pid, $post_list, true) && $pid !== $first_post_id;
 
 		// Update post ID
 		if ($is_reply)
@@ -1286,6 +1382,56 @@ class helper
 		$is_wide = $is_wide && ($width >= (($height - 10) * 1.5));
 
 		return $is_wide;
+	}
+
+	/**
+	 * Trim strings from given data, recursively.
+	 *
+	 * @param mixed		$data
+	 * @param integer	$depth
+	 *
+	 * @return mixed
+	 */
+	public function trim_items($data = [], $depth = 0)
+	{
+		if (empty($data))
+		{
+			return [];
+		}
+
+		$max_depth = 5;
+		$depth = abs($depth) + 1;
+
+		// Do not go deeper, return data as is
+		if ($depth > $max_depth)
+		{
+			return $data;
+		}
+
+		if (!is_string($data) && !is_array($data))
+		{
+			return $data;
+		}
+
+		if (is_string($data))
+		{
+			return trim($data);
+		}
+
+		// Trim strings
+		return array_map(function($item) use ($depth) {
+			if (is_string($item))
+			{
+				return trim($item);
+			}
+
+			if (is_array($item))
+			{
+				return $this->trim_items($item, $depth);
+			}
+
+			return $item;
+		}, $data);
 	}
 
 	/**
@@ -1328,5 +1474,121 @@ class helper
 
 		// Return a copy
 		return $data;
+	}
+
+	/**
+	 * Generate URL for user profile.
+	 *
+	 * @param integer $user_id
+	 *
+	 * @return string
+	 */
+	public function generate_user_url($user_id = 0)
+	{
+		$user_id = (int) $user_id;
+
+		if (empty($user_id))
+		{
+			return '';
+		}
+
+		return sprintf('%s/memberlist.%s?mode=viewprofile&u=%d', generate_board_url(), $this->php_ext, $user_id);
+	}
+
+	/**
+	 * Generate author data from topic or post data.
+	 *
+	 * @param string	$name
+	 * @param integer	$user_id
+	 * @param integer	$post_id
+	 *
+	 * @return array
+	 */
+	public function extract_author($name = '', $user_id = 0, $post_id = 0)
+	{
+		$user_id = (int) $user_id;
+		$post_id = (int) $post_id;
+
+		$data = [
+			'name' => $name,
+			'url' => $this->generate_user_url($user_id)
+		];
+
+		if (empty($post_id))
+		{
+			return $data;
+		}
+
+		$sql_array = [
+			'SELECT' => 'u.user_id, u.username',
+			'FROM' => [$this->tables['users'] => 'u'],
+			'LEFT_JOIN' => [
+				[
+					'FROM' => [$this->tables['posts'] => 'p'],
+					'ON' => 'p.poster_id = u.user_id'
+				]
+			],
+			'WHERE' => 'p.post_id = ' . $post_id
+		];
+
+		$sql = $this->db->sql_build_query('SELECT', $sql_array);
+		// Cache query for 24 hours
+		$result = $this->db->sql_query($sql, (24 * 60 * 60));
+		$user = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		$data = [
+			'name' => $user['username'],
+			'url' => $this->generate_user_url($user['user_id'])
+		];
+
+		return $data;
+	}
+
+	/**
+	 * Generate URL for user profile.
+	 *
+	 * @param integer $id
+	 *
+	 * @return string
+	 */
+	public function generate_post_url($post_id = 0)
+	{
+		$post_id = (int) $post_id;
+
+		if (empty($post_id))
+		{
+			return '';
+		}
+
+		return sprintf('%1$s/viewtopic.%2$s?p=%3$d#p%3$d', generate_board_url(), $this->php_ext, $post_id);
+	}
+
+	/**
+	 * Check if JSON-LD comment exists.
+	 *
+	 * @param array		$comment_list
+	 * @param string	$identifier
+	 *
+	 * @param bool
+	 */
+	private function comment_exists($comment_list = [], $identifier = '')
+	{
+		$identifier = trim($identifier);
+
+		if (empty($comment_list) || empty($identifier))
+		{
+			return false;
+		}
+
+		foreach ($comment_list as $comment)
+		{
+			if (!empty($comment['identifier']) && $comment['identifier'] === $identifier)
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
