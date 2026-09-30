@@ -337,7 +337,7 @@ table.zebra-list tr:nth-child(even) td, ul.zebra-list li:nth-child(even) {
 }
 
 .site_logo {
-	    background-image: url(https://www.doctorwhofans.be/images/gallifreyan.png);
+	    background-image: url(https://cdn.doctorwhofans.be/images/gallifreyan.png);
     width: 6em;
     height: 6em;
     background-repeat: no-repeat;
