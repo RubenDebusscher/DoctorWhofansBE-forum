@@ -1,0 +1,9 @@
+rubend_authentik_login:
+  path: /authentik/login
+  methods: [GET]
+  defaults: { _controller: rubend.authentik.controller.main:login }
+
+rubend_authentik_callback:
+  path: /authentik/callback
+  methods: [GET]
+  defaults: { _controller: rubend.authentik.controller.main:callback }

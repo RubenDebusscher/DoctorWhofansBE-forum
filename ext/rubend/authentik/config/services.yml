@@ -1,0 +1,17 @@
+services:
+  rubend.authentik.listener:
+    class: rubend\authentik\event\main_listener
+    arguments:
+      - "@template"
+      - "@user"
+      - "@controller.helper"
+    tags:
+      - { name: event.listener }
+
+  rubend.authentik.controller.main:
+    class: rubend\authentik\controller\main_controller
+    arguments:
+      - "@controller.helper"
+      - "@user"
+      - "@dbal.conn"
+      - "@config"
